@@ -24,7 +24,7 @@ public:
 
     void setIceCandidate(const QString &iceCandidate);
 
-    void setCallerId(const QString &callerId);
+    Q_INVOKABLE void setCallerId(const QString &callerId);
 
     Q_INVOKABLE void startCall();
 

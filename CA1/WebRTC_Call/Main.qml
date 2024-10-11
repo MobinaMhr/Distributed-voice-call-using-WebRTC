@@ -46,6 +46,7 @@ Window {
             anchors.left: callbtn.left
             anchors.right: callbtn.right
             enabled: !callbtn.pushed
+            onTextChanged: callManager.setCallerId(text)
         }
 
         Button{
@@ -69,11 +70,13 @@ Window {
                 if(pushed){
                     Material.background = "red"
                     text = "End Call"
+                    callManager.startCall()
                 }
                 else{
                     Material.background = "green"
                     text = "Call"
                     textfield.clear()
+                    callManager.endCall()
                 }
             }
         }
