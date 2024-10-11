@@ -8,9 +8,35 @@ m_iceCandidate("172.16.142.176")
 {
 }
 
+QString CallManager::ipAddress() const
+{
+    return m_ipAddress;
+}
+
+QString CallManager::iceCandidate() const
+{
+    return m_iceCandidate;
+}
+
 QString CallManager::callerId() const
 {
     return m_callerId;
+}
+
+void CallManager::setIpAddress(const QString &ipAddress)
+{
+    if (m_ipAddress != ipAddress) {
+        m_ipAddress = ipAddress;
+        emit ipAddressChanged();
+    }
+}
+
+void CallManager::setIceCandidate(const QString &iceCandidate)
+{
+    if (m_iceCandidate != iceCandidate) {
+        m_iceCandidate = iceCandidate;
+        emit iceCandidateChanged();
+    }
 }
 
 void CallManager::setCallerId(const QString &callerId)

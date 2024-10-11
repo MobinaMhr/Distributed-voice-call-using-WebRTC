@@ -2,8 +2,44 @@
     "classes": [
         {
             "className": "CallManager",
+            "methods": [
+                {
+                    "access": "public",
+                    "name": "startCall",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "endCall",
+                    "returnType": "void"
+                }
+            ],
             "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 0,
+                    "name": "callerId",
+                    "notify": "callerIdChanged",
+                    "read": "callerId",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false,
+                    "write": "setCallerId"
+                }
+            ],
             "qualifiedClassName": "CallManager",
+            "signals": [
+                {
+                    "access": "public",
+                    "name": "callerIdChanged",
+                    "returnType": "void"
+                }
+            ],
             "superClasses": [
                 {
                     "access": "public",

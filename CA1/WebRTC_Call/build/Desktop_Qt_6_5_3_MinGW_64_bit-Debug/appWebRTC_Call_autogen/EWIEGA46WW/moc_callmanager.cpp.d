@@ -1,6 +1,7 @@
 E:/UT_CN/Projects/Computer-Networks-Course-S2025/CA1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/appWebRTC_Call_autogen/EWIEGA46WW/moc_callmanager.cpp: E:/UT_CN/Projects/Computer-Networks-Course-S2025/CA1/WebRTC_Call/callmanager.h \
   E:/UT_CN/Projects/Computer-Networks-Course-S2025/CA1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/appWebRTC_Call_autogen/moc_predefs.h \
   C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
+  C:/Qt/6.5.3/mingw_64/include/QtCore/QString \
   C:/Qt/6.5.3/mingw_64/include/QtCore/q20type_traits.h \
   C:/Qt/6.5.3/mingw_64/include/QtCore/qalgorithms.h \
   C:/Qt/6.5.3/mingw_64/include/QtCore/qanystringview.h \

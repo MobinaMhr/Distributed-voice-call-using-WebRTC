@@ -21,12 +21,12 @@ Window {
             }
 
             Label{
-                text: "Ip: " + "172.16.142.176"
+                text: "Ip: " + callManager.ipAddress
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
             }
             Label{
-                text: "IceCandidate: " + "172.16.142.176"
+                text: "IceCandidate: " + callManager.iceCandidate
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
             }
