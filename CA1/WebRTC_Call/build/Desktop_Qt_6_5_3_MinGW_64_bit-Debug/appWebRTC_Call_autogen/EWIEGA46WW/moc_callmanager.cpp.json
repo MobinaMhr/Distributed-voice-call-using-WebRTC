@@ -1,0 +1,17 @@
+{
+    "classes": [
+        {
+            "className": "CallManager",
+            "object": true,
+            "qualifiedClassName": "CallManager",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "callmanager.h",
+    "outputRevision": 68
+}
