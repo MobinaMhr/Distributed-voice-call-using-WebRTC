@@ -75,8 +75,8 @@ Window {
                 else{
                     Material.background = "green"
                     text = "Call"
-                    textfield.clear()
                     callManager.endCall()
+                    textfield.clear()
                 }
             }
         }

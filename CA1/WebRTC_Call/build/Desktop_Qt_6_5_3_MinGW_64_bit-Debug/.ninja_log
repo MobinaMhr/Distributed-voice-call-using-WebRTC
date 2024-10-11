@@ -71,3 +71,14 @@
 1320	3384	7503887745186305	CMakeFiles/appWebRTC_Call.dir/main.cpp.obj	ea51fa2a17b7bbbf
 1329	3520	7503887745285233	CMakeFiles/appWebRTC_Call.dir/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.rcc/qmlcache/appWebRTC_Call_Main_qml.cpp.obj	b4fc73a78f4c0f29
 3520	3849	7503887767194625	appWebRTC_Call.exe	1bc63b61617c2754
+28	84	7503890752641941	WebRTC_Call/Main.qml	3a38ed61257fd081
+28	84	7503890752641941	E:/UT_CN/Projects/Computer-Networks-Course-S2025/CA1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/WebRTC_Call/Main.qml	3a38ed61257fd081
+33	148	7503890753271180	.qt_plugins/Qt6_QmlPlugins_Imports_appWebRTC_Call.cmake	1aa4ef44b0226df6
+33	148	7503890753271180	E:/UT_CN/Projects/Computer-Networks-Course-S2025/CA1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.qt_plugins/Qt6_QmlPlugins_Imports_appWebRTC_Call.cmake	1aa4ef44b0226df6
+151	205	7503890753860831	.rcc/qrc_appWebRTC_Call_raw_qml_0.cpp	8bd71648b848d6c0
+151	205	7503890753860831	E:/UT_CN/Projects/Computer-Networks-Course-S2025/CA1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.rcc/qrc_appWebRTC_Call_raw_qml_0.cpp	8bd71648b848d6c0
+148	383	7503890755230820	.rcc/qmlcache/appWebRTC_Call_Main_qml.cpp	9200b79edd2f4a4c
+148	383	7503890755230820	E:/UT_CN/Projects/Computer-Networks-Course-S2025/CA1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.rcc/qmlcache/appWebRTC_Call_Main_qml.cpp	9200b79edd2f4a4c
+386	445	7503890755750880	CMakeFiles/appWebRTC_Call.dir/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.rcc/qrc_appWebRTC_Call_raw_qml_0.cpp.obj	7f59545e334f69d6
+384	2447	7503890755720816	CMakeFiles/appWebRTC_Call.dir/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.rcc/qmlcache/appWebRTC_Call_Main_qml.cpp.obj	b4fc73a78f4c0f29
+2447	2762	7503890776367625	appWebRTC_Call.exe	1bc63b61617c2754
