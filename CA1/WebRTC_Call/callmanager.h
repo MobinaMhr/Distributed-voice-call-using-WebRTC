@@ -21,6 +21,9 @@ public:
     Q_INVOKABLE void endCall();
 
 signals:
+    void callerIdChanged();
+
+private:
     QString m_callerId;
 };
 
