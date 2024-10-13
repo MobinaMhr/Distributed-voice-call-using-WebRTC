@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-
+// hatef Testing his git igonre
 class CallManager : public QObject
 {
     Q_OBJECT
