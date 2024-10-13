@@ -1,5 +1,0 @@
-module WebRTC_Call
-typeinfo appWebRTC_Call.qmltypes
-prefer :/qt/qml/WebRTC_Call/
-Main 1.0 Main.qml
-
