@@ -1,13 +1,13 @@
 #ifndef AUDIOINPUT_H
 #define AUDIOINPUT_H
 
-#include <./../libraries/opus/include/opus.h>  // Include the Opus library
-#include <./../libraries/libdatachannel/include/rtc/rtc.hpp>
-#include <./../libraries/libdatachannel/include/rtc/datachannel.hpp>
+#include <E:/UT_CN/Projects/opus/include/opus.h>  // Include the Opus library
+#include <E:/UT_CN/Projects/libdatachannel/include/rtc/rtc.hpp>
+#include <E:/UT_CN/Projects/libdatachannel/include/rtc/datachannel.hpp>
 
 #include <QIODevice>
-#include <QAudioFormat>
 #include <QAudioSource>
+#include <QAudioFormat>
 #include <QDebug>
 // #include <QAudioDevice>
 // #include <QMediaDevices>
@@ -34,3 +34,4 @@ private:
 };
 
 #endif // AUDIOINPUT_H
+
