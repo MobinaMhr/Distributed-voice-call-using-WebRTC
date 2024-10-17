@@ -33,7 +33,10 @@ ws.on("request", (req) => {
                         sdp: data.sdp,
                         iceCandidate: data.iceCandidate
                     }))
-                }               
+                } else {
+                    console.log(`Target ${data.target} not found`);
+                }
+                       
                 break
         }
 
