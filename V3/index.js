@@ -41,6 +41,16 @@ ws.on("request", (req) => {
 
                 case "answer":
                     console.log(`Received an answer from ${data.user} to connect to : ${data.target}`)
+                    targetUser = peers[data.target]
+                    if (targetUser) {
+                        targetUser.send(JSON.stringify({
+                            type: "answer",
+                            user: data.user,
+                            sdp: data.sdp,
+                            iceCandidate: data.iceCandidate
+                        }))
+                    }
+
                     break
         }
 
