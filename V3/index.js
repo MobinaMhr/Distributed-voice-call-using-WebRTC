@@ -25,6 +25,15 @@ ws.on("request", (req) => {
 
             case "offer":
                 console.log(`Received an offer from ${data.user} to connect to : ${data.target}`)
+                targetUser = peers[data.target]
+                if (targetUser) {
+                    targetUser.send(JSON.stringify({
+                        type: "offer",
+                        user: data.user,
+                        sdp: data.sdp,
+                        iceCandidate: data.iceCandidate
+                    }))
+                }               
                 break
         }
 
