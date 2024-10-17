@@ -40,7 +40,7 @@ bool AudioProcessor::initializeDecoder()
     return true;
 }
 
-void AudioProcessor::encodeAudio(const QByteArray &rawAudioData)
+QByteArray AudioProcessor::encodeAudio(const QByteArray &rawAudioData)
 {
     QByteArray encodedData;
     encodedData.resize(maxPacketSize);  // Prepare buffer for encoded data
@@ -55,9 +55,10 @@ void AudioProcessor::encodeAudio(const QByteArray &rawAudioData)
     } else {
         qWarning() << "Opus encoding failed with error code:" << encodedBytes;
     }
+    return encodedData;
 }
 
-void AudioProcessor::decodeAudio(const QByteArray &encodedAudio)
+void AudioProcessor::decodeAudio(const QByteArray encodedAudio)
 {
     QByteArray decodedData;
     decodedData.resize(opusFrameSize * 2);  // Opus decodes to PCM, 16-bit (2 bytes per sample)
