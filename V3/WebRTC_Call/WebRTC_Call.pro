@@ -1,4 +1,5 @@
 QT += quick
+QT += multimedia
 
 SOURCES += \
         audioinput.cpp \
@@ -23,3 +24,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     audioinput.h \
     callmanager.h
+
+
+INCLUDEPATH += E:/UT_CN/Projects/libdatachannel/include
+LIBS += -LE:/UT_CN/Projects/libdatachannel/Windows/Mingw64 -ldatachannel.dll
+LIBS += -LC:/Qt/Tools/OpenSSLv3/Win_x64/bin -lcrypto-3-x64 -lssl-3-x64
+LIBS += -lws2_32
+LIBS += -lssp
+
+INCLUDEPATH += E:/UT_CN/Projects/opus/include
+LIBS += -LE:/UT_CN/Projects/opus/Windows/Mingw64 -lopus
