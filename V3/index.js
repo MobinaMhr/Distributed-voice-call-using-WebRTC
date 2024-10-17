@@ -22,6 +22,10 @@ ws.on("request", (req) => {
                 peers[data.user] = connection
 
                 break
+
+            case "offer":
+                console.log(`Received an offer from ${data.user} to connect to : ${data.target}`)
+                break
         }
 
     })
