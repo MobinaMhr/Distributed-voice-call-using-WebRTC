@@ -15,6 +15,14 @@ ws.on("request", (req) => {
 
     connection.on("message", (message) => {
         const data = JSON.parse(message.utf8Data)
+        var targetUser
+        switch (data.type) {
+            case "register":
+                console.log(`Received registeration from ${data.user}`)
+                peers[data.user] = connection
+
+                break
+        }
 
     })
 
