@@ -1,16 +1,17 @@
 #ifndef AUDIOINPUT_H
 #define AUDIOINPUT_H
 
-#include <E:/UT_CN/Projects/opus/include/opus.h>  // Include the Opus library
-#include <E:/UT_CN/Projects/libdatachannel/include/rtc/rtc.hpp>
-#include <E:/UT_CN/Projects/libdatachannel/include/rtc/datachannel.hpp>
+#include <./../libraries/opus/include/opus.h>
+#include <./../libraries/libdatachannel/include/rtc/rtc.hpp>
+#include <./../libraries/libdatachannel/include/rtc/datachannel.hpp>
+
+#include <audioprocessor.h>
 
 #include <QIODevice>
 #include <QAudioSource>
 #include <QAudioFormat>
 #include <QDebug>
-// #include <QAudioDevice>
-// #include <QMediaDevices>
+#include <QAudioDevice>
 
 
 class AudioInput : public QIODevice {
@@ -28,6 +29,7 @@ protected:
     qint64 readData(char *data, qint64 maxlen) override;
 
 private:
+    AudioProcessor *audioProcessor;
     QAudioSource *audioSource;
     OpusEncoder *opusEncoder;
     rtc::DataChannel *dataChannel;  // WebRTC data channel for sending audio
