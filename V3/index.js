@@ -38,6 +38,10 @@ ws.on("request", (req) => {
                 }
                        
                 break
+
+                case "answer":
+                    console.log(`Received an answer from ${data.user} to connect to : ${data.target}`)
+                    break
         }
 
     })
