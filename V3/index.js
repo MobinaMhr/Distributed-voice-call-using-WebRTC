@@ -13,4 +13,9 @@ const ws = new Socket({ httpServer: server })
 ws.on("request", (req) => {
     const connection = req.accept(null, req.origin)
 
+    connection.on("message", (message) => {
+        const data = JSON.parse(message.utf8Data)
+
+    })
+
 })
