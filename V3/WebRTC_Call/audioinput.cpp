@@ -7,10 +7,10 @@ AudioInput::AudioInput(QObject *parent)
    QAudioFormat format;
    format.setSampleRate(48000);       // Sample rate of 48kHz
    format.setChannelCount(1);         // Mono audio
-   format.setSampleSize(16);          // 16-bit PCM
-   format.setCodec("audio/pcm");
-   format.setByteOrder(QAudioFormat::LittleEndian);
-   format.setSampleType(QAudioFormat::Int16); //Int32
+   // format.setSampleSize(16);          // 16-bit PCM
+   // format.setCodec("audio/pcm");
+   // format.setByteOrder(QAudioFormat::LittleEndian);
+   // format.setSampleType(QAudioFormat::Int16); //Int32
 
    // Initialize QAudioSource
    audioSource = new QAudioSource(format, this);
@@ -29,47 +29,45 @@ AudioInput::~AudioInput() {
 }
 
 void AudioInput::start() {
-   audioIODevice = audioSource->start();  // Start the audio input device
-   connect(audioIODevice, &QIODevice::readyRead, this, &AudioInput::handleAudioInput);  // Connect signal for handling audio
-   qDebug() << "Audio input started.";
+    audioIODevice = audioSource->start();
+
+    if (audioIODevice) {
+        connect(audioIODevice, &QIODevice::readyRead, this, &AudioInput::start);
+        qDebug() << "Audio input started.";
+    } else {
+        qWarning() << "Failed to start audio input.";
+    }
 }
 
 void AudioInput::stop() {
-   // Stop capturing audio
-   audioSource->stop();  // Stop the audio input device
-   disconnect(audioIODevice, &QIODevice::readyRead, this, &AudioInput::handleAudioInput);  // Disconnect the signal
-   qDebug() << "Audio input stopped.";
+    if (audioIODevice) {
+        disconnect(audioIODevice, &QIODevice::readyRead, this, &AudioInput::start);
+        audioSource->stop();
+        qDebug() << "Audio input stopped.";
+    } else {
+        qWarning() << "No audio input to stop.";
+    }
 }
 
 qint64 AudioInput::writeData(const char *data, qint64 len) {
-    QByteArray rawAudioData(data, len);
-    audioProcessor->encodeAudio(rawAudioData);
-    return len;
+    // Convert raw audio data into QByteArray
+    QByteArray audioData(data, len);
 
-   //  // Encode the audio data using Opus
-   // unsigned char encodedData[4000];  // Buffer for encoded data
-   // int encodedBytes = opus_encode(opusEncoder, reinterpret_cast<const opus_int16 *>(data), len / 2, encodedData, sizeof(encodedData));
+    if (!audioProcessor->initializeEncoder()) {
+        qWarning() << "Failed to initialize the Opus encoder.";
+        return 0;
+    }
 
-   // if (encodedBytes < 0) {
-   //     qWarning() << "Opus encoding error:" << opus_strerror(encodedBytes);
-   //     return 0;
-   // }
+    QByteArray encodedData = audioProcessor->encodeAudio(audioData);
 
-   // if (dataChannel) {
-   //     // if (dataChannel->readyState() != rtc::DataChannelInterface::open) {
-   //     //     qWarning() << "Data channel is not open";
-   //     //     return 0;
-   //     // }
-
-   //     // rtc::message_variant data = encodedData;
-   //     // size_t data_size = sizeof(encodedData) / sizeof(encodedData[0]);
-   //     // dataChannel->send(data, data_size);
-
-   //     dataChannel->send(data);
-   //     return encodedBytes;
-   // }
-
-   // return len;  // Return the number of bytes written
+    if (dataChannel && dataChannel->isOpen()) {
+        // const char* audioData = reinterpret_cast<const char*>(encodedData.constData());
+        dataChannel->send(encodedData.constData());
+        return len; // may be the len of encoded data
+    } else {
+        qWarning() << "Data channel is not open or not initialized.";
+        return 0;
+    }
 }
 
 qint64 AudioInput::readData(char *data, qint64 maxlen) {

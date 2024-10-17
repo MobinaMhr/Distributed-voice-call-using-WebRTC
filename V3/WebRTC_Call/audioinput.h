@@ -1,11 +1,14 @@
 #ifndef AUDIOINPUT_H
 #define AUDIOINPUT_H
 
-#include <./../libraries/opus/include/opus.h>
-#include <./../libraries/libdatachannel/include/rtc/rtc.hpp>
-#include <./../libraries/libdatachannel/include/rtc/datachannel.hpp>
+// ./../libraries/opus/include/
 
-#include <audioprocessor.h>
+// D:/Computer-Networks-Course-S2025/V3/libraries/libdatachannel
+
+#include <D:/Computer-Networks-Course-S2025/V3/libraries/libdatachannel/include/rtc/rtc.hpp>
+#include <D:/Computer-Networks-Course-S2025/V3/libraries/libdatachannel/include/rtc/datachannel.hpp>
+
+#include <D:/Computer-Networks-Course-S2025/V3/WebRTC_Call/audioprocessor.h>
 
 #include <QIODevice>
 #include <QAudioSource>
@@ -30,6 +33,7 @@ protected:
 
 private:
     AudioProcessor *audioProcessor;
+    QIODevice *audioIODevice;
     QAudioSource *audioSource;
     OpusEncoder *opusEncoder;
     rtc::DataChannel *dataChannel;  // WebRTC data channel for sending audio
