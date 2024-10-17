@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/qt/qml/WebRTC_Call/">
+    <file alias="Main.qml">C:/Users/USER/Desktop/Github/Computer-Networks-Course-S2025/A1/WebRTC_Call/Main.qml</file>
+  </qresource>
+</RCC>
+

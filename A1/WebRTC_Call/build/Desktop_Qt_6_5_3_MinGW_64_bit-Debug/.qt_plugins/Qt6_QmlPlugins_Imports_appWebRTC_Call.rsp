@@ -1,0 +1,14 @@
+-rootPath
+C:/Users/USER/Desktop/Github/Computer-Networks-Course-S2025/A1/WebRTC_Call
+-cmake-output
+-output-file
+C:/Users/USER/Desktop/Github/Computer-Networks-Course-S2025/A1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.qt_plugins/Qt6_QmlPlugins_Imports_appWebRTC_Call.cmake
+-importPath
+C:/Users/USER/Desktop/Github/Computer-Networks-Course-S2025/A1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/WebRTC_Call
+-importPath
+C:/Users/USER/Desktop/Github/Computer-Networks-Course-S2025/A1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug
+-importPath
+C:/Qt/6.5.3/mingw_64/./qml
+-qrcFiles
+C:/Users/USER/Desktop/Github/Computer-Networks-Course-S2025/A1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.rcc/qmake_WebRTC_Call.qrc
+C:/Users/USER/Desktop/Github/Computer-Networks-Course-S2025/A1/WebRTC_Call/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/.rcc/appWebRTC_Call_raw_qml_0.qrc

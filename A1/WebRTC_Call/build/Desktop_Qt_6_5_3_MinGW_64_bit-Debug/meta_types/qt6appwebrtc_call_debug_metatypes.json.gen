@@ -1,0 +1,106 @@
+[
+    {
+        "classes": [
+            {
+                "className": "CallManager",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "callerId",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "setCallerId",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "startCall",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "endCall",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "ipAddress",
+                        "notify": "ipAddressChanged",
+                        "read": "ipAddress",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setIpAddress"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 1,
+                        "name": "iceCandidate",
+                        "notify": "iceCandidateChanged",
+                        "read": "iceCandidate",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setIceCandidate"
+                    },
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 2,
+                        "name": "callerId",
+                        "notify": "callerIdChanged",
+                        "read": "callerId",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "QString",
+                        "user": false,
+                        "write": "setCallerId"
+                    }
+                ],
+                "qualifiedClassName": "CallManager",
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "ipAddressChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "iceCandidateChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "callerIdChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "callmanager.h",
+        "outputRevision": 68
+    }
+]
