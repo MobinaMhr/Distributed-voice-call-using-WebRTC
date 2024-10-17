@@ -58,4 +58,14 @@ ws.on("request", (req) => {
 
     })
 
+    connection.on('close', () => {
+        for (let user in peers) {
+            if (peers[user] === connection) {
+                console.log(`User ${user} disconnected`);
+                delete peers[user];
+                break;
+            }
+        }
+    })
+
 })
