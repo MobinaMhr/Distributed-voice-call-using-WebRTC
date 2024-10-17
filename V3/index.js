@@ -59,12 +59,17 @@ ws.on("request", (req) => {
     })
 
     connection.on('close', () => {
+        var found = false
         for (let user in peers) {
             if (peers[user] === connection) {
                 console.log(`User ${user} disconnected`);
                 delete peers[user];
+                found = true
                 break;
             }
+        }
+        if (!found) {
+            console.log(`The closed connection wasn't registered`);
         }
     })
 
