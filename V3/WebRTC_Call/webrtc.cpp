@@ -69,15 +69,6 @@ void WebRTC::addPeer(const QString &peerId)
         Q_EMIT localDescriptionGenerated(peerId, descriptionToJson(description));
     });
 
-    // newPeer->onLocalCandidate([this, peerId](const std::string &candidate, const std::string &mid, uint32_t mlineindex) {
-    //     // Convert the candidate and mid to QString for Qt compatibility
-    //     QString candidateString = QString::fromStdString(candidate);
-    //     QString midString = QString::fromStdString(mid);
-
-    //     // Emit a signal to notify about the generated local candidate
-    //     Q_EMIT localCandidateGenerated(peerId, candidateString, midString, mlineindex);
-    // });
-
     // Set up a callback for handling local ICE candidates
     newPeer->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
         QString candidateString = QString::fromStdString(candidate.candidate());
@@ -166,7 +157,6 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 
 }
 
-// Sends audio track data to the peer
 void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 {
     // Create the RTP header and initialize an RtpHeader struct
@@ -183,8 +173,16 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
     rtpPacket.append(buffer);
 
     // Send the packet, catch and handle any errors that occur during sending
-    auto peer = m_peerConnections[peerId];
-    peer->sendData(rtpPacket); // TODO: will it catc all errors? check it out
+    auto track = m_peerTracks.value(peerId);
+    if (!track) {
+        qWarning() << "Audio track not found for peer:" << peerId;
+        return;
+    }
+    try {
+        track->send(rtpPacket.constData());
+    } catch (const std::exception &e) {
+        qWarning() << "Error sending RTP packet:" << e.what();
+    }
 }
 
 
