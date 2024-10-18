@@ -69,15 +69,21 @@ void WebRTC::addPeer(const QString &peerId)
         Q_EMIT localDescriptionGenerated(peerId, descriptionToJson(description));
     });
 
+    // newPeer->onLocalCandidate([this, peerId](const std::string &candidate, const std::string &mid, uint32_t mlineindex) {
+    //     // Convert the candidate and mid to QString for Qt compatibility
+    //     QString candidateString = QString::fromStdString(candidate);
+    //     QString midString = QString::fromStdString(mid);
 
+    //     // Emit a signal to notify about the generated local candidate
+    //     Q_EMIT localCandidateGenerated(peerId, candidateString, midString, mlineindex);
+    // });
 
     // Set up a callback for handling local ICE candidates
     newPeer->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
-        // Emit the local candidates using the localCandidateGenerated signal
-        Q_EMIT localCandidateGenerated(peerId, QString::fromStdString(candidate.candidate()));
+        QString candidateString = QString::fromStdString(candidate.candidate());
+        QString midString = QString::fromStdString(candidate.mid());
+        Q_EMIT localCandidateGenerated(peerId, candidateString, midString);
     });
-
-
 
     // Set up a callback for when the state of the peer connection changes
     newPeer->onStateChange([this, peerId](rtc::PeerConnection::State state) {
@@ -91,20 +97,20 @@ void WebRTC::addPeer(const QString &peerId)
             break;
         case rtc::PeerConnection::State::Connected:
             qDebug() << "Peer connection: Connected";
-            Q_EMIT connected(peerId);
+            // Q_EMIT connected(peerId);
             break;
         case rtc::PeerConnection::State::Disconnected:
             qDebug() << "Peer connection: Disconnected";
-            Q_EMIT disconnected(peerId);
+            // Q_EMIT disconnected(peerId);
             break;
         case rtc::PeerConnection::State::Failed:
             qDebug() << "Peer connection: Failed";
-            Q_EMIT connectionFailed(peerId);
+            // Q_EMIT connectionFailed(peerId);
+            break;
+        case rtc::PeerConnection::State::Closed:
             break;
         }
     });
-
-
 
     // Set up a callback for monitoring the gathering state
     newPeer->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
@@ -116,10 +122,13 @@ void WebRTC::addPeer(const QString &peerId)
 
     // Set up a callback for handling incoming tracks
     newPeer->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
-        // handle the incoming media stream, emitting the incommingPacket signal if a stream is received
-        if (track->kind() == rtc::Track::Kind::Audio) {
-            Q_EMIT incomingPacket(peerId, track->id().c_str());
-        }
+        Q_EMIT incommingPacket(peerId, )
+        Q_EMIT incomingPacket(peerId, track->id().c_str());
+        // // handle the incoming media stream, emitting the incommingPacket signal if a stream is received
+        // if (track->kind() == rtc::Track::Kind::Audio) {
+        //     Q_EMIT incommingPacket(peerId, )
+        //     Q_EMIT incomingPacket(peerId, track->id().c_str());
+        // }
     });
 
     // Add an audio track to the peer connection
@@ -158,18 +167,24 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 }
 
 // Sends audio track data to the peer
-
 void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 {
-
-        // Create the RTP header and initialize an RtpHeader struct
-
+    // Create the RTP header and initialize an RtpHeader struct
+    RtpHeader rtpHeader;
+    rtpHeader.first = 0x80;
+    rtpHeader.marker = 1;
+    rtpHeader.payloadType = 96; // Dynamic payload type for audio
+    rtpHeader.sequenceNumber = qToBigEndian(static_cast<uint16_t>(rand()));  // Random sequence number
+    rtpHeader.timestamp = qToBigEndian(static_cast<uint32_t>(QDateTime::currentMSecsSinceEpoch()));
+    rtpHeader.ssrc = qToBigEndian(static_cast<uint32_t>(rand())); // Random SSRC
 
     // Create the RTP packet by appending the RTP header and the payload buffer
-
+    QByteArray rtpPacket(reinterpret_cast<const char*>(&rtpHeader), sizeof(RtpHeader));
+    rtpPacket.append(buffer);
 
     // Send the packet, catch and handle any errors that occur during sending
-
+    auto peer = m_peerConnections[peerId];
+    peer->sendData(rtpPacket); // TODO: will it catc all errors? check it out
 }
 
 
