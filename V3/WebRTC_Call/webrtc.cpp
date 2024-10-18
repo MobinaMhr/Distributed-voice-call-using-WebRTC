@@ -129,7 +129,8 @@ void WebRTC::addPeer(const QString &peerId)
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
-
+    auto peer = m_peerConnections[peerId];
+    peer->setLocalDescription(rtc::Description::Type::Offer);
 }
 
 // Generate an answer SDP for the peer
