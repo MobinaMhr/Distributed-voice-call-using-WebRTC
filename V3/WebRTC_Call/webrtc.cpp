@@ -136,7 +136,8 @@ void WebRTC::generateOfferSDP(const QString &peerId)
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
-
+    auto peer = m_peerConnections[peerId];
+    peer->setLocalDescription(rtc::Description::Type::Answer);
 }
 
 // Add an audio track to the peer connection
