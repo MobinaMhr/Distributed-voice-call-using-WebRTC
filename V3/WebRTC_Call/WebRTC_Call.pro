@@ -4,7 +4,8 @@ QT += multimedia
 SOURCES += \
         audioinput.cpp \
         callmanager.cpp \
-        main.cpp
+        main.cpp \
+        webrtc.cpp
 
 resources.files = main.qml 
 resources.prefix = /$${TARGET}
@@ -23,7 +24,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     audioinput.h \
-    callmanager.h
+    callmanager.h \
+    webrtc.h
 
 
 INCLUDEPATH += E:/UT_CN/Projects/libdatachannel/include
