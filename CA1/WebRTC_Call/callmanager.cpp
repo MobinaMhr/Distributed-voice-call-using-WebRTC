@@ -1,10 +1,9 @@
 #include "callmanager.h"
-#include <QDebug>
 
 CallManager::CallManager(QObject *parent)
     : QObject{parent},
-m_ipAddress("172.16.142.176"),
-m_iceCandidate("172.16.142.176")
+    m_ipAddress("172.16.142.176"),
+    m_iceCandidate("172.16.142.176")
 {
 }
 

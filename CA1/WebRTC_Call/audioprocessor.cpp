@@ -1,5 +1,4 @@
 #include "audioprocessor.h"
-#include <QDebug>
 
 AudioProcessor::AudioProcessor(QObject *parent)
     : QObject(parent), opusEncoder(nullptr), opusDecoder(nullptr), opusFrameSize(960), maxPacketSize(4000)  // Default values for Opus

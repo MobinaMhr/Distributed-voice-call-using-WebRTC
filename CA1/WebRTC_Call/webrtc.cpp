@@ -1,6 +1,4 @@
 #include "webrtc.h"
-#include <QtEndian>
-#include <QJsonDocument>
 
 static_assert(true);
 

@@ -2,7 +2,8 @@
 #define AUDIOPROCESSOR_H
 
 #include <QObject>
-#include <./../libraries/opus/include/opus.h>
+#include <opus.h>
+#include <QDebug>
 #include <QByteArray>
 
 class AudioProcessor : public QObject

@@ -1,25 +1,22 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include "callmanager.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-
-    CallManager callManager;
-
-    engine.rootContext()->setContextProperty("callManager", &callManager);
-
+    const QUrl url(QStringLiteral("qrc:/WebRTC_Call/main.qml"));
     QObject::connect(
         &engine,
-        &QQmlApplicationEngine::objectCreationFailed,
+        &QQmlApplicationEngine::objectCreated,
         &app,
-        []() { QCoreApplication::exit(-1); },
+        [url](QObject *obj, const QUrl &objUrl) {
+            if (!obj && url == objUrl)
+                QCoreApplication::exit(-1);
+        },
         Qt::QueuedConnection);
-    engine.loadFromModule("WebRTC_Call", "Main");
+    engine.load(url);
 
     return app.exec();
 }
