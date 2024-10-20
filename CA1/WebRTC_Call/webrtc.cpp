@@ -297,7 +297,7 @@ void WebRTC::setIsOfferer(bool newIsOfferer)
 
 void WebRTC::resetIsOfferer()
 {
-
+    m_isOfferer = false;
 }
 
 
