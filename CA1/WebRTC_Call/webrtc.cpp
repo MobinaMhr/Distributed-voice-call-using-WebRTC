@@ -227,7 +227,7 @@ QString WebRTC::descriptionToJson(const QString &peerID)
 // Retrieves the current bit rate
 int WebRTC::bitRate() const
 {
-
+    return m_bitRate;
 }
 
 // Set a new bit rate and emit the bitRateChanged signal
