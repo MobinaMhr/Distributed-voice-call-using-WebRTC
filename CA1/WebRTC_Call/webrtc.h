@@ -6,6 +6,8 @@
 #include <QtEndian>
 #include <QJsonDocument>
 #include <QAudioSource>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include <rtc/rtc.hpp>
 
@@ -71,7 +73,7 @@ public Q_SLOTS:
 
 private:
     QByteArray readVariant(const rtc::message_variant &data);
-    QString descriptionToJson(const rtc::Description &description);
+    QString descriptionToJson(const QString &peerID);
 
     inline uint32_t getCurrentTimestamp() {
         using namespace std::chrono;
