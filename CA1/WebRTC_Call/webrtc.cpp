@@ -251,7 +251,7 @@ void WebRTC::setPayloadType(int newPayloadType)
 // Resets the payload type to its default value
 void WebRTC::resetPayloadType()
 {
-
+    m_payloadType = 111;
 }
 
 // Retrieve the current SSRC value
