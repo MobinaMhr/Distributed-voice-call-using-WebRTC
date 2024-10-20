@@ -233,7 +233,7 @@ int WebRTC::bitRate() const
 // Set a new bit rate and emit the bitRateChanged signal
 void WebRTC::setBitRate(int newBitRate)
 {
-
+    m_bitRate = newBitRate;
 }
 
 // Reset the bit rate to its default value
