@@ -245,7 +245,7 @@ void WebRTC::resetBitRate()
 // Sets a new payload type and emit the payloadTypeChanged signal
 void WebRTC::setPayloadType(int newPayloadType)
 {
-
+    m_payloadType = newPayloadType;
 }
 
 // Resets the payload type to its default value
