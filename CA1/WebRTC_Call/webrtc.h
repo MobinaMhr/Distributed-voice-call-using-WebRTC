@@ -8,6 +8,7 @@
 #include <QAudioSource>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QDebug>
 
 #include <rtc/rtc.hpp>
 

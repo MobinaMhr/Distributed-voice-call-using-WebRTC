@@ -1,6 +1,5 @@
 #include "webrtc.h"
-#include <QtEndian>
-#include <QJsonDocument>
+
 
 static_assert(true);
 
@@ -67,41 +66,62 @@ void WebRTC::init(const QString &id, bool isOfferer)
 void WebRTC::addPeer(const QString &peerId)
 {
     // Create and add a new peer connection
-
+    auto pc = std::make_shared<rtc::PeerConnection>();
+    m_peerConnections[peerId] = pc;
 
     // Set up a callback for when the local description is generated
-
-    newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
+    pc->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
-
+        Q_EMIT gatheringComplited(peerId); // CORRECT ?
     });
 
 
 
     // Set up a callback for handling local ICE candidates
-    newPeer->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
+    pc->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
         // Emit the local candidates using the localCandidateGenerated signal
-
+        Q_EMIT localCandidateGenerated(peerId, QString::fromStdString(candidate.candidate()),
+                                       QString::fromStdString(candidate.mid())); // potential bugssss!!!!!!!!!!!
     });
 
 
 
     // Set up a callback for when the state of the peer connection changes
-    newPeer->onStateChange([this, peerId](rtc::PeerConnection::State state) {
+    pc->onStateChange([this, peerId](rtc::PeerConnection::State state) {
         // Handle different states like New, Connecting, Connected, Disconnected, etc.
+        switch(state) {
+            case rtc::PeerConnection::State::New:
+                qDebug() << "Peer connection state: New";
+                break;
+            case rtc::PeerConnection::State::Connecting:
+                qDebug() << "Peer connection state: Connecting" ;
+                break;
+            case rtc::PeerConnection::State::Connected:
+                qDebug() << "Peer connection state: Connected" ;
+                break;
+            case rtc::PeerConnection::State::Disconnected:
+                qDebug() << "Peer connection state: Disconnected" ;
+                break;
+            case rtc::PeerConnection::State::Failed:
+                qDebug() << "Peer connection state: Failed" ;
+                break;
+            case rtc::PeerConnection::State::Closed:
+                qDebug() << "Peer connection state: Closed" ;
+                break;
+        }
 
     });
 
 
 
     // Set up a callback for monitoring the gathering state
-    newPeer->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
+    pc->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
 
     });
 
     // Set up a callback for handling incoming tracks
-    newPeer->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
+    pc->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
         // handle the incoming media stream, emitting the incommingPacket signal if a stream is received
 
     });
@@ -200,6 +220,8 @@ QString WebRTC::descriptionToJson(const QString &peerID)
     QString jsonString = doc.toJson(QJsonDocument::Compact);
 
     qDebug() << jsonString;
+
+    return jsonString;
 }
 
 // Retrieves the current bit rate
