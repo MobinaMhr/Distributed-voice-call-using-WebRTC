@@ -257,19 +257,19 @@ void WebRTC::resetPayloadType()
 // Retrieve the current SSRC value
 rtc::SSRC WebRTC::ssrc() const
 {
-
+    return m_ssrc;
 }
 
 // Set a new SSRC and emit the ssrcChanged signal
 void WebRTC::setSsrc(rtc::SSRC newSsrc)
 {
-
+    m_ssrc = newSsrc;
 }
 
 // Reset the SSRC to its default value
 void WebRTC::resetSsrc()
 {
-
+    m_ssrc = 2;
 }
 
 // Retrieve the current payload type
