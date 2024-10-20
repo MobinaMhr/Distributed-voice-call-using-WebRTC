@@ -53,10 +53,32 @@ void WebRTC::init(const QString &id, bool isOfferer)
     config.iceServers.emplace_back("stun:stun.l.google.com:19302");
 
     // Add a TURN server for relaying media if a direct connection can't be established
-    config.iceServers.emplace_back("turn:your-turn-server.com", "username", "password");
+    config.iceServers.emplace_back("turn:165.232.44.143", "myturn", "mewmew");
+
+    m_config = config;
 
     // Set up the audio stream configuration
     // TODO
+
+    // Create a peer connection
+    auto peerConnection = std::make_shared<rtc::PeerConnection>(config);
+    m_peerConnections[id] = peerConnection;
+
+    std::shared_ptr<rtc::AudioSource> audioSource = std::make_shared<rtc::AudioSource>();
+
+    rtc::AudioTrack::Config audioConfig;
+    audioConfig.codec = rtc::AudioCodec::Opus;
+    audioConfig.sampleRate = 48000;
+    audioConfig.channels = 1;  // Mono audio
+
+    // Set up callbacks for the peer connection (e.g., for ICE candidates and SDP)
+    addPeer(id);
+
+    // Set up the audio stream configuration
+    addAudioTrack(id, "Audio");
+
+    // Emit a signal to indicate initialization is complete
+    Q_EMIT initializationCompleted(id);
 }
 
 void WebRTC::addPeer(const QString &peerId)

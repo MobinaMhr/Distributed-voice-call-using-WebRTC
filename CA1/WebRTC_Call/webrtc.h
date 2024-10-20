@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QtEndian>
 #include <QJsonDocument>
+#include <QAudioSource>
 
 #include <rtc/rtc.hpp>
 
