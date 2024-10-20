@@ -275,7 +275,7 @@ void WebRTC::resetSsrc()
 // Retrieve the current payload type
 int WebRTC::payloadType() const
 {
-
+    return m_payloadType;
 }
 
 
@@ -287,12 +287,12 @@ int WebRTC::payloadType() const
 
 bool WebRTC::isOfferer() const
 {
-
+    return m_isOfferer;
 }
 
 void WebRTC::setIsOfferer(bool newIsOfferer)
 {
-
+    m_isOfferer = newIsOfferer;
 }
 
 void WebRTC::resetIsOfferer()
