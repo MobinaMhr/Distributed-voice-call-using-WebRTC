@@ -72,7 +72,7 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for when the local description is generated
     pc->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
-        Q_EMIT gatheringComplited(peerId); // CORRECT ?
+
     });
 
 
@@ -117,7 +117,7 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for monitoring the gathering state
     pc->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
-
+        Q_EMIT gatheringComplited(peerId);
     });
 
     // Set up a callback for handling incoming tracks
