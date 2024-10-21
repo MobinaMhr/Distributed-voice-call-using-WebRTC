@@ -192,7 +192,8 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 // Add remote ICE candidates to the peer connection
 void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
 {
-    //m_peerConnections[peerID]->addRemoteCandidate()
+    rtc::Candidate remoteCandidate(candidate.toStdString(), sdpMid.toStdString());
+    m_peerConnections[peerID]->addRemoteCandidate(remoteCandidate);
 }
 
 
