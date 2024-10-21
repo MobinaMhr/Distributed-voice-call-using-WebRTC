@@ -59,6 +59,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
     // Set up the audio stream configuration
     m_audio.addOpusCodec(m_payloadType);
     m_audio.setBitrate(m_bitRate);
+    m_audio.addSSRC(m_ssrc, "audio-send");
     m_audio.setDirection(rtc::Description::Direction::SendRecv);
 
 }
@@ -132,13 +133,13 @@ void WebRTC::addPeer(const QString &peerId)
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
-
+    m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Offer);
 }
 
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
-
+    m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Answer);
 }
 
 // Add an audio track to the peer connection
