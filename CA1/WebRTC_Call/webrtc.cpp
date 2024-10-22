@@ -134,9 +134,12 @@ void WebRTC::addPeer(const QString &peerId)
         // // on message handles the if case
     });
 
-    // Add an audio track to the peer connection
-    auto track = m_peerConnections[peerId]->addTrack(m_audio);
-    m_peerTracks[peerId] = track;
+    // // Add an audio track to the peer connection
+    // auto track = m_peerConnections[peerId]->addTrack(m_audio);
+    // m_peerTracks[peerId] = track;
+
+    // TODO call the add audio track
+    addAudioTrack(peerId, QString::fromStdString("Hasti:("));
 }
 
 // Set the local description for the peer's connection
@@ -176,11 +179,6 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
         const QByteArray data = QByteArray(reinterpret_cast<const char*>(message.data()), message.size());
         Q_EMIT incommingPacket(peerId, data, data.size());
     }, nullptr);
-
-    // Listen for incoming raw frames
-    track->onFrame([this] (rtc::binary frame, rtc::FrameInfo info) {
-        // Handle decoded frame or forward to audio player
-    });
 }
 
 // Sends audio track data to the peer
