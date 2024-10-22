@@ -177,7 +177,9 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
     header.ssrc = qToBigEndian(m_ssrc);
 
     // Create the RTP packet by appending the RTP header and the payload buffer
-
+    QByteArray rtpPacket;
+    rtpPacket.append(reinterpret_cast<char*>(&header), sizeof(RtpHeader));
+    rtpPacket.append(buffer);
 
     // Send the packet, catch and handle any errors that occur during sending
 
