@@ -1,5 +1,6 @@
 #include "webrtc.h"
 
+#include <iostream>
 
 static_assert(true);
 
@@ -183,6 +184,12 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 
     // Send the packet, catch and handle any errors that occur during sending
 
+    const rtc::byte *data = reinterpret_cast<const rtc::byte *>(rtpPacket.constData());
+    try {
+        m_peerTracks[peerId]->send(data, rtpPacket.size());
+    } catch (const std::exception &e) {
+        // std::err << "Error sending track: " << e.what() << std::endl;
+    }
 }
 
 
