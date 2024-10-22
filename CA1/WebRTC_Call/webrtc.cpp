@@ -117,8 +117,6 @@ void WebRTC::addPeer(const QString &peerId)
 
     });
 
-
-
     // Set up a callback for monitoring the gathering state
     pc->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
@@ -136,6 +134,8 @@ void WebRTC::addPeer(const QString &peerId)
     });
 
     // Add an audio track to the peer connection
+    auto track = m_peerConnections[peerId]->addTrack(m_audio);
+    m_peerTracks[peerId] = track;
 }
 
 // Set the local description for the peer's connection
