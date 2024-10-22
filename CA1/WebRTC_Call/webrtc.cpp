@@ -125,12 +125,13 @@ void WebRTC::addPeer(const QString &peerId)
 
     // Set up a callback for handling incoming tracks
     pc->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
-        // handle the incoming media stream, emitting the incommingPacket signal if a stream is received        
-        track->onMessage([this, peerId](rtc::binary message){
-            const QByteArray data = QByteArray(reinterpret_cast<const char*>(message.data()), message.size());
-            Q_EMIT incommingPacket(peerId, data, data.size());
-        }, nullptr); // TODO may cause some bug (Faghat khodaaaaa midoooneeee)
-        // on message handles the if case
+        qDebug() << "Hastiiiiiiiiiiiiiiiiiiiiiiiiiiiiii!" ;
+        // // handle the incoming media stream, emitting the incommingPacket signal if a stream is received
+        // track->onMessage([this, peerId](rtc::binary message){
+        //     const QByteArray data = QByteArray(reinterpret_cast<const char*>(message.data()), message.size());
+        //     Q_EMIT incommingPacket(peerId, data, data.size());
+        // }, nullptr); // TODO may cause some bug (Faghat khodaaaaa midoooneeee)
+        // // on message handles the if case
     });
 
     // Add an audio track to the peer connection
@@ -151,6 +152,7 @@ void WebRTC::generateAnswerSDP(const QString &peerId)
 }
 
 
+// TODO :  we are not sure about the usage of trackName in this method
 // Add an audio track to the peer connection
 void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 {
@@ -158,19 +160,22 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 
     // Handle track events
 
-
     auto pc = m_peerConnections[peerId];
 
     // Create a track for the peer
     auto track = pc->addTrack(m_audio);
     m_peerTracks[peerId] = track;
 
-    // Listen for incoming frames
-    track->onMessage([this, peerId] (rtc::message_variant data) {
-        QByteArray receivedData = readVariant(data);
+    // // Listen for incoming frames
+    // track->onMessage([this, peerId] (rtc::message_variant data) {
+    //     QByteArray receivedData = readVariant(data);
 
-        // Process received RTP data, e.g., extract header and handle audio payload.
-    });
+    //     // Process received RTP data, e.g., extract header and handle audio payload.
+    // });
+    track->onMessage([this, peerId](rtc::binary message){
+        const QByteArray data = QByteArray(reinterpret_cast<const char*>(message.data()), message.size());
+        Q_EMIT incommingPacket(peerId, data, data.size());
+    }, nullptr);
 
     // Listen for incoming raw frames
     track->onFrame([this] (rtc::binary frame, rtc::FrameInfo info) {
