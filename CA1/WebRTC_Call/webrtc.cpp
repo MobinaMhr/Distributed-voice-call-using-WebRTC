@@ -49,6 +49,9 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_localId = id;
     m_isOfferer = isOfferer;
 
+    rtc::Configuration config;
+
+    m_config = config;
     // Create an instance of rtc::Configuration to Set up ICE configuration
     // Add a STUN server to help peers find their public IP addresses
     m_config.iceServers.emplace_back("stun:165.232.44.143:3478");
