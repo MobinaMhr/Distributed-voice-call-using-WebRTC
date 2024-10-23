@@ -8,13 +8,30 @@ This is the entrly point of the application. It initializes the Qt application a
 This is the main QML file for the user interface. It displays the call controls, connected peers, and other UI elements.
 
 ### WebRTC Implementation
-The `WebRTC` class manages the peer connections and signaling necessary for real-time audio communication using the WebRTC protocol. It uses the libdatachannel library for handling peer-to-peer connections and SDP generation.
-#### webrtc.h
+The provided WebRTC class is designed to manage WebRTC peer connections, handling SDP (Session Description Protocol) generation, ICE (Interactive Connectivity Establishment) candidate gathering, and the management of audio streams. It integrates with the libdatachannel library and uses Qt 6 for event-driven communication. The class includes functionalities for creating peer connections, managing SDP offers/answers, adding audio tracks, and handling RTP (Real-time Transport Protocol) packet transmission.
+
+The WebRTC class can be used for real-time audio communication, where it establishes peer-to-peer connections, negotiates media capabilities, and transmits audio data in the form of RTP packets.
+
+#### Class Structure
+- Constructor and Destructor
+    - Initializes the WebRTC object with a default audio track and sets up signal connections.
+    - Cleans up resources in the destructor.
+- Public Methods
+    - Methods to initialize the WebRTC instance, add peers, generate SDP offers/answers, and send audio tracks.
+- Public Slots
+    - Slots for setting remote descriptions and ICE candidates.
+- Private Methods
+    - Utility methods to generate SDP in JSON format and retrieve the current timestamp for RTP synchronization.
+- RTP Header Definition
+    - A packed structure that defines the RTP header used for audio data packetization.
+
+
+<!-- #### webrtc.h
 - Header file for the WebRTC class.
 - Contains declarations for methods and member variables.
 #### webrtc.cpp
 - Source file for the WebRTC class.
-- Implements the signaling, peer connection management, and media handling (audio tracks).
+- Implements the signaling, peer connection management, and media handling (audio tracks). -->
 
 ### Audio Handling
 #### AudioInput Class
