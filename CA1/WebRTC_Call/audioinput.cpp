@@ -1,31 +1,29 @@
 #include "audioinput.h"
 
 AudioInput::AudioInput(QObject *parent)
-   : QIODevice(parent), audioSource(nullptr), opusEncoder(nullptr), dataChannel(nullptr) {
+    : QIODevice(parent), audioSource(nullptr), opusEncoder(nullptr) {
+    int sampleRate = 48000;
+    int channelCount = 1;
 
-    // Set up audio format for capturing audio
-   QAudioFormat format;
-   format.setSampleRate(48000);       // Sample rate of 48kHz
-   format.setChannelCount(1);         // Mono audio
-   // format.setSampleSize(16);          // 16-bit PCM
-   // format.setCodec("audio/pcm");
-   // format.setByteOrder(QAudioFormat::LittleEndian);
-   // format.setSampleType(QAudioFormat::Int16); //Int32
+    QAudioFormat audioFormat;
+    audioFormat.setSampleRate(sampleRate);         // 48kHz
+    audioFormat.setChannelCount(channelCount);     // Mono audio
+    audioFormat.setSampleFormat(QAudioFormat::Int16);
 
-   // Initialize QAudioSource
-   audioSource = new QAudioSource(format, this);
+    // Initialize QAudioSource
+    audioSource = new QAudioSource(format, this);
 
-   // Initialize Opus encoder
-   int error;
-   opusEncoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_AUDIO, &error);
-   if (error != OPUS_OK) {
-       qWarning() << "Failed to create Opus encoder:" << opus_strerror(error);
-   }
+    // Initialize Opus encoder
+    int error;
+    opusEncoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_AUDIO, &error);
+    if (error != OPUS_OK) {
+        qWarning() << "Failed to create Opus encoder:" << opus_strerror(error);
+    }
 }
 
 AudioInput::~AudioInput() {
-   stop();
-   opus_encoder_destroy(opusEncoder);
+    stop();
+    opus_encoder_destroy(opusEncoder);
 }
 
 void AudioInput::start() {
@@ -71,7 +69,6 @@ qint64 AudioInput::writeData(const char *data, qint64 len) {
 }
 
 qint64 AudioInput::readData(char *data, qint64 maxlen) {
-   // Not needed for this case (audio input), can return 0
-   return 0;
+    // Not needed for this case (audio input), can return 0
+    return 0;
 }
-
