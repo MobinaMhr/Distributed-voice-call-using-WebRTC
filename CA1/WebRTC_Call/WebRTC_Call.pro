@@ -3,6 +3,7 @@ QT += multimedia
 
 SOURCES += \
         audioinput.cpp \
+        audiooutput.cpp \
         audioprocessor.cpp \
         callmanager.cpp \
         main.cpp \
@@ -25,16 +26,17 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     audioinput.h \
+    audiooutput.h \
     audioprocessor.h \
     callmanager.h \
     webrtc.h
 
 
-INCLUDEPATH += ./../../../libraries/libdatachannel/include
-LIBS += -L./../../../libraries/libdatachannel/Windows/Mingw64 -ldatachannel.dll
+INCLUDEPATH += ./../../../libdatachannel/include
+LIBS += -L./../../../libdatachannel/Windows/Mingw64 -ldatachannel.dll
 LIBS += -LC:/Qt/Tools/OpenSSLv3/Win_x64/bin -lcrypto-3-x64 -lssl-3-x64
 LIBS += -lws2_32
 LIBS += -lssp
 
-INCLUDEPATH += ./../../../libraries/opus/include
-LIBS += -L./../../../libraries/opus/Windows/Mingw64 -lopus
+INCLUDEPATH += ./../../../opus/include
+LIBS += -L./../../../opus/Windows/Mingw64 -lopus
