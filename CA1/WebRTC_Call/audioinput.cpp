@@ -45,6 +45,10 @@ void AudioInput::start() {
     }
 
     audioSource->start();
+
+    if (audioSource->state() != QAudio::ActiveState) {
+        qDebug() << "AudioInput:: Audio source with state " << audioSource->state() << " is not active yet. ";
+    }
 }
 
 void AudioInput::stop() {
