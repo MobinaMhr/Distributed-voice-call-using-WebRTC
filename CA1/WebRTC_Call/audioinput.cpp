@@ -61,27 +61,31 @@ void AudioInput::stop() {
 }
 
 qint64 AudioInput::writeData(const char *data, qint64 len) {
-    // Convert raw audio data into QByteArray
-    QByteArray audioData(data, len);
+    qint64 encodedBytes;
 
-    if (!audioProcessor->initializeEncoder()) {
-        qWarning() << "Failed to initialize the Opus encoder.";
-        return 0;
+    if (!opusEncoder) {
+        qDebug() << "AudioInput:: Opus Encoder is not initialized.";
+        return -1;
     }
 
-    QByteArray encodedData = audioProcessor->encodeAudio(audioData);
-
-    if (dataChannel && dataChannel->isOpen()) {
-        // const char* audioData = reinterpret_cast<const char*>(encodedData.constData());
-        dataChannel->send(encodedData.constData());
-        return len; // may be the len of encoded data
-    } else {
-        qWarning() << "Data channel is not open or not initialized.";
-        return 0;
+    encodedBytes = encodeAudio(data, len);
+    if (encodedBytes < 0) {
+        qDebug() << "AudioInput:: opus encoding process failed. ";
+        qDebug() << "AudioInput:: Error code " << encodedBytes;
+        return -1;
     }
+
+    return len;
 }
 
-qint64 AudioInput::readData(char *data, qint64 maxlen) {
-    // Not needed for this case (audio input), can return 0
-    return 0;
+qint64 AudioInput::encodeAudio(const char *data, qint64 len) {
+    char encodedData[4000];
+
+    return opus_encode(
+        opusEncoder,
+        reinterpret_cast<const opus_int16*>(data),
+        len / 2,
+        reinterpret_cast<unsigned char*>(encodedData), // Could be simply encodedData
+        sizeof(encodedData)
+    );
 }

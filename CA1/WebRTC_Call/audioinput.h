@@ -25,7 +25,7 @@ private:
     QAudioSource *audioSource;
     OpusEncoder *opusEncoder;
 
-    qint64 processAudio(const char *data, qint64 len);
+    qint64 encodeAudio(const char *data, qint64 len);
 };
 
 #endif // AUDIOINPUT_H
