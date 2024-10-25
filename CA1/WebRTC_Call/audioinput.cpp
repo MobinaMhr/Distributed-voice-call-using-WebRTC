@@ -51,13 +51,11 @@ void AudioInput::start() {
 }
 
 void AudioInput::stop() {
-    if (audioIODevice) {
-        disconnect(audioIODevice, &QIODevice::readyRead, this, &AudioInput::start);
+    if (audioSource) {
         audioSource->stop();
-        qDebug() << "Audio input stopped.";
-    } else {
-        qWarning() << "No audio input to stop.";
     }
+    // we may need to
+    // disconnect(audioIODevice, &QIODevice::readyRead, this, &AudioInput::start);
 }
 
 qint64 AudioInput::writeData(const char *data, qint64 len) {
