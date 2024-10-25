@@ -13,4 +13,19 @@ AudioOutput::AudioOutput(QObject *parent)
     if (!QMediaDevices::defaultAudioOutput().isFormatSupported(audioFormat)) {
         qDebug() << "This audio format is not supported.";
     }
+
+    audioSink = new QAudioSink(QMediaDevices::defaultAudioInput(), audioFormat, this);
+
+    int error;
+    opusDecoder = opus_decoder_create(sampleRate, channelCount, &error);
+    if (error != OPUS_OK) {
+        qWarning() << "Failed to create Opus decoder:" << opus_strerror(error);
+    }
+
+    audioDevice = audioSink->start();
+    if (!audioDevice) {
+        qDebug() << "Failed to start audio device.";
+    }
+
+    connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
 }
