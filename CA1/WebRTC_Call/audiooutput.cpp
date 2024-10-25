@@ -50,3 +50,28 @@ void AudioOutput::addData(const QByteArray &data) {
 
     play();
 }
+
+void AudioOutput::play() {
+    if (audioQueue.isEmpty()) {
+        qDebug() << "AudioOutput: No data to play. Queue is empty";
+        return;
+    }
+
+    QByteArray packet = audioQueue.dequeue();
+
+    if (packet.size() <= 0) {
+        qWarning() << "AudioOutput: Invalid encoded data size";
+        return;
+    }
+
+    opus_int16 outputBuffer[960 * 2]; // 960 is the frameSize
+
+    int decodedSamples;
+    decodedSamples = decodeAudio(packet, outputBuffer);
+    if (decodedSamples < 0) {
+        qWarning() << "opus decoder failed" << opus_strerror(decodedSamples);
+        return;
+    }
+
+    audioDevice->write(reinterpret_cast<const char*>(outputBuffer), decodedSamples * sizeof(opus_int16));
+}
