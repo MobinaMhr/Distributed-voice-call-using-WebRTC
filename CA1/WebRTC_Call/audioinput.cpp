@@ -40,14 +40,11 @@ AudioInput::~AudioInput() {
 }
 
 void AudioInput::start() {
-    audioIODevice = audioSource->start();
-
-    if (audioIODevice) {
-        connect(audioIODevice, &QIODevice::readyRead, this, &AudioInput::start);
-        qDebug() << "Audio input started.";
-    } else {
-        qWarning() << "Failed to start audio input.";
+    if (!audioSource || !open(QIODevice::ReadWrite)) {
+        return;
     }
+
+    audioSource->start();
 }
 
 void AudioInput::stop() {
