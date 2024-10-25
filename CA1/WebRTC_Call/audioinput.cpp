@@ -31,8 +31,12 @@ AudioInput::AudioInput(QObject *parent)
 }
 
 AudioInput::~AudioInput() {
-    stop();
-    opus_encoder_destroy(opusEncoder);
+    if (opusEncoder) {
+        opus_encoder_destroy(opusEncoder);
+    }
+    if (audioSource) {
+        delete audioSource;
+    }
 }
 
 void AudioInput::start() {
