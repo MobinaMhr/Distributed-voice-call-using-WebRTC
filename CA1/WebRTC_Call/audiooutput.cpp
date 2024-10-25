@@ -38,3 +38,15 @@ AudioOutput::~AudioOutput() {
         opus_decoder_destroy(opusDecoder);
     }
 }
+
+void AudioOutput::addData(const QByteArray &data) {
+    QMutexLocker locker(&mutex);
+
+    qDebug() << "Adding new data to the queue.";
+    qDebug() << "Audio length = " << data.size();
+
+    audioQueue.enqueue(data);
+    emit newPacket();
+
+    play();
+}
