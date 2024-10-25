@@ -111,7 +111,8 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for monitoring the gathering state
     pc->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
-        Q_EMIT gatheringComplited(peerId);
+        if (state == rtc::PeerConnection::GatheringState::Complete)
+            Q_EMIT gatheringComplited(peerId);
     });
 
     // Set up a callback for handling incoming tracks

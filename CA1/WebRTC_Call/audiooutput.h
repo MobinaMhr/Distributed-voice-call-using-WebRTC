@@ -27,6 +27,8 @@ private slots:
     void play();
 
 private:
+    int decodeAudio(const QByteArray &packet, opus_int16 *outputBuffer);
+
     QAudioSink *audioSink;
     OpusDecoder *opusDecoder;
     QIODevice *audioDevice;
