@@ -5,19 +5,28 @@ AudioInput::AudioInput(QObject *parent)
     int sampleRate = 48000;
     int channelCount = 1;
 
+    QMediaDevices mediaDevices;
+    QAudioDevice inputDevice;
+
     QAudioFormat audioFormat;
     audioFormat.setSampleRate(sampleRate);         // 48kHz
     audioFormat.setChannelCount(channelCount);     // Mono audio
     audioFormat.setSampleFormat(QAudioFormat::Int16);
 
-    // Initialize QAudioSource
-    audioSource = new QAudioSource(format, this);
+    inputDevice = mediaDevices.defaultAudioInput();
+    if (!inputDevice.isFormatSupported(audioFormat)) {
+        qDebug() << "AudioInput:: Audio format is not supported.";
+    }
 
-    // Initialize Opus encoder
-    int error;
-    opusEncoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_AUDIO, &error);
+    audioSource = new QAudioSource(inputDevice, audioFormat, this);
+    if (!audioSource) {
+        qDebug() << "AudioInput:: Audio format is not supported.";
+    }
+
+    int error; // may be OPUS_APPLICATION_VOIP
+    opusEncoder = opus_encoder_create(sampleRate, channelCount, OPUS_APPLICATION_AUDIO, &error);
     if (error != OPUS_OK) {
-        qWarning() << "Failed to create Opus encoder:" << opus_strerror(error);
+        qDebug() << "AudioInput:: Failed to create Opus encoder:" << opus_strerror(error);
     }
 }
 

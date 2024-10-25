@@ -5,6 +5,7 @@
 #include <QAudioSource>
 #include <QMediaDevices>
 #include <QMutex>
+#include <QDebug>
 #include <QThread>
 #include <opus.h>
 
