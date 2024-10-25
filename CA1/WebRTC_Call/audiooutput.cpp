@@ -75,3 +75,14 @@ void AudioOutput::play() {
 
     audioDevice->write(reinterpret_cast<const char*>(outputBuffer), decodedSamples * sizeof(opus_int16));
 }
+
+int AudioOutput::decodeAudio(const QByteArray &packet, opus_int16 *outputBuffer) {
+    return opus_decode(
+        opusDecoder,
+        reinterpret_cast<const unsigned char *>(packet.data()),
+        packet.size(),
+        outputBuffer,
+        960,
+        0
+        );
+}
