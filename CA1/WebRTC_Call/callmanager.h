@@ -50,6 +50,9 @@ private:
     QString m_callerId;
 
     WebRTC* webrtc;
+
+    void createWebRTC(const QString &id, bool isOfferer);
+
 };
 
 #endif // CALLMANAGER_H
