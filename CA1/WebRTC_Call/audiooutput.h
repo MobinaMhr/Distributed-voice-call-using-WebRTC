@@ -1,39 +1,39 @@
-#ifndef AUDIOOUTPUT_H
-#define AUDIOOUTPUT_H
+// #ifndef AUDIOOUTPUT_H
+// #define AUDIOOUTPUT_H
 
-#include <QObject>
-#include <QAudioSink>
-#include <QAudioFormat>
-#include <QByteArray>
-#include <QMediaDevices>
-#include <QMutex>
-#include <QQueue>
-#include <opus.h>
-#include <QDebug>
+// #include <QObject>
+// #include <QAudioSink>
+// #include <QAudioFormat>
+// #include <QByteArray>
+// #include <QMediaDevices>
+// #include <QMutex>
+// #include <QQueue>
+// #include <opus.h>
+// #include <QDebug>
 
-class AudioOutput : public QObject
-{
-    Q_OBJECT
-public:
-    explicit AudioOutput(QObject *parent = nullptr);
-    ~AudioOutput();
+// class AudioOutput : public QObject
+// {
+//     Q_OBJECT
+// public:
+//     explicit AudioOutput(QObject *parent = nullptr);
+//     ~AudioOutput();
 
-    void addData(const QByteArray &data);
+//     void addData(const QByteArray &data);
 
-signals:
-    void newPacket();
+// signals:
+//     void newPacket();
 
-private slots:
-    void play();
+// private slots:
+//     void play();
 
-private:
-    int decodeAudio(const QByteArray &packet, opus_int16 *outputBuffer);
+// private:
+//     int decodeAudio(const QByteArray &packet, opus_int16 *outputBuffer);
 
-    QAudioSink *audioSink;
-    OpusDecoder *opusDecoder;
-    QIODevice *audioDevice;
-    QMutex mutex;
-    QQueue<QByteArray> audioQueue;
-};
+//     QAudioSink *audioSink;
+//     OpusDecoder *opusDecoder;
+//     QIODevice *audioDevice;
+//     QMutex mutex;
+//     QQueue<QByteArray> audioQueue;
+// };
 
-#endif // AUDIOOUTPUT_H
+// #endif // AUDIOOUTPUT_H

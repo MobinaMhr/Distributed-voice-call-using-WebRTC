@@ -1,6 +1,6 @@
 const http = require("http")
 const Socket = require("websocket").server
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 
 const server = http.createServer(() => {})
 
@@ -9,12 +9,15 @@ server.listen(3000, () => {
 })
 
 const ws = new Socket({ httpServer: server })
-
+const peers = {};
 ws.on("request", (req) => {
     const connection = req.accept(null, req.origin)
+    connection.send("Yechize Adddiiiiii")
+    console.log("Connection established")
 
     connection.on("message", (message) => {
         const data = JSON.parse(message.utf8Data)
+        console.log(`Received message ${data}`)
         var targetUser
         switch (data.type) {
             case "register":
@@ -74,3 +77,4 @@ ws.on("request", (req) => {
     })
 
 })
+

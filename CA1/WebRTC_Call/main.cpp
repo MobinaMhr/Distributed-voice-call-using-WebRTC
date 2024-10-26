@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "callmanager.h"
+#include "socket.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,6 +11,15 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     CallManager callManager;
+
+    const QUrl url0(QStringLiteral("ws://localhost:3000"));
+
+    Socket socket(url0);
+    socket.connectToServer();
+
+    QString message = QString("Incoming offer..............");
+    socket.sendMessage(message);
+
 
     engine.rootContext()->setContextProperty("callManager", &callManager);
 

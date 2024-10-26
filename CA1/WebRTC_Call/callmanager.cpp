@@ -5,13 +5,13 @@ CallManager::CallManager(QObject *parent)
     m_ipAddress("172.16.142.176"),
     m_iceCandidate("172.16.142.176")
 {
-    createWebRTC("1", false);
+    // createWebRTC("1", false);
 }
 
 CallManager::~CallManager()
 {
-    if (webrtc)
-        delete webrtc;
+    // if (webrtc)
+    //     delete webrtc;
 }
 
 QString CallManager::ipAddress() const
@@ -55,8 +55,8 @@ void CallManager::setCallerId(const QString &callerId)
 
 void CallManager::startCall()
 {
-    delete webrtc;
-    createWebRTC("2", true);
+    // delete webrtc;
+    // createWebRTC("2", true);
     qDebug() << "Starting call with Caller ID:" << m_callerId;
 }
 
@@ -65,22 +65,22 @@ void CallManager::endCall()
     qDebug() << "Ending call with Caller ID:" << m_callerId;
 }
 
-void CallManager::createWebRTC(const QString &id, bool isOfferer)
-{
-    webrtc = new WebRTC();
-    webrtc->init(id, isOfferer);
-    webrtc->addPeer(id);
+// void CallManager::createWebRTC(const QString &id, bool isOfferer)
+// {
+//     // webrtc = new WebRTC();
+//     // webrtc->init(id, isOfferer);
+//     // webrtc->addPeer(id);
 
-    // Connect
-    connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
-        //
-    });
+//     // // Connect
+//     // connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
+//     //     //
+//     // });
 
-    connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
-        //
-    });
+//     // connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
+//     //     //
+//     // });
 
-    connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
-        //
-    });
-}
+//     // connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
+//     //     //
+//     // });
+// }

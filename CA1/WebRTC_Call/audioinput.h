@@ -1,31 +1,31 @@
-#ifndef AUDIOINPUT_H
-#define AUDIOINPUT_H
+// #ifndef AUDIOINPUT_H
+// #define AUDIOINPUT_H
 
-#include <QIODevice>
-#include <QAudioSource>
-#include <QMediaDevices>
-#include <QMutex>
-#include <QDebug>
-#include <QThread>
-#include <opus.h>
+// #include <QIODevice>
+// #include <QAudioSource>
+// #include <QMediaDevices>
+// #include <QMutex>
+// #include <QDebug>
+// #include <QThread>
+// #include <opus.h>
 
-class AudioInput : public QIODevice {
-    Q_OBJECT
+// class AudioInput : public QIODevice {
+//     Q_OBJECT
 
-public:
-    AudioInput(QObject *parent = nullptr);
-    ~AudioInput();
+// public:
+//     AudioInput(QObject *parent = nullptr);
+//     ~AudioInput();
 
-    qint64 writeData(const char *data, qint64 len) override;
+//     qint64 writeData(const char *data, qint64 len) override;
 
-    void start();
-    void stop();
+//     void start();
+//     void stop();
 
-private:
-    QAudioSource *audioSource;
-    OpusEncoder *opusEncoder;
+// private:
+//     QAudioSource *audioSource;
+//     OpusEncoder *opusEncoder;
 
-    qint64 encodeAudio(const char *data, qint64 len);
-};
+//     qint64 encodeAudio(const char *data, qint64 len);
+// };
 
-#endif // AUDIOINPUT_H
+// #endif // AUDIOINPUT_H

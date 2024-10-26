@@ -1,40 +1,40 @@
-#ifndef AUDIOPROCESSOR_H
-#define AUDIOPROCESSOR_H
+// #ifndef AUDIOPROCESSOR_H
+// #define AUDIOPROCESSOR_H
 
-#include <QObject>
-#include <opus.h>
-#include <QDebug>
-#include <QByteArray>
+// #include <QObject>
+// #include <opus.h>
+// #include <QDebug>
+// #include <QByteArray>
 
-class AudioProcessor : public QObject
-{
-    Q_OBJECT
+// class AudioProcessor : public QObject
+// {
+//     Q_OBJECT
 
-public:
-    explicit AudioProcessor(QObject *parent = nullptr);
-    ~AudioProcessor();
+// public:
+//     explicit AudioProcessor(QObject *parent = nullptr);
+//     ~AudioProcessor();
 
-    // Initialize both encoder and decoder
-    bool initializeEncoder();  // Initializes the Opus encoder
-    bool initializeDecoder();  // Initializes the Opus decoder
+//     // Initialize both encoder and decoder
+//     bool initializeEncoder();  // Initializes the Opus encoder
+//     bool initializeDecoder();  // Initializes the Opus decoder
 
-    // Encode raw microphone audio
-    void encodeAudio(const QByteArray &rawAudioData);
+//     // Encode raw microphone audio
+//     void encodeAudio(const QByteArray &rawAudioData);
 
-    // Decode incoming encoded audio
-    void decodeAudio(const QByteArray &encodedAudio);
+//     // Decode incoming encoded audio
+//     void decodeAudio(const QByteArray &encodedAudio);
 
-signals:
-    void audioEncoded(const QByteArray &encodedData);  // Signal to send encoded data (for transmission)
-    void audioDecoded(const QByteArray &decodedData);  // Signal to provide decoded data (for playback)
+// signals:
+//     void audioEncoded(const QByteArray &encodedData);  // Signal to send encoded data (for transmission)
+//     void audioDecoded(const QByteArray &decodedData);  // Signal to provide decoded data (for playback)
 
-private:
-    // Opus encoder and decoder
-    OpusEncoder *opusEncoder;
-    OpusDecoder *opusDecoder;
+// private:
+//     // Opus encoder and decoder
+//     OpusEncoder *opusEncoder;
+//     OpusDecoder *opusDecoder;
 
-    int opusFrameSize;         // Frame size for Opus encoding/decoding
-    int maxPacketSize;         // Maximum packet size for encoding
-};
+//     int opusFrameSize;         // Frame size for Opus encoding/decoding
+//     int maxPacketSize;         // Maximum packet size for encoding
+// };
 
-#endif // AUDIOPROCESSOR_H
+// #endif // AUDIOPROCESSOR_H
