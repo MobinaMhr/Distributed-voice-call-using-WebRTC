@@ -1,5 +1,6 @@
 QT += quick
 QT += multimedia
+QT += websockets
 
 SOURCES += \
         audioinput.cpp \
@@ -7,6 +8,7 @@ SOURCES += \
         audioprocessor.cpp \
         callmanager.cpp \
         main.cpp \
+        socket.cpp \
         webrtc.cpp
 
 resources.files = main.qml 
@@ -29,14 +31,15 @@ HEADERS += \
     audiooutput.h \
     audioprocessor.h \
     callmanager.h \
+    socket.h \
     webrtc.h
 
 
-INCLUDEPATH += ./../../../libraries/libdatachannel/include
-LIBS += -L./../../../libraries/libdatachannel/Windows/Mingw64 -ldatachannel.dll
+INCLUDEPATH += ./../../../libdatachannel/include
+LIBS += -L./../../../libdatachannel/Windows/Mingw64 -ldatachannel.dll
 LIBS += -LC:/Qt/Tools/OpenSSLv3/Win_x64/bin -lcrypto-3-x64 -lssl-3-x64
 LIBS += -lws2_32
 LIBS += -lssp
 
-INCLUDEPATH += ./../../../libraries/opus/include
-LIBS += -L./../../../libraries/opus/Windows/Mingw64 -lopus
+INCLUDEPATH += ./../../../opus/include
+LIBS += -L./../../../opus/Windows/Mingw64 -lopus
