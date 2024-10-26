@@ -44,17 +44,13 @@ public:
     void resetBitRate();
 
 Q_SIGNALS:
-    void openedDataChannel(const QString &peerId);
-
-    void closedDataChannel(const QString &peerId);
-
     void incommingPacket(const QString &peerId, const QByteArray &data, qint64 len);
 
     void localDescriptionGenerated(const QString &peerID, const QString &sdp);
 
     void localCandidateGenerated(const QString &peerID, const QString &candidate, const QString &sdpMid);
 
-    void isOffererChanged();
+    void isOffererChanged(); // Think about it
 
     void gatheringComplited(const QString &peerID);
 
@@ -62,11 +58,11 @@ Q_SIGNALS:
 
     void answerIsReady(const QString &peerID, const QString& description);
 
-    void ssrcChanged();
+    void ssrcChanged(); // Think about it
 
-    void payloadTypeChanged();
+    void payloadTypeChanged(); // Think about it
 
-    void bitRateChanged();
+    void bitRateChanged(); // Think about it
 
 public Q_SLOTS:
     void setRemoteDescription(const QString &peerID, const QString &sdp);

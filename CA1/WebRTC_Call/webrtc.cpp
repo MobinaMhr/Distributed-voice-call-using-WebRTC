@@ -38,6 +38,12 @@ WebRTC::WebRTC(QObject *parent)
         else
             generateAnswerSDP(peerID);
     });
+
+    connect(this, &WebRTC::localCandidateGenerated, [this] (const QString &peerID, const QString &candidate,
+                                                           const QString &mid){
+        rtc::Candidate localCandidate(candidate.toStdString(), mid.toStdString());
+        m_peerConnections[peerID]->localDescription()->addCandidate(localCandidate);
+    });
 }
 
 WebRTC::~WebRTC()
