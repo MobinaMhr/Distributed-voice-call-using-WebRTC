@@ -16,7 +16,7 @@ struct RtpHeader {
 };
 #pragma pack(pop)
 
-
+// incommingPacket bere vase audioInput output
 WebRTC::WebRTC(QObject *parent)
     : QObject{parent},
     m_audio("Audio")

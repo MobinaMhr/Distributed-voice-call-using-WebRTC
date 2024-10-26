@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QDebug>
+#include <webrtc.h>.h>
 
 class CallManager : public QObject
 {
@@ -14,6 +15,8 @@ class CallManager : public QObject
 
 public:
     explicit CallManager(QObject *parent = nullptr);
+
+    ~CallManager();
 
     QString ipAddress() const;
 
@@ -45,6 +48,8 @@ private:
     QString m_iceCandidate;
 
     QString m_callerId;
+
+    WebRTC* webrtc;
 };
 
 #endif // CALLMANAGER_H
