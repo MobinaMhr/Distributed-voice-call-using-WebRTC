@@ -17,6 +17,18 @@ void Socket::disconnectFromServer()
     m_webSocket->close();
 }
 
+void Socket::sendMessage(const QString &message)
+{
+    if (m_webSocket->isValid())
+        m_webSocket->sendTextMessage(message);
+
+}
+
+bool Socket::isConnected() const
+{
+    return m_webSocket->state() == QAbstractSocket::ConnectedState;
+}
+
 void Socket::onConnected()
 {
     emit connected();

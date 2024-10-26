@@ -12,6 +12,8 @@ public:
     ~Socket();
     void connectToServer();
     void disconnectFromServer();
+    void sendMessage(const QString &message);
+    bool isConnected() const;
 
 signals:
     void connected();
