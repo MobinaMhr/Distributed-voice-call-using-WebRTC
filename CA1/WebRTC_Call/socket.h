@@ -10,6 +10,8 @@ class Socket : public QObject
 public:
     explicit Socket(const QUrl &url, QObject *parent = nullptr);
     ~Socket();
+    void connectToServer();
+    void disconnectFromServer();
 
 signals:
 
