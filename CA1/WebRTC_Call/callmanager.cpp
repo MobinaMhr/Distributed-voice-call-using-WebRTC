@@ -81,6 +81,23 @@ void CallManager::setUserName(QString userName)
     userInSignallingServer = userName;
 }
 
+void CallManager::completeTheJson(const QString& description, const QString type)
+{
+    QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
+
+    if (!doc.isObject())
+        qWarning() << "Invalid JSON format";
+
+    QJsonObject jsonObj = doc.object();
+    jsonObj["reqType"] = "offer";
+    jsonObj["user"] = userInSignallingServer;
+    jsonObj["target"] = m_callerId;
+
+    QJsonDocument updatedDoc(jsonObj);
+    QString updatedJsonString = updatedDoc.toJson(QJsonDocument::Compact);
+    socket->sendMessage(updatedJsonString);
+}
+
 void CallManager::createWebRTC(const QString &id, bool isOfferer)
 {
     webrtc = new WebRTC();
@@ -88,36 +105,11 @@ void CallManager::createWebRTC(const QString &id, bool isOfferer)
     webrtc->addPeer(id);
 
     connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
-        QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
-
-        if (!doc.isObject())
-            qWarning() << "Invalid JSON format";
-
-        QJsonObject jsonObj = doc.object();
-        jsonObj["reqType"] = "offer";
-        jsonObj["user"] = userInSignallingServer;
-        jsonObj["target"] = m_callerId;
-
-        QJsonDocument updatedDoc(jsonObj);
-        QString updatedJsonString = updatedDoc.toJson(QJsonDocument::Compact);
-        socket->sendMessage(updatedJsonString);
+        completeTheJson(description, "offer");
     });
 
-
     connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
-        QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
-
-        if (!doc.isObject())
-            qWarning() << "Invalid JSON format";
-
-        QJsonObject jsonObj = doc.object();
-        jsonObj["reqType"] = "answer";
-        jsonObj["user"] = userInSignallingServer;
-        jsonObj["target"] = m_callerId;
-
-        QJsonDocument updatedDoc(jsonObj);
-        QString updatedJsonString = updatedDoc.toJson(QJsonDocument::Compact);
-        socket->sendMessage(updatedJsonString);
+        completeTheJson(description, "answer");
     });
 
     connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {

@@ -59,6 +59,7 @@ private:
 
     void createWebRTC(const QString &id, bool isOfferer);
     void setUserName(QString userName);
+    void completeTheJson(const QString& description, const QString type);
 };
 
 #endif // CALLMANAGER_H
