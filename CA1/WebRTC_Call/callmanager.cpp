@@ -113,7 +113,7 @@ void CallManager::createWebRTC(const QString &id, bool isOfferer)
         socket->sendMessage(updatedJsonString);
     });
 
-    connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
-        // Process the packat
-    });
+    // connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
+    //     // Process the packat
+    // });
 }

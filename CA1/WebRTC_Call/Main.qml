@@ -3,8 +3,8 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 
 Window {
-    width: 280
-    height: 520
+    width: 360
+    height: 570
     visible: true
     title: qsTr("CA1")
 
@@ -47,23 +47,60 @@ Window {
         TextField{
             id: textfield1
             placeholderText: "Your Id"
-            anchors.bottom: textfield.top
-            anchors.bottomMargin: 10
-            anchors.left: callbtn.left
-            anchors.right: callbtn.right
-            enabled: !callbtn.pushed
+            anchors {
+                bottom: textfield.top
+                bottomMargin: 10
+                left: parent.left
+                right: parent.right
+                margins: 20  // Add a 20-pixel margin on all sides
+            }enabled: !idbtn.pushed
             onTextChanged: callManager.setUserName(text)
         }
 
-        TextField{
+        TextField {
             id: textfield
             placeholderText: "Phone Number"
-            anchors.bottom: callbtn.top
-            anchors.bottomMargin: 10
-            anchors.left: callbtn.left
-            anchors.right: callbtn.right
+            anchors {
+                bottom: callbtn.top
+                bottomMargin: 10
+                left: parent.left
+                right: parent.right
+                margins: 20  // Add a 20-pixel margin on all sides
+            }
             enabled: !callbtn.pushed
             onTextChanged: callManager.setCallerId(text)
+        }
+
+
+        Button{
+            id: idbtn
+
+            property bool pushed: false
+
+            height: 47
+            width: parent.width / 2 - 30  // Adjust to make both buttons symmetric
+            text: "SET ID"
+            Material.background: "green"
+            Material.foreground: "white"
+            anchors{
+                bottom: parent.bottom
+                left: parent.left
+                right: parent.center + 30
+                margins: 20
+            }
+
+            onClicked: {
+                pushed = !pushed
+                if(pushed){
+                    Material.background = "red"
+                    text = "UN Set"
+                }
+                else{
+                    Material.background = "green"
+                    text = "Set"
+                    textfield1.clear()
+                }
+            }
         }
 
         Button{
@@ -72,12 +109,13 @@ Window {
             property bool pushed: false
 
             height: 47
+            width: parent.width / 2 - 30  // Make the width the same as callerIdBtn
             text: "Call"
             Material.background: "green"
             Material.foreground: "white"
             anchors{
                 bottom: parent.bottom
-                left: parent.left
+                left: parent.center
                 right: parent.right
                 margins: 20
             }
