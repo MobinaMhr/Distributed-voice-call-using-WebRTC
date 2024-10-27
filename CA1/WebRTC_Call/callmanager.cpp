@@ -5,13 +5,24 @@ CallManager::CallManager(QObject *parent)
     m_ipAddress("172.16.142.176"),
     m_iceCandidate("172.16.142.176")
 {
-    // createWebRTC("1", false);
+    createWebRTC("1", false);
+
+
+    const QUrl url(QStringLiteral("ws://localhost:3000"));
+
+    socket = new Socket(url);
+    socket->connectToServer();
 }
 
 CallManager::~CallManager()
 {
-    // if (webrtc)
-    //     delete webrtc;
+    if (webrtc)
+        delete webrtc;
+
+    if (socket) {
+        socket->disconnectFromServer();
+        delete socket;
+    }
 }
 
 QString CallManager::ipAddress() const
@@ -55,8 +66,8 @@ void CallManager::setCallerId(const QString &callerId)
 
 void CallManager::startCall()
 {
-    // delete webrtc;
-    // createWebRTC("2", true);
+    delete webrtc;
+    createWebRTC("2", true);
     qDebug() << "Starting call with Caller ID:" << m_callerId;
 }
 
@@ -65,22 +76,40 @@ void CallManager::endCall()
     qDebug() << "Ending call with Caller ID:" << m_callerId;
 }
 
-// void CallManager::createWebRTC(const QString &id, bool isOfferer)
-// {
-//     // webrtc = new WebRTC();
-//     // webrtc->init(id, isOfferer);
-//     // webrtc->addPeer(id);
+void CallManager::setUserName(QString userName)
+{
+    userInSignallingServer = userName;
+}
 
-//     // // Connect
-//     // connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
-//     //     //
-//     // });
+void CallManager::createWebRTC(const QString &id, bool isOfferer)
+{
+    webrtc = new WebRTC();
+    webrtc->init(id, isOfferer);
+    webrtc->addPeer(id);
 
-//     // connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
-//     //     //
-//     // });
+    connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
+        QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
 
-//     // connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
-//     //     //
-//     // });
-// }
+        if (!doc.isObject())
+            qWarning() << "Invalid JSON format";
+
+        QJsonObject jsonObj = doc.object();
+        jsonObj["reqType"] = "offer";
+        jsonObj["user"] = userInSignallingServer;
+        jsonObj["target"] = m_callerId;
+
+        QJsonDocument updatedDoc(jsonObj);
+        QString updatedJsonString = updatedDoc.toJson(QJsonDocument::Compact);
+        socket->sendMessage(updatedJsonString);
+    });
+
+
+    connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
+        rtc::Description localDescription(description.toStdString(), rtc::Description::Type::Answer);
+        // Send this description
+    });
+
+    connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
+        // Process the packat
+    });
+}

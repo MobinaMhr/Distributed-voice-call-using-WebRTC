@@ -4,7 +4,8 @@
 #include <QObject>
 #include <QString>
 #include <QDebug>
-// #include <webrtc.h>
+#include <webrtc.h>
+#include <socket.h>
 
 class CallManager : public QObject
 {
@@ -49,10 +50,15 @@ private:
 
     QString m_callerId;
 
-    // WebRTC* webrtc;
+    WebRTC* webrtc;
 
-    // void createWebRTC(const QString &id, bool isOfferer);
+    Socket* socket;
 
+    QString userInSignallingServer; //TODO::rename it
+
+
+    void createWebRTC(const QString &id, bool isOfferer);
+    void setUserName(QString userName);
 };
 
 #endif // CALLMANAGER_H

@@ -12,14 +12,13 @@ const ws = new Socket({ httpServer: server })
 const peers = {};
 ws.on("request", (req) => {
     const connection = req.accept(null, req.origin)
-    connection.send("Yechize Adddiiiiii")
     console.log("Connection established")
 
     connection.on("message", (message) => {
         const data = JSON.parse(message.utf8Data)
         console.log(`Received message ${data}`)
         var targetUser
-        switch (data.type) {
+        switch (data.reqType) {
             case "register":
                 console.log(`Received registeration from ${data.user}`)
                 peers[data.user] = connection
@@ -31,10 +30,10 @@ ws.on("request", (req) => {
                 targetUser = peers[data.target]
                 if (targetUser) {
                     targetUser.send(JSON.stringify({
-                        type: "offer",
+                        type: data.type,
                         user: data.user,
                         sdp: data.sdp,
-                        iceCandidate: data.iceCandidate
+                        // iceCandidate: data.iceCandidate
                     }))
                 } else {
                     console.log(`Target ${data.target} not found`);
@@ -47,10 +46,10 @@ ws.on("request", (req) => {
                 targetUser = peers[data.target]
                 if (targetUser) {
                     targetUser.send(JSON.stringify({
-                        type: "answer",
+                        type: data.type,
                         user: data.user,
                         sdp: data.sdp,
-                        iceCandidate: data.iceCandidate
+                        // iceCandidate: data.iceCandidate-
                     }))
                 } else {
                     console.log(`Target ${data.target} not found`);

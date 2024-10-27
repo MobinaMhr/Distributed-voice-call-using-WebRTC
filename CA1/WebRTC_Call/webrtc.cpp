@@ -119,7 +119,6 @@
 //                 qDebug() << "Peer connection state: Closed" ;
 //                 break;
 //         }
-
 //     });
 
 //     // Set up a callback for monitoring the gathering state
@@ -231,6 +230,7 @@
 //     QJsonObject jsonMessage;
 
 //     jsonMessage["type"] = QString::fromStdString(description->typeString());
+//     // description.value().
 
 //     jsonMessage["sdp"] = QString::fromStdString(description.value());
 

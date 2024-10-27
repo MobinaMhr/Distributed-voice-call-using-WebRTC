@@ -23,19 +23,36 @@ Window {
             Label{
                 text: "Ip: " + callManager.ipAddress
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
+                Layout.preferredHeight: 30
             }
             Label{
                 text: "IceCandidate: " + callManager.iceCandidate
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
+                Layout.preferredHeight: 30
             }
+            Label{
+                text: "Id: " + textfield1.text
+                Layout.fillWidth: true
+                Layout.preferredHeight: 30
+            }
+
             Label{
                 text: "CallerId: " + textfield.text
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
+                Layout.preferredHeight: 80
             }
 
+        }
+
+        TextField{
+            id: textfield1
+            placeholderText: "Your Id"
+            anchors.bottom: textfield.top
+            anchors.bottomMargin: 10
+            anchors.left: callbtn.left
+            anchors.right: callbtn.right
+            enabled: !callbtn.pushed
+            onTextChanged: callManager.setUserName(text)
         }
 
         TextField{
