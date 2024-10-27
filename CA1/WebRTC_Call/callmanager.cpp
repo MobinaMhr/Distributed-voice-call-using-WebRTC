@@ -105,8 +105,19 @@ void CallManager::createWebRTC(const QString &id, bool isOfferer)
 
 
     connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
-        rtc::Description localDescription(description.toStdString(), rtc::Description::Type::Answer);
-        // Send this description
+        QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
+
+        if (!doc.isObject())
+            qWarning() << "Invalid JSON format";
+
+        QJsonObject jsonObj = doc.object();
+        jsonObj["reqType"] = "answer";
+        jsonObj["user"] = userInSignallingServer;
+        jsonObj["target"] = m_callerId;
+
+        QJsonDocument updatedDoc(jsonObj);
+        QString updatedJsonString = updatedDoc.toJson(QJsonDocument::Compact);
+        socket->sendMessage(updatedJsonString);
     });
 
     connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
