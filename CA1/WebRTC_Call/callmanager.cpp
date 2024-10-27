@@ -81,7 +81,7 @@ void CallManager::setUserName(QString userName)
     userInSignallingServer = userName;
 }
 
-void CallManager::completeTheJson(const QString& description, const QString type)
+QString CallManager::getCompletedJson(const QString& description, const QString type)
 {
     QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
 
@@ -94,8 +94,7 @@ void CallManager::completeTheJson(const QString& description, const QString type
     jsonObj["target"] = m_callerId;
 
     QJsonDocument updatedDoc(jsonObj);
-    QString updatedJsonString = updatedDoc.toJson(QJsonDocument::Compact);
-    socket->sendMessage(updatedJsonString);
+    return updatedDoc.toJson(QJsonDocument::Compact);
 }
 
 void CallManager::createWebRTC(const QString &id, bool isOfferer)
@@ -105,11 +104,13 @@ void CallManager::createWebRTC(const QString &id, bool isOfferer)
     webrtc->addPeer(id);
 
     connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
-        completeTheJson(description, "offer");
+        QString updatedJsonString = getCompletedJson(description, "offer");
+        socket->sendMessage(updatedJsonString);
     });
 
     connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
-        completeTheJson(description, "answer");
+        QString updatedJsonString = getCompletedJson(description, "answer");
+        socket->sendMessage(updatedJsonString);
     });
 
     connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
