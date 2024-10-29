@@ -23,12 +23,13 @@ WebRTC::WebRTC(QObject *parent)
     connect(this, &WebRTC::gatheringComplited, [this] (const QString &peerID) {
 
         m_localDescription = descriptionToJson(peerID);
-        Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
+        //Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
 
         if (m_isOfferer)
             Q_EMIT this->offerIsReady(peerID, m_localDescription);
         else
             Q_EMIT this->answerIsReady(peerID, m_localDescription);
+        qDebug()<<"fuck buggg\n";
     });
 
     connect(this, &WebRTC::localDescriptionGenerated, [this] (const QString &peerID){ // , const QString &m_localDescription
@@ -133,7 +134,7 @@ void WebRTC::addPeer(const QString &peerId)
             qDebug() << "state is inProgress";
                 // When the gathering is complete, emit the gatheringComplited signal
         if (state == rtc::PeerConnection::GatheringState::Complete){
-            qDebug() << "state is complete";
+            qDebug() << "------------------------- \n state is complete\n------------------";
             Q_EMIT gatheringComplited(peerId);
         }
     });
@@ -151,8 +152,8 @@ void WebRTC::addPeer(const QString &peerId)
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
-    qDebug() << "generating offerSDP";
     m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Offer);
+    qDebug() << "generating offerSDP";
 }
 
 // Generate an answer SDP for the peer
@@ -239,14 +240,14 @@ void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate,
 // Utility function to convert rtc::Description to JSON format
 QString WebRTC::descriptionToJson(const QString &peerID)
 {
-    auto description = m_peerConnections[peerID]->localDescription();
+    auto description = m_peerConnections[peerID]->localDescription().value();
 
     QJsonObject jsonMessage;
 
-    jsonMessage["type"] = QString::fromStdString(description->typeString());
+    jsonMessage["type"] = QString::fromStdString(description.typeString());
     // description.value().
 
-    jsonMessage["sdp"] = QString::fromStdString(description.value());
+    jsonMessage["sdp"] = QString::fromStdString(description);
 
     QJsonDocument doc(jsonMessage);
     QString jsonString = doc.toJson(QJsonDocument::Compact);
@@ -320,7 +321,12 @@ bool WebRTC::isOfferer() const
 
 void WebRTC::setIsOfferer(bool newIsOfferer)
 {
-    m_isOfferer = newIsOfferer;
+    qDebug() << "******************\nsuper shit\n*********************";
+    if (m_isOfferer != newIsOfferer){
+        m_isOfferer = newIsOfferer;
+        this->init(m_localId);
+        this->addPeer(m_localId);
+    }
 }
 
 void WebRTC::resetIsOfferer()

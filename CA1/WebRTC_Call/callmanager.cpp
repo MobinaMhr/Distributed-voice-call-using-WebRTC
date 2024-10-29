@@ -5,28 +5,29 @@ CallManager::CallManager(QObject *parent)
     m_ipAddress("172.16.142.176"),
     m_iceCandidate("172.16.142.176")
 {
-    createWebRTC("1", false);
-
     const QUrl url(QStringLiteral("ws://localhost:3000"));
 
     socket = new Socket(url);
     socket->connectToServer();
 
-    connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
-        qDebug() << "OFFER::";
+    webrtc = new WebRTC();
+    webrtc->init("1", false);
+    webrtc->addPeer("1");
+
+    connect(webrtc, &WebRTC::offerIsReady, this, [this](const QString &peerId, const QString& description) {
+        qDebug() << "-----------------/nOFFER::\n";
         QString updatedJsonString = getCompletedJson(description, "offer");
         socket->sendMessage(updatedJsonString);
-    });
+    }, Qt::QueuedConnection);
 
-    connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
+    connect(webrtc, &WebRTC::answerIsReady, this ,[this](const QString &peerId, const QString& description) {
         QString updatedJsonString = getCompletedJson(description, "answer");
         socket->sendMessage(updatedJsonString);
-    });
+    }, Qt::QueuedConnection);
 
-    connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
+    connect(webrtc, &WebRTC::incommingPacket, this ,[this](const QString &peerId, const QByteArray &data, qint64 len) {
         // Process the packat
-        qDebug() << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
-    });
+    }, Qt::QueuedConnection);
 }
 
 CallManager::~CallManager()
@@ -94,8 +95,9 @@ void CallManager::setUserName(const QString &userName)
 
 void CallManager::startCall()
 {
-    delete webrtc;
-    createWebRTC("2", true);
+    //delete webrtc;
+    //createWebRTC("2", true);
+    webrtc->setIsOfferer(true);
     qDebug() << "Starting call with Caller ID:" << m_callerId;
 }
 
@@ -147,7 +149,5 @@ QString CallManager::getCompletedJson(const QString& description, const QString 
 
 void CallManager::createWebRTC(const QString &id, bool isOfferer)
 {
-    webrtc = new WebRTC();
-    webrtc->init(id, isOfferer);
-    webrtc->addPeer(id);
+    //
 }
