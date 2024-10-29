@@ -1,6 +1,5 @@
 #include "webrtc.h"
 
-// TODO::Connect signals and methods
 // TODO::we are not sure about the usage of trackName in addAudioTrack method
 
 static_assert(true);
@@ -79,18 +78,21 @@ void WebRTC::init(const QString &id, bool isOfferer)
 
 void WebRTC::addPeer(const QString &peerId)
 {
+    qDebug() << "addPeer::";
     // Create and add a new peer connection
     auto pc = std::make_shared<rtc::PeerConnection>();
     m_peerConnections[peerId] = pc;
 
     // Set up a callback for when the local description is generated
     pc->onLocalDescription([this, peerId](const rtc::Description &description) {
+        qDebug() << "onLocalDescription";
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
         Q_EMIT localDescriptionGenerated(peerId, QString::fromStdString(description)); // description?? or description.value??
     });
 
     // Set up a callback for handling local ICE candidates
     pc->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
+        qDebug() << "onLocalCandidate";
         // Emit the local candidates using the localCandidateGenerated signal
         Q_EMIT localCandidateGenerated(peerId, QString::fromStdString(candidate.candidate()),
                                        QString::fromStdString(candidate.mid())); // potential bugssss!!!!!!!!!!!
@@ -123,13 +125,21 @@ void WebRTC::addPeer(const QString &peerId)
 
     // Set up a callback for monitoring the gathering state
     pc->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
-        // When the gathering is complete, emit the gatheringComplited signal
-        if (state == rtc::PeerConnection::GatheringState::Complete)
+        qDebug() << "addPeer::";
+        if (state == rtc::PeerConnection::GatheringState::New)
+            qDebug() << "state is New";
+        if (state == rtc::PeerConnection::GatheringState::InProgress)
+            qDebug() << "state is inProgress";
+                // When the gathering is complete, emit the gatheringComplited signal
+        if (state == rtc::PeerConnection::GatheringState::Complete){
+            qDebug() << "state is complete";
             Q_EMIT gatheringComplited(peerId);
+        }
     });
 
     // Set up a callback for handling incoming tracks
     pc->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
+        qDebug() << "addPeer::";
         qDebug() << "Hastiiiiiiiiiiiiiiiiiiiiiiiiiiiiii!" ;
     });
 

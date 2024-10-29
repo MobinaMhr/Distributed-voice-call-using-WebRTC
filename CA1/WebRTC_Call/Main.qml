@@ -71,7 +71,7 @@ Window {
             onTextChanged: callManager.setCallerId(text)
         }
 
-
+        // Register user
         Button{
             id: idbtn
 
@@ -92,6 +92,7 @@ Window {
             onClicked: {
                 pushed = !pushed
                 if(pushed){
+                    callManager.registerUser();
                     Material.background = "red"
                     text = "UN Set"
                 }
@@ -103,6 +104,7 @@ Window {
             }
         }
 
+        // Start call - End call
         Button{
             id: callbtn
 

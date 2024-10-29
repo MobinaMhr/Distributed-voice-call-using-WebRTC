@@ -7,7 +7,6 @@ CallManager::CallManager(QObject *parent)
 {
     createWebRTC("1", false);
 
-
     const QUrl url(QStringLiteral("ws://localhost:3000"));
 
     socket = new Socket(url);
@@ -40,6 +39,11 @@ QString CallManager::callerId() const
     return m_callerId;
 }
 
+QString CallManager::userName() const
+{
+    return m_userName;
+}
+
 void CallManager::setIpAddress(const QString &ipAddress)
 {
     if (m_ipAddress != ipAddress) {
@@ -64,6 +68,14 @@ void CallManager::setCallerId(const QString &callerId)
     }
 }
 
+void CallManager::setUserName(const QString &userName)
+{
+    if (m_userName != userName) {
+        m_userName = userName;
+        emit userNameChanged();
+    }
+}
+
 void CallManager::startCall()
 {
     delete webrtc;
@@ -76,9 +88,28 @@ void CallManager::endCall()
     qDebug() << "Ending call with Caller ID:" << m_callerId;
 }
 
-void CallManager::setUserName(QString userName)
+void CallManager::registerUser()
 {
-    userInSignallingServer = userName;
+    QString jsonReq;
+    jsonReq = createJsonRequest({"reqType", "user"}, {"register", m_userName});
+    qDebug() << "!!!!!!!!!!!!!!! " << jsonReq << " !!!!!!!!!!!!!!! " << m_userName;
+    socket->sendMessage(jsonReq);
+}
+
+QString CallManager::createJsonRequest(const std::vector<QString> &keys, const std::vector<QString> &values) {
+    int size = keys.size();
+    QJsonObject jsonObject;
+
+    for (int i = 0; i < size; i++) {
+        QString key = keys[i];
+        QString value = values[i];
+        jsonObject[key] = value;
+    }
+
+    QJsonDocument jsonDoc(jsonObject);
+    QString jsonString = jsonDoc.toJson(QJsonDocument::Compact);
+
+    return jsonString;
 }
 
 QString CallManager::getCompletedJson(const QString& description, const QString type)
@@ -89,8 +120,9 @@ QString CallManager::getCompletedJson(const QString& description, const QString 
         qWarning() << "Invalid JSON format";
 
     QJsonObject jsonObj = doc.object();
+
     jsonObj["reqType"] = "offer";
-    jsonObj["user"] = userInSignallingServer;
+    jsonObj["user"] = m_userName;
     jsonObj["target"] = m_callerId;
 
     QJsonDocument updatedDoc(jsonObj);
@@ -104,6 +136,7 @@ void CallManager::createWebRTC(const QString &id, bool isOfferer)
     webrtc->addPeer(id);
 
     connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
+        qDebug() << "OFFER::";
         QString updatedJsonString = getCompletedJson(description, "offer");
         socket->sendMessage(updatedJsonString);
     });

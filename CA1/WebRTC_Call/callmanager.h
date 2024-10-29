@@ -13,6 +13,7 @@ class CallManager : public QObject
     Q_PROPERTY(QString ipAddress READ ipAddress WRITE setIpAddress NOTIFY ipAddressChanged)
     Q_PROPERTY(QString iceCandidate READ iceCandidate WRITE setIceCandidate NOTIFY iceCandidateChanged)
     Q_PROPERTY(QString callerId READ callerId WRITE setCallerId NOTIFY callerIdChanged)
+    Q_PROPERTY(QString m_userName READ userName WRITE setUserName NOTIFY userNameChanged)
 
 public:
     explicit CallManager(QObject *parent = nullptr);
@@ -25,16 +26,21 @@ public:
 
     QString callerId() const;
 
+    QString userName() const;
+
     void setIpAddress(const QString &ipAddress);
 
     void setIceCandidate(const QString &iceCandidate);
 
+    Q_INVOKABLE void setCallerId(const QString &callerId);
 
-    void setCallerId(const QString &callerId);
+    Q_INVOKABLE void setUserName(const QString &userName);
 
     Q_INVOKABLE void startCall();
 
     Q_INVOKABLE void endCall();
+
+    Q_INVOKABLE void registerUser();
 
 signals:
     void ipAddressChanged();
@@ -43,6 +49,8 @@ signals:
 
     void callerIdChanged();
 
+    void userNameChanged();
+
 private:
     QString m_ipAddress;
 
@@ -50,17 +58,17 @@ private:
 
     QString m_callerId;
 
+    QString m_userName;
+
     WebRTC* webrtc;
 
     Socket* socket;
 
-    QString userInSignallingServer; //TODO::rename it
-
-
     void createWebRTC(const QString &id, bool isOfferer);
-    void setUserName(QString userName);
 
     QString getCompletedJson(const QString& description, const QString type);
+
+    QString createJsonRequest(const std::vector<QString> &keys, const std::vector<QString> &values);
 };
 
 #endif // CALLMANAGER_H
