@@ -70,6 +70,8 @@ void WebRTC::init(const QString &id, bool isOfferer)
     // m_config.iceServers.emplace_back("turn:165.232.44.143:3478", "myturn", "mewmew");
 
     // Set up the audio stream configuration
+    rtc::Description::Audio audio("audio", rtc::Description::Direction::SendRecv);
+    m_audio = audio;
     m_audio.addOpusCodec(m_payloadType);
     m_audio.setBitrate(m_bitRate);
     m_audio.addSSRC(m_ssrc, "audio-send");
@@ -82,7 +84,6 @@ void WebRTC::addPeer(const QString &peerId)
     // Create and add a new peer connection
     auto pc = std::make_shared<rtc::PeerConnection>();
     m_peerConnections[peerId] = pc;
-
     // Set up a callback for when the local description is generated
     pc->onLocalDescription([this, peerId](const rtc::Description &description) {
         qDebug() << "onLocalDescription";
@@ -144,17 +145,20 @@ void WebRTC::addPeer(const QString &peerId)
     });
 
     addAudioTrack(peerId, QString::fromStdString("Hasti:("));
+    pc->setLocalDescription();
 }
 
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
+    qDebug() << "generating offerSDP";
     m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Offer);
 }
 
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
+    qDebug() << "generating answerSDP";
     m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Answer);
 }
 

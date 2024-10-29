@@ -11,6 +11,22 @@ CallManager::CallManager(QObject *parent)
 
     socket = new Socket(url);
     socket->connectToServer();
+
+    connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
+        qDebug() << "OFFER::";
+        QString updatedJsonString = getCompletedJson(description, "offer");
+        socket->sendMessage(updatedJsonString);
+    });
+
+    connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
+        QString updatedJsonString = getCompletedJson(description, "answer");
+        socket->sendMessage(updatedJsonString);
+    });
+
+    connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
+        // Process the packat
+        qDebug() << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
+    });
 }
 
 CallManager::~CallManager()
@@ -134,19 +150,4 @@ void CallManager::createWebRTC(const QString &id, bool isOfferer)
     webrtc = new WebRTC();
     webrtc->init(id, isOfferer);
     webrtc->addPeer(id);
-
-    connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
-        qDebug() << "OFFER::";
-        QString updatedJsonString = getCompletedJson(description, "offer");
-        socket->sendMessage(updatedJsonString);
-    });
-
-    connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
-        QString updatedJsonString = getCompletedJson(description, "answer");
-        socket->sendMessage(updatedJsonString);
-    });
-
-    // connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
-    //     // Process the packat
-    // });
 }
