@@ -60,6 +60,8 @@ private:
 
     QString m_userName;
 
+    QString webrtcPeerId;
+
     WebRTC* webrtc;
 
     Socket* socket;
@@ -69,6 +71,13 @@ private:
     QString getCompletedJson(const QString& description, const QString type);
 
     QString createJsonRequest(const std::vector<QString> &keys, const std::vector<QString> &values);
+
+    void handleSingalingOffer(const QJsonObject &offer);
+
+    void handleSingalingAnswer(const QJsonObject &answer);
+
+private slots:
+    void handleIncomingSocketMessage(const QString &message);
 };
 
 #endif // CALLMANAGER_H

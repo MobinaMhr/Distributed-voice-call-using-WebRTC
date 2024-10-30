@@ -5,7 +5,8 @@ CallManager::CallManager(QObject *parent)
     m_ipAddress("172.16.142.176"),
     m_iceCandidate("172.16.142.176")
 {
-    createWebRTC("1", false);
+    webrtcPeerId = "1";
+    createWebRTC(webrtcPeerId, false);
 
     const QUrl url(QStringLiteral("ws://localhost:3000"));
 
@@ -28,6 +29,8 @@ CallManager::CallManager(QObject *parent)
         // Process the packat
         qDebug() << "CALLMANAGER(___)" << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
     }, Qt::AutoConnection);
+
+    connect(socket, &Socket::messageReceived, this, &CallManager::handleIncomingSocketMessage, Qt::AutoConnection);
 }
 
 CallManager::~CallManager()
@@ -126,6 +129,26 @@ QString CallManager::createJsonRequest(const std::vector<QString> &keys, const s
     QString jsonString = jsonDoc.toJson(QJsonDocument::Compact);
 
     return jsonString;
+}
+
+void CallManager::handleSingalingOffer(const QJsonObject &offer)
+{
+    m_callerId = offer.value("user").toString();
+    webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());
+}
+
+void CallManager::handleSingalingAnswer(const QJsonObject &answer)
+{
+    webrtc->setRemoteDescription(webrtcPeerId, answer.value("sdp").toString());
+}
+
+void CallManager::handleIncomingSocketMessage(const QString &message)
+{
+    QJsonObject jsonDoc = QJsonDocument::fromJson(message.toUtf8()).object();
+    if (jsonDoc.value("type").toString() == "offer")
+        handleSingalingOffer(jsonDoc);
+    else
+        handleSingalingAnswer(jsonDoc);
 }
 
 QString CallManager::getCompletedJson(const QString& description, const QString type)
