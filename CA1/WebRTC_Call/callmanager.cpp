@@ -12,22 +12,22 @@ CallManager::CallManager(QObject *parent)
     socket = new Socket(url);
     socket->connectToServer();
 
-    connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
+    connect(webrtc, &WebRTC::offerIsReady, this, [this](const QString &peerId, const QString& description) {
         qDebug() << "CALLMANAGER(___)" << "OFFER::";
         QString updatedJsonString = getCompletedJson(description, "offer");
         qDebug() << updatedJsonString;
-        socket->sendMessage(updatedJsonString);
-    });
+        this->socket->sendMessage(updatedJsonString);
+    }, Qt::AutoConnection);
 
-    connect(webrtc, &WebRTC::answerIsReady, [this](const QString &peerId, const QString& description) {
+    connect(webrtc, &WebRTC::answerIsReady, this,[this](const QString &peerId, const QString& description) {
         QString updatedJsonString = getCompletedJson(description, "answer");
-        socket->sendMessage(updatedJsonString);
-    });
+        this->socket->sendMessage(updatedJsonString);
+    }, Qt::AutoConnection);
 
-    connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
+    connect(webrtc, &WebRTC::incommingPacket, this, [this](const QString &peerId, const QByteArray &data, qint64 len) {
         // Process the packat
         qDebug() << "CALLMANAGER(___)" << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
-    });
+    }, Qt::AutoConnection);
 }
 
 CallManager::~CallManager()
