@@ -13,7 +13,7 @@ CallManager::CallManager(QObject *parent)
     socket->connectToServer();
 
     connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
-        qDebug() << "OFFER::";
+        qDebug() << "CALLMANAGER(___)" << "OFFER::";
         QString updatedJsonString = getCompletedJson(description, "offer");
         socket->sendMessage(updatedJsonString);
     });
@@ -25,7 +25,7 @@ CallManager::CallManager(QObject *parent)
 
     connect(webrtc, &WebRTC::incommingPacket, [this](const QString &peerId, const QByteArray &data, qint64 len) {
         // Process the packat
-        qDebug() << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
+        qDebug() << "CALLMANAGER(___)" << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
     });
 }
 
@@ -96,19 +96,19 @@ void CallManager::startCall()
 {
     delete webrtc;
     createWebRTC("2", true);
-    qDebug() << "Starting call with Caller ID:" << m_callerId;
+    qDebug() << "CALLMANAGER(___)" << "Starting call with Caller ID:" << m_callerId;
 }
 
 void CallManager::endCall()
 {
-    qDebug() << "Ending call with Caller ID:" << m_callerId;
+    qDebug() << "CALLMANAGER(___)" << "Ending call with Caller ID:" << m_callerId;
 }
 
 void CallManager::registerUser()
 {
     QString jsonReq;
     jsonReq = createJsonRequest({"reqType", "user"}, {"register", m_userName});
-    qDebug() << "!!!!!!!!!!!!!!! " << jsonReq << " !!!!!!!!!!!!!!! " << m_userName;
+    qDebug() << "CALLMANAGER(___)" << "!!!!!!!!!!!!!!! " << jsonReq << " !!!!!!!!!!!!!!! " << m_userName;
     socket->sendMessage(jsonReq);
 }
 

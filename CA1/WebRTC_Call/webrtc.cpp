@@ -80,20 +80,20 @@ void WebRTC::init(const QString &id, bool isOfferer)
 
 void WebRTC::addPeer(const QString &peerId)
 {
-    qDebug() << "addPeer::";
+    qDebug() << "WEBRTC(___)" << "WEBRTC(___)" << "addPeer::";
     // Create and add a new peer connection
     auto pc = std::make_shared<rtc::PeerConnection>();
     m_peerConnections[peerId] = pc;
     // Set up a callback for when the local description is generated
     pc->onLocalDescription([this, peerId](const rtc::Description &description) {
-        qDebug() << "onLocalDescription";
+        qDebug() << "WEBRTC(___)" << "onLocalDescription";
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
         Q_EMIT localDescriptionGenerated(peerId, QString::fromStdString(description)); // description?? or description.value??
     });
 
     // Set up a callback for handling local ICE candidates
     pc->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
-        qDebug() << "onLocalCandidate";
+        qDebug() << "WEBRTC(___)" << "onLocalCandidate";
         // Emit the local candidates using the localCandidateGenerated signal
         Q_EMIT localCandidateGenerated(peerId, QString::fromStdString(candidate.candidate()),
                                        QString::fromStdString(candidate.mid())); // potential bugssss!!!!!!!!!!!
@@ -104,44 +104,44 @@ void WebRTC::addPeer(const QString &peerId)
         // Handle different states like New, Connecting, Connected, Disconnected, etc.
         switch(state) {
             case rtc::PeerConnection::State::New:
-                qDebug() << "Peer connection state: New";
+                qDebug() << "WEBRTC(___)" << "Peer connection state: New";
                 break;
             case rtc::PeerConnection::State::Connecting:
-                qDebug() << "Peer connection state: Connecting" ;
+                qDebug() << "WEBRTC(___)" << "Peer connection state: Connecting" ;
                 break;
             case rtc::PeerConnection::State::Connected:
-                qDebug() << "Peer connection state: Connected" ;
+                qDebug() << "WEBRTC(___)" << "Peer connection state: Connected" ;
                 break;
             case rtc::PeerConnection::State::Disconnected:
-                qDebug() << "Peer connection state: Disconnected" ;
+                qDebug() << "WEBRTC(___)" << "Peer connection state: Disconnected" ;
                 break;
             case rtc::PeerConnection::State::Failed:
-                qDebug() << "Peer connection state: Failed" ;
+                qDebug() << "WEBRTC(___)" << "Peer connection state: Failed" ;
                 break;
             case rtc::PeerConnection::State::Closed:
-                qDebug() << "Peer connection state: Closed" ;
+                qDebug() << "WEBRTC(___)" << "Peer connection state: Closed" ;
                 break;
         }
     });
 
     // Set up a callback for monitoring the gathering state
     pc->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
-        qDebug() << "addPeer::";
+        qDebug() << "WEBRTC(___)" << "addPeer::";
         if (state == rtc::PeerConnection::GatheringState::New)
-            qDebug() << "state is New";
+            qDebug() << "WEBRTC(___)" << "state is New";
         if (state == rtc::PeerConnection::GatheringState::InProgress)
-            qDebug() << "state is inProgress";
+            qDebug() << "WEBRTC(___)" << "state is inProgress";
                 // When the gathering is complete, emit the gatheringComplited signal
         if (state == rtc::PeerConnection::GatheringState::Complete){
-            qDebug() << "state is complete";
+            qDebug() << "WEBRTC(___)" << "state is complete";
             Q_EMIT gatheringComplited(peerId);
         }
     });
 
     // Set up a callback for handling incoming tracks
     pc->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
-        qDebug() << "addPeer::";
-        qDebug() << "Hastiiiiiiiiiiiiiiiiiiiiiiiiiiiiii!" ;
+        qDebug() << "WEBRTC(___)" << "addPeer::";
+        qDebug() << "WEBRTC(___)" << "Hastiiiiiiiiiiiiiiiiiiiiiiiiiiiiii!" ;
     });
 
     addAudioTrack(peerId, QString::fromStdString("Hasti:("));
@@ -151,14 +151,14 @@ void WebRTC::addPeer(const QString &peerId)
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
-    qDebug() << "generating offerSDP";
+    qDebug() << "WEBRTC(___)" << "generating offerSDP";
     m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Offer);
 }
 
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
-    qDebug() << "generating answerSDP";
+    qDebug() << "WEBRTC(___)" << "generating answerSDP";
     m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Answer);
 }
 
@@ -251,7 +251,7 @@ QString WebRTC::descriptionToJson(const QString &peerID)
     QJsonDocument doc(jsonMessage);
     QString jsonString = doc.toJson(QJsonDocument::Compact);
 
-    qDebug() << jsonString;
+    qDebug() << "WEBRTC(___)" << jsonString;
 
     return jsonString;
 }
