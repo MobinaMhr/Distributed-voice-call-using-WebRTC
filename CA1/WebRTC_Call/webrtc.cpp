@@ -29,7 +29,7 @@ WebRTC::WebRTC(QObject *parent)
             Q_EMIT this->offerIsReady(peerID, m_localDescription);
         else
             Q_EMIT this->answerIsReady(peerID, m_localDescription);
-        qDebug()<<"fuck buggg\n";
+        qDebug()<<"fuck buggg : " << m_isOfferer << "\n";
     });
 
     connect(this, &WebRTC::localDescriptionGenerated, [this] (const QString &peerID){ // , const QString &m_localDescription
@@ -321,11 +321,11 @@ bool WebRTC::isOfferer() const
 
 void WebRTC::setIsOfferer(bool newIsOfferer)
 {
-    qDebug() << "******************\nsuper shit\n*********************";
     if (m_isOfferer != newIsOfferer){
-        m_isOfferer = newIsOfferer;
-        this->init(m_localId);
+        qDebug() << "******************\nsuper shit : " << newIsOfferer <<"\n*********************";
+        this->init(m_localId, newIsOfferer);
         this->addPeer(m_localId);
+
     }
 }
 
