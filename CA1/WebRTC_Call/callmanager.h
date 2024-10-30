@@ -76,6 +76,10 @@ private:
 
     void handleSingalingAnswer(const QJsonObject &answer);
 
+    QString m_candidate;
+
+    QString candidate_mid;
+
 private slots:
     void handleIncomingSocketMessage(const QString &message);
 };

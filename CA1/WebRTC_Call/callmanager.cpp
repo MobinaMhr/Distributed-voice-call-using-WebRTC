@@ -29,6 +29,12 @@ CallManager::CallManager(QObject *parent)
     }, Qt::AutoConnection);
 
     connect(socket, &Socket::messageReceived, this, &CallManager::handleIncomingSocketMessage, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::localCandidateGenerated, this, [this] (const QString &peerID, const QString &candidate,
+                                                           const QString &mid){
+        m_candidate = candidate;
+        candidate_mid = mid;
+    }, Qt::AutoConnection);
 }
 
 CallManager::~CallManager()
@@ -130,13 +136,17 @@ QString CallManager::createJsonRequest(const std::vector<QString> &keys, const s
 
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
+    qDebug() << "heq" ;
     m_callerId = offer.value("user").toString();
     webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());
+    //webrtc->setRemoteCandidate(webrtcPeerId, offer.value("candidate").toString(), offer.value("mid").toString());
 }
 
 void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 {
+    qDebug() << "heq2" ;
     webrtc->setRemoteDescription(webrtcPeerId, answer.value("sdp").toString());
+    //webrtc->setRemoteCandidate(webrtcPeerId, answer.value("candidate").toString(), answer.value("mid").toString());
 }
 
 void CallManager::handleIncomingSocketMessage(const QString &message)
@@ -157,9 +167,11 @@ QString CallManager::getCompletedJson(const QString& description, const QString 
 
     QJsonObject jsonObj = doc.object();
 
-    jsonObj["reqType"] = "offer";
+    jsonObj["reqType"] = type;
     jsonObj["user"] = m_userName;
     jsonObj["target"] = m_callerId;
+    jsonObj["candidate"] = m_candidate;
+    jsonObj["mid"] = candidate_mid;
 
     QJsonDocument updatedDoc(jsonObj);
     return updatedDoc.toJson(QJsonDocument::Compact);
