@@ -14,9 +14,7 @@ CallManager::CallManager(QObject *parent)
     socket->connectToServer();
 
     connect(webrtc, &WebRTC::offerIsReady, this, [this](const QString &peerId, const QString& description) {
-        qDebug() << "CALLMANAGER(___)" << "OFFER::";
         QString updatedJsonString = getCompletedJson(description, "offer");
-        qDebug() << updatedJsonString;
         this->socket->sendMessage(updatedJsonString);
     }, Qt::AutoConnection);
 
@@ -111,7 +109,6 @@ void CallManager::registerUser()
 {
     QString jsonReq;
     jsonReq = createJsonRequest({"reqType", "user"}, {"register", m_userName});
-    qDebug() << "CALLMANAGER(___)" << "!!!!!!!!!!!!!!! " << jsonReq << " !!!!!!!!!!!!!!! " << m_userName;
     socket->sendMessage(jsonReq);
 }
 

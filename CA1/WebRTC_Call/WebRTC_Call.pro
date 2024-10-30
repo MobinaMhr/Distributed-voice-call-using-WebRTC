@@ -34,11 +34,11 @@ HEADERS += \
     socket.h \
     webrtc.h
 
-INCLUDEPATH += E:/UT_CN/Projects/libdatachannel/include
-LIBS += -LE:/UT_CN/Projects/libdatachannel/Windows/Mingw64 -ldatachannel
+INCLUDEPATH += C:/Users/USER/Desktop/Github/libraries/libdatachannel/include
+LIBS += -LC:/Users/USER/Desktop/Github/libraries/libdatachannel/Windows/Mingw64 -ldatachannel
 LIBS += -LC:/Qt/Tools/OpenSSLv3/Win_x64/bin -lcrypto-3-x64 -lssl-3-x64
 LIBS += -lws2_32
 LIBS += -lssp
 
-INCLUDEPATH += E:/UT_CN/Projects/opus/include
-LIBS += -LE:/UT_CN/Projects/opus/Windows/Mingw64 -lopus
+INCLUDEPATH += C:/Users/USER/Desktop/Github/libraries/opus/include
+LIBS += -LC:/Users/USER/Desktop/Github/libraries/opus/Windows/Mingw64 -lopus

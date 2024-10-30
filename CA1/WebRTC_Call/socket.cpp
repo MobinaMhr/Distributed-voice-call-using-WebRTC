@@ -17,7 +17,7 @@ Socket::~Socket()
 void Socket::connectToServer()
 {
     m_webSocket->open(m_url);
-    qDebug() << "SOCKET(___)" << "I'm connected to that, be happy:> " << m_url;
+    qDebug() << "SOCKET(___)" << "I'm connected to: " << m_url;
 }
 
 void Socket::disconnectFromServer()
