@@ -320,7 +320,10 @@ bool WebRTC::isOfferer() const
 
 void WebRTC::setIsOfferer(bool newIsOfferer)
 {
-    m_isOfferer = newIsOfferer;
+    if (m_isOfferer != newIsOfferer){
+        this->init(m_localId, newIsOfferer);
+        this->addPeer(m_localId);
+    }
 }
 
 void WebRTC::resetIsOfferer()

@@ -15,6 +15,7 @@ CallManager::CallManager(QObject *parent)
     connect(webrtc, &WebRTC::offerIsReady, [this](const QString &peerId, const QString& description) {
         qDebug() << "CALLMANAGER(___)" << "OFFER::";
         QString updatedJsonString = getCompletedJson(description, "offer");
+        qDebug() << updatedJsonString;
         socket->sendMessage(updatedJsonString);
     });
 
@@ -94,8 +95,7 @@ void CallManager::setUserName(const QString &userName)
 
 void CallManager::startCall()
 {
-    delete webrtc;
-    createWebRTC("2", true);
+    webrtc->setIsOfferer(true);
     qDebug() << "CALLMANAGER(___)" << "Starting call with Caller ID:" << m_callerId;
 }
 
