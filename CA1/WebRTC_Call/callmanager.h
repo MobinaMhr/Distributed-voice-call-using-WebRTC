@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QString>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QDebug>
 #include <webrtc.h>
 #include <socket.h>
@@ -79,6 +81,8 @@ private:
     QString m_candidate;
 
     QString candidate_mid;
+
+    QJsonArray getCandidatesQJsonArr(std::vector<rtc::Candidate> candidates);
 
 private slots:
     void handleIncomingSocketMessage(const QString &message);

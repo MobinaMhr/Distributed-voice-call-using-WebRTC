@@ -139,15 +139,15 @@ void CallManager::handleSingalingOffer(const QJsonObject &offer)
     qDebug() << "heq" ;
     m_callerId = offer.value("user").toString();
     webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());
-    //webrtc->setRemoteCandidate(webrtcPeerId, offer.value("candidate").toString(), offer.value("mid").toString());
-    //webrtc->generateAnswerSDP(webrtcPeerId);
+    webrtc->setRemoteCandidate(webrtcPeerId, offer.value("candidate").toString(), offer.value("mid").toString());
+    // webrtc->getCandi
 }
 
 void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 {
     qDebug() << "heq2" ;
     webrtc->setRemoteDescription(webrtcPeerId, answer.value("sdp").toString());
-    //webrtc->setRemoteCandidate(webrtcPeerId, answer.value("candidate").toString(), answer.value("mid").toString());
+    webrtc->setRemoteCandidate(webrtcPeerId, answer.value("candidate").toString(), answer.value("mid").toString());
 }
 
 void CallManager::handleIncomingSocketMessage(const QString &message)
@@ -166,16 +166,29 @@ QString CallManager::getCompletedJson(const QString& description, const QString 
     if (!doc.isObject())
         qWarning() << "Invalid JSON format";
 
-    QJsonObject jsonObj = doc.object();
+    QJsonObject jsonObj = doc.object();    
 
     jsonObj["reqType"] = type;
     jsonObj["user"] = m_userName;
     jsonObj["target"] = m_callerId;
-    jsonObj["candidate"] = m_candidate;
-    jsonObj["mid"] = candidate_mid;
+    jsonObj["candidate"] = getCandidatesQJsonArr(webrtc->getCandidates(webrtcPeerId));
+    jsonObj["mid"] = webrtc->getMid(webrtcPeerId);
 
     QJsonDocument updatedDoc(jsonObj);
     return updatedDoc.toJson(QJsonDocument::Compact);
+}
+
+QJsonArray CallManager::getCandidatesQJsonArr(std::vector<rtc::Candidate> candidates) {
+    QJsonArray candidateArray;
+    for (const auto& candidate : candidates) {
+        candidateArray.append(QString::fromStdString(candidate.candidate()));
+    }
+    return candidateArray;
+    // std::string candidatesStr;
+    // for (const auto& candidate : candidates) {
+    //     candidatesStr += candidate.candidate();
+    // }
+    // return candidatesStr;
 }
 
 void CallManager::createWebRTC(const QString &id, bool isOfferer)

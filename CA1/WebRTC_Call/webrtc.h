@@ -43,6 +43,9 @@ public:
     void setBitRate(int newBitRate);
     void resetBitRate();
 
+    std::vector<rtc::Candidate> getCandidates(const QString &peerID);
+    QString getMid(const QString &peerID);
+
 Q_SIGNALS:
     void incommingPacket(const QString &peerId, const QByteArray &data, qint64 len);
 

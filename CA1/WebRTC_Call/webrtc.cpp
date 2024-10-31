@@ -267,6 +267,16 @@ void WebRTC::resetBitRate()
     m_bitRate = 48000;
 }
 
+std::vector<rtc::Candidate> WebRTC::getCandidates(const QString &peerID)
+{
+    return m_peerConnections[peerID]->localDescription()->candidates();
+}
+
+QString WebRTC::getMid(const QString &peerID)
+{
+    return QString::fromStdString(m_peerConnections[peerID]->localDescription()->candidates()[0].mid());
+}
+
 // Sets a new payload type and emit the payloadTypeChanged signal
 void WebRTC::setPayloadType(int newPayloadType)
 {

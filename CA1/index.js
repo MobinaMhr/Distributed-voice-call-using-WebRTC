@@ -1,6 +1,5 @@
 const http = require("http")
 const Socket = require("websocket").server
-const { v4: uuidv4 } = require("uuid");
 
 const server = http.createServer(() => {})
 
@@ -18,6 +17,7 @@ ws.on("request", (req) => {
 
     connection.on("message", (message) => {
         const data = JSON.parse(message.utf8Data)
+        console.log(data)
         var targetUser
         switch (data.reqType) {
             case "register":
