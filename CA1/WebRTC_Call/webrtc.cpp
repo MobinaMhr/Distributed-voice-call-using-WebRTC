@@ -24,7 +24,6 @@ WebRTC::WebRTC(QObject *parent)
 
         m_localDescription = descriptionToJson(peerID);
         Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
-
         if (m_isOfferer)
             Q_EMIT this->offerIsReady(peerID, m_localDescription);
         else
@@ -75,7 +74,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_audio.addOpusCodec(m_payloadType);
     m_audio.setBitrate(m_bitRate);
     m_audio.addSSRC(m_ssrc, "audio-send");
-    m_audio.setDirection(rtc::Description::Direction::SendRecv);
+
 }
 
 void WebRTC::addPeer(const QString &peerId)
@@ -83,8 +82,11 @@ void WebRTC::addPeer(const QString &peerId)
     // Create and add a new peer connection
     //if (m_peerConnections[peerId])
     //    delete m_peerConnections[peerId].get();
-    auto pc = std::make_shared<rtc::PeerConnection>();
+    auto pc = std::make_shared<rtc::PeerConnection>(m_config);
     m_peerConnections[peerId] = pc;
+
+    addAudioTrack(peerId, QString::fromStdString("Hasti:("));
+    pc->setLocalDescription();
     // Set up a callback for when the local description is generated
     pc->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
@@ -141,8 +143,9 @@ void WebRTC::addPeer(const QString &peerId)
         qDebug() << "WEBRTC(___)" << "Hastiiiiiiiiiiiiiiiiiiiiiiiiiiiiii!" ;
     });
 
-    addAudioTrack(peerId, QString::fromStdString("Hasti:("));
-    pc->setLocalDescription();
+    // addAudioTrack(peerId, QString::fromStdString("Hasti:("));
+    // /*rtc::Description::Type */type = (!m_isOfferer) ? rtc::Description::Type::Answer : rtc::Description::Type::Offer;
+    // pc->setLocalDescription(type);
 }
 
 // Set the local description for the peer's connection
@@ -219,6 +222,7 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
     rtc::Description remoteDescription(sdp.toStdString(), type);
 
     m_peerConnections[peerID]->setRemoteDescription(remoteDescription);
+
 }
 
 // Add remote ICE candidates to the peer connection

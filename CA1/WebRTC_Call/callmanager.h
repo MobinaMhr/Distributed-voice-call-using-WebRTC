@@ -82,8 +82,11 @@ private:
 
     QString candidate_mid;
 
+    bool callStartedComeOn;
+
     QJsonArray getCandidatesQJsonArr(std::vector<rtc::Candidate> candidates);
 
+    std::vector<rtc::Candidate> extractCandidates (const QString &sdp);
 private slots:
     void handleIncomingSocketMessage(const QString &message);
 };

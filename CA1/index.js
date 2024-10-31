@@ -33,7 +33,7 @@ ws.on("request", (req) => {
                         type: "offer",
                         user: data.user,
                         sdp: data.sdp,
-                        Candidate: data.Candidate,
+                        Candidate: data.candidate,
                         mid: data.mid
                     }))
                 } else {
@@ -49,7 +49,7 @@ ws.on("request", (req) => {
                         type: "answer",
                         user: data.user,
                         sdp: data.sdp,
-                        Candidate: data.Candidate,
+                        Candidate: data.candidate,
                         mid: data.mid
                     }))
                 } else {
@@ -61,7 +61,7 @@ ws.on("request", (req) => {
                 targetUser = peers[data.target]
                 if (targetUser) {
                     targetUser.send(JSON.stringify({
-                        Candidate: data.Candidate,
+                        Candidate: data.candidate,
                         mid: data.mid
                     }))
                 } else {
