@@ -1,6 +1,6 @@
 const http = require("http")
 const Socket = require("websocket").server
-// const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 
 const server = http.createServer(() => {})
 
@@ -9,14 +9,15 @@ server.listen(3000, () => {
 })
 
 const ws = new Socket({ httpServer: server })
-const peers = {};
+
+let peers = {};
+
 ws.on("request", (req) => {
     const connection = req.accept(null, req.origin)
     console.log("Connection established")
 
     connection.on("message", (message) => {
         const data = JSON.parse(message.utf8Data)
-        console.log(`Received message ${data}`)
         var targetUser
         switch (data.reqType) {
             case "register":
@@ -24,40 +25,50 @@ ws.on("request", (req) => {
                 peers[data.user] = connection
 
                 break
-
             case "offer":
                 console.log(`Received an offer from ${data.user} to connect to : ${data.target}`)
                 targetUser = peers[data.target]
                 if (targetUser) {
                     targetUser.send(JSON.stringify({
-                        type: data.type,
+                        type: "offer",
                         user: data.user,
                         sdp: data.sdp,
-                        // iceCandidate: data.iceCandidate
+                        Candidate: data.Candidate,
+                        mid: data.mid
                     }))
                 } else {
                     console.log(`Target ${data.target} not found`);
                 }
-                       
-                break
 
+                break
             case "answer":
                 console.log(`Received an answer from ${data.user} to connect to : ${data.target}`)
                 targetUser = peers[data.target]
                 if (targetUser) {
                     targetUser.send(JSON.stringify({
-                        type: data.type,
+                        type: "answer",
                         user: data.user,
                         sdp: data.sdp,
-                        // iceCandidate: data.iceCandidate-
+                        Candidate: data.Candidate,
+                        mid: data.mid
                     }))
                 } else {
                     console.log(`Target ${data.target} not found`);
                 }
-
+                break
+            case "candidate":
+                console.log(`Received a candidate from ${data.user} to send to : ${data.target}`)
+                targetUser = peers[data.target]
+                if (targetUser) {
+                    targetUser.send(JSON.stringify({
+                        Candidate: data.Candidate,
+                        mid: data.mid
+                    }))
+                } else {
+                    console.log(`Target ${data.target} not found`);
+                }
                 break
         }
-
     })
 
     connection.on('close', () => {
@@ -74,6 +85,4 @@ ws.on("request", (req) => {
             console.log(`The closed connection wasn't registered`);
         }
     })
-
 })
-

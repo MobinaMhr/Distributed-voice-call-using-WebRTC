@@ -81,6 +81,8 @@ void WebRTC::init(const QString &id, bool isOfferer)
 void WebRTC::addPeer(const QString &peerId)
 {
     // Create and add a new peer connection
+    //if (m_peerConnections[peerId])
+    //    delete m_peerConnections[peerId].get();
     auto pc = std::make_shared<rtc::PeerConnection>();
     m_peerConnections[peerId] = pc;
     // Set up a callback for when the local description is generated
