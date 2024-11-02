@@ -142,7 +142,10 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 
     // Listen for incoming frames
     track->onMessage([this, peerId](rtc::binary message){
-        const QByteArray data = QByteArray(reinterpret_cast<const char*>(message.data()), message.size());
+        QByteArray data = QByteArray(reinterpret_cast<const char*>(message.data()), message.size());
+        if (data.size()) {
+            data.remove(0, sizeof(RtpHeader));
+        }
         Q_EMIT incommingPacket(peerId, data, data.size());
     }, nullptr);
 }
