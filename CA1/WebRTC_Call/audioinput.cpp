@@ -32,6 +32,22 @@ AudioInput::~AudioInput() {
         opus_encoder_destroy(encoder);
 }
 
+void AudioInput::start()
+{
+    if (!audioSource) {
+        qWarning() << "audioSource doesn't exist" ;
+        return;
+    }
+    if (!this->open(QIODevice::ReadWrite)) {
+        qWarning() << "AudioInput: Failed to open QIODevice for writing";
+        return;
+    }
+    audioSource->start(this);
+    if (audioSource->state() != QAudio::ActiveState)
+        qWarning() << "Audio source is not active. State:" << audioSource->state();
+
+}
+
 qint64 AudioInput::readData(char *data, qint64 maxLen)
 {
     Q_UNUSED(data);
