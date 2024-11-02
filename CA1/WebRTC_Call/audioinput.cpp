@@ -1,43 +1,67 @@
-// #include "audioinput.h"
+#include "audioinput.h"
 
-// AudioInput::AudioInput(QObject *parent)
-//     : QIODevice(parent), audioSource(nullptr), opusEncoder(nullptr) {
-//     int sampleRate = 48000;
-//     int channelCount = 1;
+AudioInput::AudioInput(QObject *parent)
+    : QIODevice(parent), audioSource(nullptr), bufferSize(4096),
+    encoder(nullptr), frameSize(960) {
+    int status;
+    encoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_VOIP, &status);
+    if (status != OPUS_OK) {
+        qFatal("Opus encoder creation failed. error : %s", opus_strerror(status));
+    }
 
-//     QMediaDevices mediaDevices;
-//     QAudioDevice inputDevice;
+    QAudioFormat format;
+    format.setSampleRate(48000);
+    format.setChannelCount(1);
+    format.setSampleFormat(QAudioFormat::Int16);
 
-//     QAudioFormat audioFormat;
-//     audioFormat.setSampleRate(sampleRate);         // 48kHz
-//     audioFormat.setChannelCount(channelCount);     // Mono audio
-//     audioFormat.setSampleFormat(QAudioFormat::Int16);
+    QMediaDevices mediaDevices;
+    QAudioDevice inputDevice;
+    inputDevice = mediaDevices.defaultAudioInput();
 
-//     inputDevice = mediaDevices.defaultAudioInput();
-//     if (!inputDevice.isFormatSupported(audioFormat)) {
-//         qDebug() << "AudioInput:: Audio format is not supported.";
-//     }
+    if (!inputDevice.isFormatSupported(format)) {
+        qFatal("Audio format not supported");
+    }
 
-//     audioSource = new QAudioSource(inputDevice, audioFormat, this);
-//     if (!audioSource) {
-//         qDebug() << "AudioInput:: Audio format is not supported.";
-//     }
+    audioSource = new QAudioSource(inputDevice, format, this);
+}
 
-//     int error; // may be OPUS_APPLICATION_VOIP
-//     opusEncoder = opus_encoder_create(sampleRate, channelCount, OPUS_APPLICATION_AUDIO, &error);
-//     if (error != OPUS_OK) {
-//         qDebug() << "AudioInput:: Failed to create Opus encoder:" << opus_strerror(error);
-//     }
-// }
+AudioInput::~AudioInput() {
+    if (audioSource)
+        delete audioSource;
+    if (encoder)
+        opus_encoder_destroy(encoder);
+}
 
-// AudioInput::~AudioInput() {
-//     if (opusEncoder) {
-//         opus_encoder_destroy(opusEncoder);
-//     }
-//     if (audioSource) {
-//         delete audioSource;
-//     }
-// }
+qint64 AudioInput::readData(char *data, qint64 maxLen)
+{
+    Q_UNUSED(data);
+    Q_UNUSED(maxLen);
+    return 0;
+}
+
+qint64 AudioInput::writeData(const char *data, qint64 len)
+{
+    if (!encoder) {
+        qWarning() << "AudioInput: Opus encoder is not initialized!";
+        return -1;
+    }
+
+    const int maxPacketSize = 4000;
+    unsigned char encodedData[maxPacketSize];
+
+    int encodedBytes = opus_encode(encoder, reinterpret_cast<const opus_int16*>(data), len / 2, encodedData, maxPacketSize);
+
+    if (encodedBytes < 0) {
+        qWarning() << "AudioInput: Opus encoding failed, error code:" << encodedBytes;
+        return -1;
+    }
+
+    QByteArray audioData(reinterpret_cast<const char*>(encodedData), encodedBytes);
+    emit bufferIsReady(audioData);
+    // qDebug() << "AudioInput: Encoded audio data emitted, length:" << encodedBytes;
+
+    return len;
+}
 
 // void AudioInput::start() {
 //     if (!audioSource || !open(QIODevice::ReadWrite)) {
