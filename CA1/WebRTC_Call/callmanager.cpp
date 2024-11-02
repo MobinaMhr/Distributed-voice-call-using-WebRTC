@@ -7,7 +7,9 @@ CallManager::CallManager(QObject *parent)
 {
     callStartedComeOn = false;
     webrtcPeerId = "1";
-    createWebRTC(webrtcPeerId, false);
+    //createWebRTC(webrtcPeerId, false);
+    webrtc = new WebRTC();
+    webrtc->init(webrtcPeerId, false);
 
     const QUrl url(QStringLiteral("ws://localhost:3000"));
 
@@ -110,6 +112,7 @@ void CallManager::startCall()
     // createWebRTC(webrtcPeerId, true);
     callStartedComeOn = true;
     webrtc->setIsOfferer(true);
+    webrtc->addPeer(webrtcPeerId);
     //webrtc->generateOfferSDP(webrtcPeerId);
     qDebug() << "CALLMANAGER(___)" << "Starting call with Caller ID:" << m_callerId;    
 }
@@ -148,6 +151,7 @@ void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
     qDebug() << "heq" ;
     m_callerId = offer.value("user").toString();
+    webrtc->addPeer(webrtcPeerId);
     webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());
     std::vector<rtc::Candidate> candidates = extractCandidates(offer.value("sdp").toString());
     for (int i = 0 ; i < candidates.size(); i++)

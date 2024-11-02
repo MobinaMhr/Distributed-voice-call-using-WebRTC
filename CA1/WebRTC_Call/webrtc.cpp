@@ -29,12 +29,12 @@ WebRTC::WebRTC(QObject *parent)
             Q_EMIT this->answerIsReady(peerID, m_localDescription);
     });
 
-    connect(this, &WebRTC::localDescriptionGenerated, [this] (const QString &peerID){ // , const QString &m_localDescription
-        if (m_isOfferer)
-            generateOfferSDP(peerID);
-        else
-            generateAnswerSDP(peerID);
-    });
+    // connect(this, &WebRTC::localDescriptionGenerated, [this] (const QString &peerID){ // , const QString &m_localDescription
+    //     if (m_isOfferer)
+    //         generateOfferSDP(peerID);
+    //     else
+    //         generateAnswerSDP(peerID);
+    // });
 
     connect(this, &WebRTC::localCandidateGenerated, [this] (const QString &peerID, const QString &candidate,
                                                            const QString &mid){
@@ -61,8 +61,8 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_config = rtc::Configuration();
     // Create an instance of rtc::Configuration to Set up ICE configuration
     // Add a STUN server to help peers find their public IP addresses
-    m_config.iceServers.emplace_back("stun:stun.1.google.com:19302");
-    // m_config.iceServers.emplace_back("stun:165.232.44.143:3478");
+    // m_config.iceServers.emplace_back("stun:stun.2.google.com:19302");
+    m_config.iceServers.emplace_back("stun:165.232.44.143:3478");
 
     // // Add a TURN server for relaying media if a direct connection can't be established
     // m_config.iceServers.emplace_back("turn:165.232.44.143:3478", "myturn", "mewmew");
@@ -83,8 +83,8 @@ void WebRTC::addPeer(const QString &peerId)
     auto pc = std::make_shared<rtc::PeerConnection>(m_config);
     m_peerConnections[peerId] = pc;
 
-    addAudioTrack(peerId, QString::fromStdString("Hasti:("));
-    pc->setLocalDescription();
+    // addAudioTrack(peerId, QString::fromStdString("Hasti:("));
+    // pc->setLocalDescription();
     // Set up a callback for when the local description is generated
     pc->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
@@ -141,9 +141,9 @@ void WebRTC::addPeer(const QString &peerId)
         qDebug() << "WEBRTC(___)" << "Hastiiiiiiiiiiiiiiiiiiiiiiiiiiiiii!" ;
     });
 
-    // addAudioTrack(peerId, QString::fromStdString("Hasti:("));
+    addAudioTrack(peerId, QString::fromStdString("Hasti:("));
     // /*rtc::Description::Type */type = (!m_isOfferer) ? rtc::Description::Type::Answer : rtc::Description::Type::Offer;
-    // pc->setLocalDescription(type);
+    pc->setLocalDescription();
 }
 
 void WebRTC::generateOfferSDP(const QString &peerId)
@@ -325,8 +325,9 @@ bool WebRTC::isOfferer() const
 void WebRTC::setIsOfferer(bool newIsOfferer)
 {
     if (m_isOfferer != newIsOfferer){
-        this->init(m_localId, newIsOfferer);
-        this->addPeer(m_localId);
+        //this->init(m_localId, newIsOfferer);
+        m_isOfferer = newIsOfferer;
+        //this->addPeer(m_localId);
 
         Q_EMIT isOffererChanged();
     }
