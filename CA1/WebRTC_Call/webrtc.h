@@ -53,7 +53,7 @@ Q_SIGNALS:
 
     void localCandidateGenerated(const QString &peerID, const QString &candidate, const QString &sdpMid);
 
-    void isOffererChanged(); // Think about it
+    void isOffererChanged();
 
     void gatheringComplited(const QString &peerID);
 
@@ -61,11 +61,11 @@ Q_SIGNALS:
 
     void answerIsReady(const QString &peerID, const QString& description);
 
-    void ssrcChanged(); // Think about it
+    void ssrcChanged();
 
-    void payloadTypeChanged(); // Think about it
+    void payloadTypeChanged();
 
-    void bitRateChanged(); // Think about it
+    void bitRateChanged();
 
 public Q_SLOTS:
     void setRemoteDescription(const QString &peerID, const QString &sdp);
