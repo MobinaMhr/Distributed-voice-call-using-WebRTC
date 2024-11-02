@@ -48,6 +48,12 @@ void AudioInput::start()
 
 }
 
+void AudioInput::stop()
+{
+    if (audioSource)
+        audioSource->stop();
+}
+
 qint64 AudioInput::readData(char *data, qint64 maxLen)
 {
     Q_UNUSED(data);

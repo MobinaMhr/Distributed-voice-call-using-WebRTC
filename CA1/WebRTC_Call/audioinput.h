@@ -14,13 +14,11 @@ class AudioInput : public QIODevice {
     Q_OBJECT
 
 public:
-    AudioInput(QObject *parent = nullptr);
+    explicit AudioInput(QObject *parent = nullptr);
     ~AudioInput();
 
-    // qint64 writeData(const char *data, qint64 len) override;
-
-    //void start();
-    //void stop();
+    void start();
+    void stop();
 
 private:
     QAudioSource *audioSource;
