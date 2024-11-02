@@ -112,3 +112,12 @@ AudioOutput::AudioOutput(QObject *parent)
 
     connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
 }
+
+AudioOutput::~AudioOutput()
+{
+    if (audioSink)
+        delete audioSink;
+
+    if (opusDecoder)
+        opus_decoder_destroy(opusDecoder);
+}
