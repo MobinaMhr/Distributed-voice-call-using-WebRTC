@@ -13,7 +13,7 @@ CallManager::CallManager(QObject *parent)
     webrtc = new WebRTC(this);
     webrtc->init(webrtcPeerId, false);
 
-    const QUrl url(QStringLiteral("ws://localhost:3000"));
+    const QUrl url(QStringLiteral("ws://165.232.44.143:3000"));
 
     socket = new Socket(url);
     socket->connectToServer();
