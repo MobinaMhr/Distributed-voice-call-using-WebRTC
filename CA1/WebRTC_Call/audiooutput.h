@@ -21,7 +21,7 @@ public:
     void addData(const QByteArray &data);
 
 signals:
-    void newPacket();
+    void newPacketGenerated();
 
 private slots:
     void play();

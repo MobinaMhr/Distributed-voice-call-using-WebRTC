@@ -121,3 +121,15 @@ AudioOutput::~AudioOutput()
     if (opusDecoder)
         opus_decoder_destroy(opusDecoder);
 }
+
+void AudioOutput::addData(const QByteArray &data)
+{
+    QMutexLocker locker(&mutex);
+
+    packetQueue.enqueue(data);
+    qDebug() << "AudioOutput(***): New data with size " << data.size() << " added to the queue.";
+
+    emit newPacketGenerated();
+
+    play();
+}
