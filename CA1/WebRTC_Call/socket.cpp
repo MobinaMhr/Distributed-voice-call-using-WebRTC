@@ -3,6 +3,7 @@
 Socket::Socket(const QUrl &url, QObject *parent)
 : QObject(parent), m_url(url) {
     m_webSocket = new QWebSocket();
+
     connect(m_webSocket, &QWebSocket::connected, this, &Socket::onConnected);
     connect(m_webSocket, &QWebSocket::disconnected, this, &Socket::onDisconnected);
     connect(m_webSocket, &QWebSocket::textMessageReceived, this, &Socket::onMessageReceived);
@@ -17,7 +18,6 @@ Socket::~Socket()
 void Socket::connectToServer()
 {
     m_webSocket->open(m_url);
-    qDebug() << "SOCKET(___)" << "I'm connected to: " << m_url;
 }
 
 void Socket::disconnectFromServer()
@@ -49,6 +49,5 @@ void Socket::onDisconnected()
 
 void Socket::onMessageReceived(const QString &message)
 {
-    qDebug() << "SOCKET(___)" << "~:" << message;
     emit messageReceived(message);
 }

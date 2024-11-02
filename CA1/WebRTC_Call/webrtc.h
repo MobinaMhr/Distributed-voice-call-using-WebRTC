@@ -46,26 +46,17 @@ public:
     QString getMid(const QString &peerID);
 
 Q_SIGNALS:
-    void connectionStablished();
-
     void incommingPacket(const QString &peerId, const QByteArray &data, qint64 len);
-
     void localDescriptionGenerated(const QString &peerID, const QString &sdp);
-
     void localCandidateGenerated(const QString &peerID, const QString &candidate, const QString &sdpMid);
-
-    void isOffererChanged();
-
     void gatheringComplited(const QString &peerID);
-
     void offerIsReady(const QString &peerID, const QString& description);
-
     void answerIsReady(const QString &peerID, const QString& description);
 
+    void connectionStablished();
+    void isOffererChanged();
     void ssrcChanged();
-
     void payloadTypeChanged();
-
     void bitRateChanged();
 
 public Q_SLOTS:

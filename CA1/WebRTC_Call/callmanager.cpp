@@ -7,9 +7,10 @@ CallManager::CallManager(QObject *parent)
 {
     audioInput = new AudioInput(this);
     audioOutput = new AudioOutput(this);
-    callStartedComeOn = false;
+
+    callStartedComeOn = false;    
     webrtcPeerId = "1";
-    //createWebRTC(webrtcPeerId, false);
+
     webrtc = new WebRTC(this);
     webrtc->init(webrtcPeerId, false);
 
@@ -20,7 +21,6 @@ CallManager::CallManager(QObject *parent)
 
     connect(webrtc, &WebRTC::offerIsReady, this, [this](const QString &peerId, const QString& description) {
         if (callStartedComeOn){
-            qDebug() << "\n\n\ngereftam\n\n\n";
             QString updatedJsonString = getCompletedJson(description, "offer");
             this->socket->sendMessage(updatedJsonString);
         }
@@ -32,8 +32,6 @@ CallManager::CallManager(QObject *parent)
     }, Qt::AutoConnection);
 
     connect(webrtc, &WebRTC::incommingPacket, this, [this](const QString &peerId, const QByteArray &data, qint64 len) {
-        // Process the packat
-        qDebug() << "CALLMANAGER(___)" << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
         audioOutput->addData(data);
     }, Qt::AutoConnection);
 
@@ -119,19 +117,14 @@ void CallManager::setUserName(const QString &userName)
 
 void CallManager::startCall()
 {
-    //delete webrtc;
-    // createWebRTC(webrtcPeerId, true);
     callStartedComeOn = true;
     webrtc->setIsOfferer(true);
     webrtc->addPeer(webrtcPeerId);
-    //webrtc->generateOfferSDP(webrtcPeerId);
-    qDebug() << "CALLMANAGER(___)" << "Starting call with Caller ID:" << m_callerId;    
 }
 
 void CallManager::endCall()
 {
     audioInput->stop();
-    qDebug() << "CALLMANAGER(___)" << "Ending call with Caller ID:" << m_callerId;
 }
 
 void CallManager::registerUser()
@@ -157,11 +150,8 @@ QString CallManager::createJsonRequest(const std::vector<QString> &keys, const s
     return jsonString;
 }
 
-
-
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
-    qDebug() << "heq" ;
     m_callerId = offer.value("user").toString();
     webrtc->addPeer(webrtcPeerId);
     webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());
@@ -169,20 +159,19 @@ void CallManager::handleSingalingOffer(const QJsonObject &offer)
     for (int i = 0 ; i < candidates.size(); i++)
         webrtc->setRemoteCandidate(webrtcPeerId, QString::fromStdString(candidates[i].candidate()),
                                    offer.value("mid").toString());
-    // webrtc->getCandi
 }
 
 void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 {
-    qDebug() << "heq2" ;
     webrtc->setRemoteDescription(webrtcPeerId, answer.value("sdp").toString());
     webrtc->setRemoteCandidate(webrtcPeerId, answer.value("candidate").toString(), answer.value("mid").toString());
 }
 
 void CallManager::handleIncomingSocketMessage(const QString &message)
 {
-    qDebug() << "((((((+++++" << message;
-    QJsonObject jsonDoc = QJsonDocument::fromJson(message.toUtf8()).object();
+    QJsonObject jsonDoc;
+    jsonDoc = QJsonDocument::fromJson(message.toUtf8()).object();
+
     if (jsonDoc.value("type").toString() == "offer")
         handleSingalingOffer(jsonDoc);
     else
@@ -204,32 +193,21 @@ QString CallManager::getCompletedJson(const QString& description, const QString 
     jsonObj["candidate"] = getCandidatesQJsonArr(webrtc->getCandidates(webrtcPeerId));
     jsonObj["mid"] = webrtc->getMid(webrtcPeerId);
 
-    QJsonDocument updatedDoc(jsonObj);
-    return updatedDoc.toJson(QJsonDocument::Compact);
+    return QJsonDocument(jsonObj).toJson(QJsonDocument::Compact);
 }
 
 QJsonArray CallManager::getCandidatesQJsonArr(std::vector<rtc::Candidate> candidates) {
     QJsonArray candidateArray;
+
     for (const auto& candidate : candidates) {
         candidateArray.append(QString::fromStdString(candidate.candidate()));
     }
+
     return candidateArray;
-    // std::string candidatesStr;
-    // for (const auto& candidate : candidates) {
-    //     candidatesStr += candidate.candidate();
-    // }
-    // return candidatesStr;
 }
 
 std::vector<rtc::Candidate> CallManager::extractCandidates(const QString &sdp)
 {
     rtc::Description remoteDescription(sdp.toStdString());
     return remoteDescription.extractCandidates();
-}
-
-void CallManager::createWebRTC(const QString &id, bool isOfferer)
-{
-    webrtc = new WebRTC();
-    webrtc->init(id, isOfferer);
-    webrtc->addPeer(id);
 }

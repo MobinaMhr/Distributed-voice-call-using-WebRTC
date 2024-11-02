@@ -1,7 +1,5 @@
 #include "webrtc.h"
 
-// TODO::we are not sure about the usage of trackName in addAudioTrack method
-
 static_assert(true);
 
 #pragma pack(push, 1)
@@ -52,12 +50,12 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_config.iceServers.clear();
     m_config = rtc::Configuration();
     m_config.iceServers.emplace_back("stun:165.232.44.143:3478");
-    // m_config.iceServers.emplace_back("turn:165.232.44.143:3478", "myturn", "mewmew");
+    // m_config.iceServers.emplace_back("stun:stun.l.google.com:19302");
 
     m_audio = rtc::Description::Audio("audio", rtc::Description::Direction::SendRecv);
-    m_audio.addOpusCodec(m_payloadType);
-    m_audio.setBitrate(m_bitRate);
-    m_audio.addSSRC(m_ssrc, "audio-send");
+    m_audio.addOpusCodec(payloadType());
+    m_audio.setBitrate(bitRate());
+    m_audio.addSSRC(ssrc(), "audio-send");
 }
 
 void WebRTC::addPeer(const QString &peerId)
@@ -70,9 +68,8 @@ void WebRTC::addPeer(const QString &peerId)
     });
 
     pc->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
-        // Emit the local candidates using the localCandidateGenerated signal
         Q_EMIT localCandidateGenerated(peerId, QString::fromStdString(candidate.candidate()),
-                                       QString::fromStdString(candidate.mid())); // potential bugssss!!!!!!!!!!!
+                                       QString::fromStdString(candidate.mid()));
     });
 
     pc->onStateChange([this, peerId](rtc::PeerConnection::State state) {
@@ -110,10 +107,6 @@ void WebRTC::addPeer(const QString &peerId)
         }
     });
 
-    pc->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
-        qDebug() << "WEBRTC(___)" << "Hastiiiiiiiiiiiiiiiiiiiiiiiiiiiiii!" ;
-    });
-
     addAudioTrack(peerId, QString::fromStdString("Hasti:("));
     pc->setLocalDescription();
 }
@@ -135,17 +128,10 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
     auto track = pc->addTrack(m_audio);
     m_peerTracks[peerId] = track;
 
-    // track->onMessage([this, peerId] (rtc::message_variant data) {
-    //     QByteArray receivedData = readVariant(data);
-    //     // Process received RTP data, e.g., extract header and handle audio payload.
-    // });
-
-    // Listen for incoming frames
     track->onMessage([this, peerId](rtc::binary message){
         QByteArray data = QByteArray(reinterpret_cast<const char*>(message.data()), message.size());
-        if (data.size()) {
+        if (data.size())
             data.remove(0, sizeof(RtpHeader));
-        }
         Q_EMIT incommingPacket(peerId, data, data.size());
     }, nullptr);
 }
@@ -155,10 +141,10 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
     RtpHeader header;
     header.first = 0x80;
     header.marker = 0;
-    header.payloadType = m_payloadType;
+    header.payloadType = payloadType();
     header.sequenceNumber = qToBigEndian(m_sequenceNumber++);
     header.timestamp = qToBigEndian(getCurrentTimestamp());
-    header.ssrc = qToBigEndian(m_ssrc);
+    header.ssrc = qToBigEndian(ssrc());
 
     QByteArray rtpPacket;
     rtpPacket.append(reinterpret_cast<char*>(&header), sizeof(RtpHeader));
@@ -177,7 +163,8 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
-    rtc::Description::Type type = (m_isOfferer) ? rtc::Description::Type::Answer : rtc::Description::Type::Offer;
+    rtc::Description::Type type = (m_isOfferer) ? rtc::Description::Type::Answer
+                                                : rtc::Description::Type::Offer;
     rtc::Description remoteDescription(sdp.toStdString(), type);
 
     m_peerConnections[peerID]->setRemoteDescription(remoteDescription);

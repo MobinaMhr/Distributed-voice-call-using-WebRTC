@@ -7,14 +7,12 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-
     QQmlApplicationEngine engine;
-
     CallManager callManager;
 
     const QUrl url0(QStringLiteral("ws://localhost:3000"));
-
     Socket socket(url0);
+
     socket.connectToServer();
 
     QString message = QString("Incoming offer..............");
@@ -33,6 +31,7 @@ int main(int argc, char *argv[])
                 QCoreApplication::exit(-1);
         },
         Qt::QueuedConnection);
+
     engine.load(url);
 
     return app.exec();

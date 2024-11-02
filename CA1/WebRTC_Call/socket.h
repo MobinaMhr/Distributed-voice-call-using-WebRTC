@@ -10,6 +10,7 @@ class Socket : public QObject
 public:
     explicit Socket(const QUrl &url, QObject *parent = nullptr);
     ~Socket();
+
     void connectToServer();
     void disconnectFromServer();
     void sendMessage(const QString &message);
@@ -27,6 +28,7 @@ private slots:
 
 private:
     QWebSocket *m_webSocket;
+
     QUrl m_url;
 };
 

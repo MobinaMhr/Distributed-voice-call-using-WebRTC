@@ -15,6 +15,7 @@ class AudioInput : public QIODevice {
 
 public:
     explicit AudioInput(QObject *parent = nullptr);
+
     ~AudioInput();
 
     void start();
@@ -22,22 +23,20 @@ public:
 
 private:
     QAudioSource *audioSource;
-    QByteArray audioBuffer;
-    int bufferSize;
-    OpusEncoder *encoder;
-    int frameSize;
 
-    // qint64 encodeAudio(const char *data, qint64 len);
+    QByteArray audioBuffer;
+
+    OpusEncoder *encoder;
+
+    int bufferSize;
+    int frameSize;
 
 protected:
     qint64 readData (char* data, qint64 maxLen) override;
-
     qint64 writeData (const char* data, qint64 len) override;
 
 signals:
     void bufferIsReady(const QByteArray &buffer);
-
-
 };
 
 #endif // AUDIOINPUT_H
