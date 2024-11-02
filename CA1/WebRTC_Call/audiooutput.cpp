@@ -1,4 +1,4 @@
-// #include "audiooutput.h"
+#include "audiooutput.h"
 
 // AudioOutput::AudioOutput(QObject *parent)
 //     : QObject(parent), audioSink(nullptr), opusDecoder(nullptr), audioDevice(nullptr) {
@@ -86,3 +86,29 @@
 //         0
 //         );
 // }
+
+AudioOutput::AudioOutput(QObject *parent)
+    : QObject(parent), audioSink(nullptr), audioDevice(nullptr), frameSize(960)
+{
+    QAudioFormat format;
+    format.setSampleRate(48000);
+    format.setChannelCount(1);
+    format.setSampleFormat(QAudioFormat::Int16);
+
+    if (!QMediaDevices::defaultAudioOutput().isFormatSupported(format)) {
+        qFatal("Audio format not supported");
+    }
+
+    audioSink = new QAudioSink(QMediaDevices::defaultAudioOutput(), format, this);
+
+    int status;
+    opusDecoder = opus_decoder_create(48000, 1, &status);
+    if (status != OPUS_OK)
+        qFatal("Failed to create Opus decoder: %s", opus_strerror(status));
+
+    audioDevice = audioSink->start();
+    if (!audioDevice)
+        qWarning() << "AudioOutput: Failed to start audio device";
+
+    connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
+}
