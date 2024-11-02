@@ -15,7 +15,6 @@ struct RtpHeader {
 };
 #pragma pack(pop)
 
-// incommingPacket bere vase audioInput output
 WebRTC::WebRTC(QObject *parent)
     : QObject{parent},
     m_audio("Audio")
@@ -47,6 +46,7 @@ WebRTC::WebRTC(QObject *parent)
 WebRTC::~WebRTC()
 {}
 
+
 // ================= public methods =================== //
 
 void WebRTC::init(const QString &id, bool isOfferer)
@@ -57,9 +57,8 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_localId = id;
     m_isOfferer = isOfferer;
 
-    rtc::Configuration config;
-
-    m_config = config;
+    m_config.iceServers.clear();
+    m_config = rtc::Configuration();
     // Create an instance of rtc::Configuration to Set up ICE configuration
     // Add a STUN server to help peers find their public IP addresses
     m_config.iceServers.emplace_back("stun:stun.1.google.com:19302");
@@ -69,8 +68,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
     // m_config.iceServers.emplace_back("turn:165.232.44.143:3478", "myturn", "mewmew");
 
     // Set up the audio stream configuration
-    rtc::Description::Audio audio("audio", rtc::Description::Direction::SendRecv);
-    m_audio = audio;
+    m_audio = rtc::Description::Audio("audio", rtc::Description::Direction::SendRecv);
     m_audio.addOpusCodec(m_payloadType);
     m_audio.setBitrate(m_bitRate);
     m_audio.addSSRC(m_ssrc, "audio-send");
@@ -148,25 +146,24 @@ void WebRTC::addPeer(const QString &peerId)
     // pc->setLocalDescription(type);
 }
 
-// Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
+    // m_peerConnections.contains(peerId)
     m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Offer);
 }
 
-// Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
+    // m_peerConnections.contains(peerId)
     m_peerConnections[peerId]->setLocalDescription(rtc::Description::Type::Answer);
 }
 
-// Add an audio track to the peer connection
 void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 {
+    // m_peerConnections.contains(peerId)
+
     // Add an audio track to the peer connection
-
     // Handle track events
-
     auto pc = m_peerConnections[peerId];
 
     // Create a track for the peer
@@ -185,7 +182,6 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
     }, nullptr);
 }
 
-// Sends audio track data to the peer
 void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 {
     // Create the RTP header and initialize an RtpHeader struct
@@ -215,7 +211,6 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 
 // ================= public slots ===================== //
 
-// Set the remote SDP description for the peer that contains metadata about the media being transmitted
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
     rtc::Description::Type type = (m_isOfferer) ? rtc::Description::Type::Answer : rtc::Description::Type::Offer;
@@ -225,7 +220,6 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 
 }
 
-// Add remote ICE candidates to the peer connection
 void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
 {
     rtc::Candidate remoteCandidate(candidate.toStdString(), sdpMid.toStdString());
@@ -235,7 +229,6 @@ void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate,
 
 // ================= private methods ================== //
 
-// Utility function to convert rtc::Description to JSON format
 QString WebRTC::descriptionToJson(const QString &peerID)
 {
     auto description = m_peerConnections[peerID]->localDescription();
@@ -244,11 +237,10 @@ QString WebRTC::descriptionToJson(const QString &peerID)
 
     jsonMessage["type"] = QString::fromStdString(description->typeString());
     // description.value().
-
     jsonMessage["sdp"] = QString::fromStdString(description.value());
 
     QJsonDocument doc(jsonMessage);
-    QString jsonString = doc.toJson(QJsonDocument::Compact);
+    QString jsonString = QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
 
     return jsonString;
 }
