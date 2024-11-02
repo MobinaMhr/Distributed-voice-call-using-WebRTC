@@ -110,7 +110,7 @@ AudioOutput::AudioOutput(QObject *parent)
     if (!audioDevice)
         qWarning() << "AudioOutput: Failed to start audio device";
 
-    connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
+    connect(this, &AudioOutput::newPacketGenerated, this, &AudioOutput::play);
 }
 
 AudioOutput::~AudioOutput()
@@ -127,9 +127,38 @@ void AudioOutput::addData(const QByteArray &data)
     QMutexLocker locker(&mutex);
 
     packetQueue.enqueue(data);
-    qDebug() << "AudioOutput(***): New data with size " << data.size() << " added to the queue.";
+    qDebug() << "AudioOutput(***) New data with size " << data.size() << " added to the queue.";
 
     emit newPacketGenerated();
 
     play();
+}
+
+void AudioOutput::play()
+{
+    QByteArray packet;
+
+    if (packetQueue.isEmpty()) {
+        qWarning() << "AudioOutput(***) No available data to play.";
+        return;
+    }
+    packet = packetQueue.dequeue();
+
+    int packetSize = packet.size();
+    if (packetSize < 1) {
+        qWarning() << "AudioOutput(***) Invalid encoded packet size: " << packetSize;
+        return;
+    }
+
+    opus_int16 outputBuff[2 * frameSize];
+
+    int decodingResult = opus_decode(opusDecoder, reinterpret_cast<const unsigned char *>(packet.data()),
+                           packet.size(), outputBuff, frameSize, 0);
+
+    if (decodingResult < 0) {
+        qWarning() << "AudioOutput(***) Decoder process failed. Errof: " << opus_strerror(decodingResult);
+        return;
+    }
+
+    audioDevice->write(reinterpret_cast<const char*>(outputBuff), decodingResult * sizeof(opus_int16));
 }
