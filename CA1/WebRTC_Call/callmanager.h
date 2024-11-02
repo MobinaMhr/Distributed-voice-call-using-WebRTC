@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <webrtc.h>
 #include <socket.h>
+#include <audioinput.h>
+#include <audiooutput.h>
 
 class CallManager : public QObject
 {
@@ -67,6 +69,10 @@ private:
     WebRTC* webrtc;
 
     Socket* socket;
+
+    AudioInput* audioInput;
+
+    AudioOutput* audioOutput;
 
     void createWebRTC(const QString &id, bool isOfferer);
 

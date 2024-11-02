@@ -5,10 +5,12 @@ CallManager::CallManager(QObject *parent)
     m_ipAddress("172.16.142.176"),
     m_iceCandidate("172.16.142.176")
 {
+    audioInput = new AudioInput(this);
+    audioOutput = new AudioOutput(this);
     callStartedComeOn = false;
     webrtcPeerId = "1";
     //createWebRTC(webrtcPeerId, false);
-    webrtc = new WebRTC();
+    webrtc = new WebRTC(this);
     webrtc->init(webrtcPeerId, false);
 
     const QUrl url(QStringLiteral("ws://localhost:3000"));
@@ -32,6 +34,7 @@ CallManager::CallManager(QObject *parent)
     connect(webrtc, &WebRTC::incommingPacket, this, [this](const QString &peerId, const QByteArray &data, qint64 len) {
         // Process the packat
         qDebug() << "CALLMANAGER(___)" << "fuckkkkkkkkkkkkk!!!!!!!!!!!!!!";
+        audioOutput->addData(data);
     }, Qt::AutoConnection);
 
     connect(socket, &Socket::messageReceived, this, &CallManager::handleIncomingSocketMessage, Qt::AutoConnection);
@@ -40,6 +43,14 @@ CallManager::CallManager(QObject *parent)
                                                            const QString &mid){
         m_candidate = candidate;
         candidate_mid = mid;
+    }, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::connectionStablished, this, [this] (){
+        audioInput->start();
+    }, Qt::AutoConnection);
+
+    connect(audioInput, &AudioInput::bufferIsReady, this, [this](const QByteArray &buffer){
+        webrtc->sendTrack(webrtcPeerId, buffer);
     }, Qt::AutoConnection);
 }
 
@@ -119,6 +130,7 @@ void CallManager::startCall()
 
 void CallManager::endCall()
 {
+    audioInput->stop();
     qDebug() << "CALLMANAGER(___)" << "Ending call with Caller ID:" << m_callerId;
 }
 

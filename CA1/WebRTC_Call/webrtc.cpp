@@ -84,6 +84,7 @@ void WebRTC::addPeer(const QString &peerId)
             qDebug() << "WEBRTC(___)" << "Peer connection state: Connecting" ;
             break;
         case rtc::PeerConnection::State::Connected:
+            Q_EMIT connectionStablished();
             qDebug() << "WEBRTC(___)" << "Peer connection state: Connected" ;
             break;
         case rtc::PeerConnection::State::Disconnected:

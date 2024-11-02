@@ -131,7 +131,7 @@ void AudioOutput::addData(const QByteArray &data)
 
     emit newPacketGenerated();
 
-    play();
+    //play();
 }
 
 void AudioOutput::play()

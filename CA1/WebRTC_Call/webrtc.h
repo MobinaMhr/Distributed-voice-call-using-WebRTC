@@ -46,6 +46,8 @@ public:
     QString getMid(const QString &peerID);
 
 Q_SIGNALS:
+    void connectionStablished();
+
     void incommingPacket(const QString &peerId, const QByteArray &data, qint64 len);
 
     void localDescriptionGenerated(const QString &peerID, const QString &sdp);
