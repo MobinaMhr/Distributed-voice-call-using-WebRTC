@@ -142,6 +142,9 @@ void AudioOutput::play()
 }
 ```
 
+A challange in this projet was that we thought the `opus_int16` and other configs of encoding and decoding.
+The type should be the buffer type, but after reading the documentaion of opus, we set the true type and config for them.
+
 #### AudioProcessor Implementation
 
 This class handles the processing actions on audio. It has a static method called `createAudioFormat`.
@@ -379,6 +382,7 @@ void WebRTC::addPeer(const QString &peerId)
 }
 ```
 
+A challange in coding was unnessesary setLocalDescription in constructor of htis class. It was the cause of faillure. We checked the webrtc procedure and found it out.
 
 The `generateOfferSDP` and `generateAnswerSDP` methods are responsible for generating the Session Description Protocol (SDP) offers and answers in a WebRTC connection.
 Thye are crucial for setting up the SDP offers and answers in the WebRTC handshake process. By calling setLocalDescription with the appropriate type (Offer or Answer), they ensure that the peer connection is correctly configured for initiating or responding to a connection request.
@@ -417,6 +421,9 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
     }, nullptr);
 }
 ```
+
+A challange in project was this:
+We forgot to remove the RTP header and the heared voice was incomprehensible and noisy for both of use.
 
 The `sendTrack` method handles the process of sending an audio track to a peer connection. It constructs an RTP packet by adding a properly formatted header and the audio data. It then sends the packet over the WebRTC connection, ensuring the data is transmitted to the intended peer.
 - RTP Header Construction:
@@ -591,9 +598,6 @@ The `isConnected` method checks the current state of the WebSocket connection. I
 return m_webSocket->state() == QAbstractSocket::ConnectedState;
 ```
 
-<!-- TODO:: tell them about signalling server with js -->
-<!-- This Node.js WebSocket server handles real-time communication between peers, enabling functionalities like registration, offer/answer exchanges, and candidate sharing, crucial for WebRTC-based applications. -->
-
 ### backend
 #### CallManager Implementation
 
@@ -635,9 +639,20 @@ CallManager::~CallManager()
     }
 }
 ```
+This method establishes various connections between the CallManager and the WebRTC instance to handle WebRTC signaling and audio data transmission.
+- Offer and Answer Handling:
+    - Connects to the offerIsReady and answerIsReady signals from the WebRTC instance.
+    - When either signal is emitted, it constructs a JSON message with the offer or answer details and sends it via the WebSocket.
 
- <!-- TODO:: -->
+- Incoming Packet Handling:
+    - Connects to the incommingPacket signal to process incoming audio data and add it to the audio output.
 
+- Connection State Handling:
+    - Connects to the connectionStablished signal to start the audio input when the connection is established.
+    - Connects to the connectionClosed signal to stop the audio input when the connection is closed.
+
+- Candidate Generation Handling:
+    - Connects to the localCandidateGenerated signal to handle new ICE - - candidates by sending them via the WebSocket.
 ```c
 void CallManager::handleWebrtcConncetions()
 {
@@ -674,7 +689,10 @@ void CallManager::handleWebrtcConncetions()
         }
     }, Qt::AutoConnection);
 }
+```
 
+This method constructs a JSON message from the WebRTC session description, including the type, user, target, and ICE candidates.
+```c
 QString CallManager::getCompletedJson(const QString& description, const QString type)
 {
     QJsonDocument doc = QJsonDocument::fromJson(description.toUtf8());
@@ -692,7 +710,10 @@ QString CallManager::getCompletedJson(const QString& description, const QString 
 
     return QJsonDocument(jsonObj).toJson(QJsonDocument::Compact);
 }
+```
 
+This method converts a vector of rtc::Candidate objects to a QJsonArray for inclusion in JSON messages.
+```c
 QJsonArray CallManager::getCandidatesQJsonArr(std::vector<rtc::Candidate> candidates) {
     QJsonArray candidateArray;
 
@@ -702,7 +723,6 @@ QJsonArray CallManager::getCandidatesQJsonArr(std::vector<rtc::Candidate> candid
 
     return candidateArray;
 }
-
 ```
 
 The first line of `createSocket()` method defines our WebSocket server URL.
@@ -801,8 +821,7 @@ void CallManager::handleIncomingSocketMessage(const QString &message)
 }
 ```
 
-<!-- Hashem -->
-<!-- This method  -->
+This method is not called in project. However, it serves the purpose of handling scenarios where a new ICE candidate is generated post-connection setup. In such cases, the signaling server notifies us, allowing the method to set the remote candidate accordingly.
 ```c
 void CallManager::handleNewCandidate(const QJsonObject &candidate)
 {
@@ -811,12 +830,11 @@ void CallManager::handleNewCandidate(const QJsonObject &candidate)
 }
 ```
 
-<!-- Hashem -->
-<!-- This method handles outgoing message with offer type to the server. Sets the `callerId`, initialized the webrtc protocol with `webrtcPeerId`  -->
+When an offer is received for this peer, the webrtc inits it. Since this peer is answerer, its `isOfferer` should be set to false. We sets its caller id for display. We call `addPeer` on the `webrtcPeerId`. extract all its ICE candidates and add them sequentially.
 ```c
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
-    setCallerId( offer.value("user").toString());
+    setCallerId(offer.value("user").toString());
     webrtc->init(webrtcPeerId, false);
     webrtc->addPeer(webrtcPeerId);
     webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());
@@ -833,9 +851,7 @@ std::vector<rtc::Candidate> CallManager::extractCandidates(const QString &sdp)
 }
 ```
 
-<!-- Hashem -->
-<!-- This method handles incomming message with answer type from the server. Sets the `callerId`, sets the remote description and remote candidate with required fields.
-This is done to join to the started call.  -->
+When an answer is received for this peer, this method sets remote description and candidates.
 ```c
 void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 {

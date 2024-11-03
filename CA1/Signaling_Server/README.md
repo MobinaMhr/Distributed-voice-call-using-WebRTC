@@ -1,5 +1,5 @@
 ## index.js 
-This file sets up a WebSocket server using Node.js. The server listens for incoming WebSocket connections and handles various types of messages from clients.
+This Node.js WebSocket server handles real-time communication between peers. It sets up a WebSocket server using Node.js. The server listens for incoming WebSocket connections and handles various types of messages from clients.
 
 - **HTTP and WebSocket Server Setup**:
     - The HTTP server is created and listens on port 3000.
