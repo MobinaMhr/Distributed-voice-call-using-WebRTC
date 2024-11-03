@@ -9,6 +9,7 @@
 #include <QMediaDevices>
 #include <QDebug>
 #include <opus.h>
+#include "audioprocessor.h"
 
 class AudioInput : public QIODevice {
     Q_OBJECT
@@ -23,8 +24,7 @@ public:
 
 private:
     QAudioSource *audioSource;
-
-    OpusEncoder *encoder;
+    AudioProcessor *processor;
 
     int bufferSize;
     int frameSize;
