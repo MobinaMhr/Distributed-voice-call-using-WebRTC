@@ -1,196 +1,118 @@
 ### Project
-#### main Implementation
+### main Implementation
 This is the entrly point of the application. It initializes the Qt application adn sets up the main window(UI).
+
 ### Audio
 #### AudioInput Implementation
 
-```c
-signals:
-    void bufferIsReady(const QByteArray &buffer);
-```
 
-```c
-AudioInput::AudioInput(QObject *parent)
-    : QIODevice(parent), audioSource(nullptr), encoder(nullptr),
-    bufferSize(4096), frameSize(960) {
-
-    int status;
-    encoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_VOIP, &status);
-    if (status != OPUS_OK) {
-        qFatal("Opus encoder creation failed. error : %s", opus_strerror(status));
-    }
-
-    QAudioFormat format;
-    format.setSampleRate(48000);
-    format.setChannelCount(1);
-    format.setSampleFormat(QAudioFormat::Int16);
-
-    QMediaDevices mediaDevices;
-    QAudioDevice inputDevice;
-    inputDevice = mediaDevices.defaultAudioInput();
-
-    if (!inputDevice.isFormatSupported(format)) {
-        qFatal("Audio format not supported");
-    }
-
-    audioSource = new QAudioSource(inputDevice, format, this);
-}
-```
-
-```c
-AudioInput::~AudioInput() {
-    if (audioSource)
-        delete audioSource;
-    if (encoder)
-        opus_encoder_destroy(encoder);
-}
-```
-
-```c
-void AudioInput::start()
-{
-    if (!audioSource) {
-        qWarning() << "audioSource doesn't exist" ;
-        return;
-    }
-    if (!this->open(QIODevice::ReadWrite)) {
-        qWarning() << "AudioInput: Failed to open QIODevice for writing";
-        return;
-    }
-    audioSource->start(this);
-    if (audioSource->state() != QAudio::ActiveState)
-        qWarning() << "Audio source is not active. State:" << audioSource->state();
-}
-```
-
-```c
-void AudioInput::stop()
-{
-    if (audioSource)
-        audioSource->stop();
-}
-```
-
-```c
-qint64 AudioInput::readData(char *data, qint64 maxLen)
-{
-    Q_UNUSED(data);
-    Q_UNUSED(maxLen);
-    return 0;
-}
-```
-
-```c
-qint64 AudioInput::writeData(const char *data, qint64 len)
-{
-    if (!encoder) {
-        qWarning() << "AudioInput: Opus encoder is not initialized!";
-        return -1;
-    }
-
-    const int maxPacketSize = 4000;
-    unsigned char encodedData[maxPacketSize];
-
-    int encodedBytes = opus_encode(encoder, reinterpret_cast<const opus_int16*>(data), len / 2, encodedData, maxPacketSize);
-
-    if (encodedBytes < 0) {
-        return -1;
-    }
-
-    QByteArray audioData(reinterpret_cast<const char*>(encodedData), encodedBytes);
-    emit bufferIsReady(audioData);
-
-    return len;
-}
-```
 
 #### AudioOutput Implementation
 
-```c
-signals:
-    void newPacketGenerated();
-```
+
+#### AudioProcessor Implementation
+
+This class handles the processing actions on audio. It has a static method called `createAudioFormat`.
+It is sets up an audio format with a sample rate of 48000, a single channel, and a sample format of QAudioFormat::Int16 and is called in both AudioInput and AudioOutput classes to get a consistent format for auidio.
 
 ```c
-AudioOutput::AudioOutput(QObject *parent)
-    : QObject(parent), audioSink(nullptr), audioDevice(nullptr),
-    frameSize(960)
-{
+QAudioFormat AudioProcessor::createAudioFormat() {
     QAudioFormat format;
     format.setSampleRate(48000);
     format.setChannelCount(1);
     format.setSampleFormat(QAudioFormat::Int16);
+    return format;
+}
+```
 
-    if (!QMediaDevices::defaultAudioOutput().isFormatSupported(format))
-        qFatal("Audio format not supported");
+The encoder and decoder object should be initialized.
+Since Opus is a stateful codec, the encoding and decoding process starts with creating an encoder state.
 
+```c
+bool AudioProcessor::initializeDecoder() {
     int status;
-    opusDecoder = opus_decoder_create(48000, 1, &status);
-    if (status != OPUS_OK)
-        qFatal("Failed to create Opus decoder: %s", opus_strerror(status));
+    decoder = opus_decoder_create(48000, 1, &status);
+    if (status != OPUS_OK) {
+        qWarning() << "AudioProcessor: Failed to create Opus decoder:" << opus_strerror(status);
+        return false;
+    }
+    return true;
+}
 
-    audioSink = new QAudioSink(QMediaDevices::defaultAudioOutput(), format, this);
-    audioDevice = audioSink->start();
-    if (!audioDevice)
-        qWarning() << "AudioOutput: Failed to start audio device";
-
-    connect(this, &AudioOutput::newPacketGenerated, this, &AudioOutput::play);
+bool AudioProcessor::initializeEncoder() {
+    int status;
+    encoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_VOIP, &status);
+    if (status != OPUS_OK) {
+        qWarning() << "AudioProcessor: Failed to create Opus encoder";
+        return false;
+    }
+    return true;
 }
 ```
 
-```c
-AudioOutput::~AudioOutput()
-{
-    if (audioSink)
-        delete audioSink;
+They return boolean types to make sure the opus objects are initialized successfully.
 
-    if (opusDecoder)
-        opus_decoder_destroy(opusDecoder);
+In the destructor, we delete destroy `encoder` and `decoder` if they exist. This is done with built-in methods in ***opus** library.
+
+- The `opus_decoder_destroy` Free an OpusDecoder allocated by `opus_decoder_create`. 
+- The `opus_encoder_destroy` Free an OpusEncoder allocated by `opus_encoder_create`. 
+
+```c
+if (decoder) {
+    opus_decoder_destroy(decoder);
+    decoder = nullptr;
+}
+
+if (encoder) {
+    opus_encoder_destroy(encoder);
+    encoder = nullptr;
 }
 ```
 
-```c
-void AudioOutput::addData(const QByteArray &data)
-{
-    QMutexLocker locker(&mutex);
+The `encodeAudio` method is called by AudioInput class and encodes raw audio data using the Opus codec.
+This method takes the following parameters:
 
-    packetQueue.enqueue(data);
+`input` is a pointer to the raw audio data to be encoded. `frameSize` is the number of audio samples in each frame. `output` is a buffer to hold the encoded data. `maxPacketSize` is the maximum size of the encoded packet.
 
-    emit newPacketGenerated();
-}
-```
+The method first checks if the Opus encoder is initialized. If not, it logs a warning and returns -1 indicating an error. Otherwise, it calls the `opus_encode` function to perform the encoding, converting the input audio samples into the compressed Opus format, and returns the number of bytes written to the output buffer.
 
 ```c
-void AudioOutput::play()
-{
-    if (packetQueue.isEmpty()) {
-        qWarning() << "AudioOutput(***) No available data to play.";
-        return;
+int AudioProcessor::encodeAudio(const char *input, int frameSize, unsigned char* output, int maxPacketSize) {
+    if (!encoder) {
+        qWarning() << "AudioProcessor: Opus encoder is not initialized!";
+        return -1;
     }
 
-    QByteArray packet = packetQueue.dequeue();
-    opus_int16 outputBuff[2 * frameSize];
+    return opus_encode(encoder, reinterpret_cast<const opus_int16*>(input),
+                       frameSize, output, maxPacketSize);
+}
+```
 
-    int packetSize = packet.size();
+The `decodeAudio` method is called by AudioOutput class and decodes encoded audio data using the Opus codec. 
+
+`data` is a pointer to a QByteArray containing the encoded audio data. `output` is a buffer to hold the decoded audio samples. `frameSize` is the number of audio samples to decode in each frame.
+
+The method first checks if the Opus decoder is initialized. If not, it logs a warning and returns -1 to indicate an error. It also verifies the size of the encoded packet. If the packet size is less than 1, it logs a warning and returns -1.
+
+If all checks pass, it calls the `opus_decode` function to decode the audio data, converting the encoded input into raw audio samples and storing them in the output buffer. The function returns the number of samples decoded.
+
+```c
+int AudioProcessor::decodeAudio(const QByteArray *data, opus_int16 *output, int frameSize) {
+    if (!decoder) {
+        qWarning() << "AudioProcessor: Opus decoder is not initialized!";
+        return -1;
+    }
+
+    int packetSize = data->size();
     if (packetSize < 1) {
-        qWarning() << "AudioOutput(***) Invalid encoded packet size: " << packetSize;
-        return;
+        qWarning() << "AudioProcessor: Invalid encoded packet size:" << packetSize;
+        return -1;
     }
 
-    int decodingResult;
-    decodingResult = opus_decode(opusDecoder, reinterpret_cast<const unsigned char *>(packet.data()),
-                                 packet.size(), outputBuff, frameSize, 0);
-
-    if (decodingResult < 0) {
-        qWarning() << "AudioOutput(***) Decoder process failed. Errof: " << opus_strerror(decodingResult);
-        return;
-    }
-
-    audioDevice->write(reinterpret_cast<const char*>(outputBuff), decodingResult * sizeof(opus_int16));
+    return opus_decode(decoder, reinterpret_cast<const unsigned char *>(data->data()),
+                       packetSize, output, frameSize, 0);
 }
 ```
-
-#### AudioProcessor Implementation
 
 ### Network
 #### WebRTC Implementation
@@ -456,6 +378,9 @@ The `isConnected` method checks the current state of the WebSocket connection. I
 ```c
 return m_webSocket->state() == QAbstractSocket::ConnectedState;
 ```
+
+<!-- TODO:: tell them about signalling server with js -->
+<!-- This Node.js WebSocket server handles real-time communication between peers, enabling functionalities like registration, offer/answer exchanges, and candidate sharing, crucial for WebRTC-based applications. -->
 
 ### Src
 #### CallManager Implementation
