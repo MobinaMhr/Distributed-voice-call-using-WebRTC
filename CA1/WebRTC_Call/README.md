@@ -30,7 +30,7 @@ it also uses the static method of `AudioProcessor` to create a format for audio 
 QAudioFormat format = AudioProcessor::createAudioFormat();
 ```
 
-The desctructore deletes processor and audioSource if they exist.
+The desctructore deletes processor and audioSource pointers if they exist.
 
 The `start` method of this class checks if the audioSource exists, attempts to open the device for reading and writing with `QIODevice::ReadWrite`, and Starts the `audioSource` with the current instance (`this`) as the device to which it will write audio data.
 
@@ -40,7 +40,7 @@ After all it checks if the audioSource is in `QAudio::ActiveState`.
 The `stop` method halts the audio input process.
 The method first checks if audioSource is initialized, and then calls audioSource->stop(), which stops the audio data capture.
 
-The `readData` method is designed to read audio data from the device. It uses the `Q_UNUSED` macro for both `data` and `maxLen` parameters, indicating that these parameters are intentionally unused within the function. This method simply returns 0.
+The `readData` method is designed to read audio data from the device. Since the AudioInput class is designed to handle audio capture and encoding, `readData` remains unused in this implementation. It uses the `Q_UNUSED` macro for both `data` and `maxLen` parameters, indicating that these parameters are intentionally unused within the function. This method simply returns 0.
 
 The `writeData` responsible for handling and encoding raw audio data, then emitting a signal when the buffer is ready.
 
@@ -55,12 +55,90 @@ After all it creates a QByteArray object named `audioData` from the encoded data
 At the end the `bufferIsReady` signal is emited with the encoded audioData, and returns the length of the data written.
 
 #### AudioOutput Implementation
+This class leverages the `QObject` framework for audio data management and playback. 
 
+The constructor initializes the audio output device and sets up the necessary components for audio playback.
+It sets the audio format using static method of `AudioProcessor`.
+```c
+QAudioFormat format = AudioProcessor::createAudioFormat();
+```
+
+It immidiately checks if the format is supported by the `defaultAudioOutput`, which is the speacker of device.
+```c
+if (!QMediaDevices::defaultAudioOutput().isFormatSupported(format))
+  qFatal("Audio format not supported");
+```
+
+The named `processor` object initializes the decoder.
+```c
+if (!processor->initializeDecoder()) {
+  qFatal("Failed to initialize Opus decoder");
+}
+```
+
+The `audioSink` is responsible for audio playback and writes the audio to the output device.
+```c
+audioSink = new QAudioSink(QMediaDevices::defaultAudioOutput(), format, this);
+```
+
+The `start()` method of `audioSink` is called to begin audio playback. It returns a pointer to a QIODevice, which is assigned to audioDevice. This `QIODevice` represents the device through which audio data will be written for playback.
+```c
+audioDevice = audioSink->start();
+if (!audioDevice)
+  qWarning() << "AudioOutput: Failed to start audio device";
+```
+
+When the `newPacketGenerated` signal is emitted, the `play` private slot is automatically invoked. This ensures that as soon as new audio data is ready, it gets processed and played back immediately.
+```c
+connect(this, &AudioOutput::newPacketGenerated, this, &AudioOutput::play);
+```
+
+The desctructore deletes processor and audioSink pointers if they exist.
+
+The `addData()` method ensures that new audio data is safely added to the processing queue and immediately signals that data is ready to be processed for playback.
+The `mutex lock` ensures that with the congestion of packets only one packet at a time can access this function. 
+After queueing the packet we inform that a packet has arrived by emiting `newPacketGenerated` signal.
+
+```c
+QMutexLocker locker(&mutex);
+packetQueue.enqueue(data);
+emit newPacketGenerated();
+```
+
+In the `play()` method, after checking that we have at least one packet to play, we get the packet from queue.
+```c
+if (packetQueue.isEmpty()) {
+  qWarning() << "AudioOutput: No available data to play.";
+  return;
+}
+
+QByteArray packet = packetQueue.dequeue();
+```
+
+We decode the packet using `processor->decodeAudio()` method and after a successful decoding, the incomming audio is written into the output device.
+
+```c
+void AudioOutput::play()
+{
+    int decodingResult = processor->decodeAudio(&packet, outputBuff, frameSize);
+    if (decodingResult < 0) {
+        qWarning() << "AudioOutput: Decoder process failed.";
+        return;
+    }
+
+    audioDevice->write(reinterpret_cast<const char*>(outputBuff), decodingResult * sizeof(opus_int16));
+}
+```
 
 #### AudioProcessor Implementation
 
 This class handles the processing actions on audio. It has a static method called `createAudioFormat`.
-It is sets up an audio format with a sample rate of 48000, a single channel, and a sample format of QAudioFormat::Int16 and is called in both AudioInput and AudioOutput classes to get a consistent format for auidio.
+It is sets up an audio format with a sample rate, channel count, and a sample format which is of QAudioFormat::Int16 
+
+This static method and is called in both AudioInput and AudioOutput classes to get a consistent format for auidio.
+
+- The sample rate is 48KHz which is in range of what human ears can hear. 
+- We've used a single channel, but you can use 2 channels if you have a stereo speaker.
 
 ```c
 QAudioFormat AudioProcessor::createAudioFormat() {
