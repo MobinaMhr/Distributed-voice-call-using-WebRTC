@@ -189,7 +189,7 @@ void CallManager::handleSingalingOffer(const QJsonObject &offer)
 
 void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 {
-    m_callerId = answer.value("user").toString();
+    this->setCallerId(answer.value("user").toString());
     webrtc->setRemoteDescription(webrtcPeerId, answer.value("sdp").toString());
     webrtc->setRemoteCandidate(webrtcPeerId, answer.value("candidate").toString(), answer.value("mid").toString());
 }
