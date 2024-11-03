@@ -510,7 +510,10 @@ return m_webSocket->state() == QAbstractSocket::ConnectedState;
 ### Src
 #### CallManager Implementation
 
-Here is an overveiw of constructor, in which we 
+The CallManager constructor initializes the call manager, sets up audio input and output, and handles WebRTC and socket creation.
+
+At the end it connects the `bufferIsReady` signal from audioInput to a lambda function that sends the track data via WebRTC. 
+It ensures the audio buffer is sent over the WebRTC connection whenever new audio data is ready.
 
 ```c
 CallManager::CallManager(QObject *parent)
@@ -531,6 +534,8 @@ CallManager::CallManager(QObject *parent)
 }
 ```
 
+The destructore deletes the pointers corresponding to webrtc and socket, if they exist.
+
 ```c
 CallManager::~CallManager()
 {
@@ -543,6 +548,8 @@ CallManager::~CallManager()
     }
 }
 ```
+
+ <!-- TODO:: -->
 
 ```c
 void CallManager::handleWebrtcConncetions()
@@ -611,6 +618,12 @@ QJsonArray CallManager::getCandidatesQJsonArr(std::vector<rtc::Candidate> candid
 
 ```
 
+The first line of `createSocket()` method defines our WebSocket server URL.
+After that, it creates a new Socket object with the specified URL.
+Then initiates the connection to the WebSocket server.
+
+The signal-Slot Connection connects the `messageReceived` signal from the Socket to the `handleIncomingSocketMessage` slot in CallManager, ensuring incoming messages are properly handled.
+
 ```c
 void CallManager::createSocket()
 {
@@ -619,7 +632,13 @@ void CallManager::createSocket()
     socket->connectToServer();
     connect(socket, &Socket::messageReceived, this, &CallManager::handleIncomingSocketMessage, Qt::AutoConnection);
 }
+```
 
+The `createWebrtc()` method initializes the WebRTC components.
+It sets the WebRTC peer ID, creates a new WebRTC object.
+Tehn it initializes the WebRTC object with the peer ID and a boolean flag (it sets the `isOffere` as false).
+
+```c
 void CallManager::createWebrtc()
 {
     webrtcPeerId = "1";
@@ -628,6 +647,8 @@ void CallManager::createWebrtc()
     handleWebrtcConncetions();
 }
 ```
+
+The setter methods simply set new value to attributes and emits the corresponding signal. 
 
 ```c
 void CallManager::setCallerId(const QString &callerId)
@@ -647,6 +668,8 @@ void CallManager::setUserName(const QString &userName)
 }
 ```
 
+
+If a peer wants to start a call with another one, the `startCall()` method is called and sets some boolean values and adds the `webrtcPeerId` as a peer in the protocol.
 ```c
 void CallManager::startCall()
 {
@@ -654,13 +677,19 @@ void CallManager::startCall()
     webrtc->setIsOfferer(true);
     webrtc->addPeer(webrtcPeerId);
 }
+```
 
+If a peer wants to end a call with another one, the `endCall()` method is called and a boolean value is set to default value (false) and the created peer connection as `webrtcPeerId` si closed.
+```c
 void CallManager::endCall()
 {
     callStartedComeOn = false;
     webrtc->closePeerConnection(webrtcPeerId);
 }
+```
 
+When a user tries to register in, the `registerUser()` method is called and a request in json format is send as a message via socket to the server.
+```c
 void CallManager::registerUser()
 {
     QString jsonReq;
@@ -669,6 +698,7 @@ void CallManager::registerUser()
 }
 ```
 
+
 ```c
 void CallManager::handleNewCandidate(const QJsonObject &candidate)
 {
@@ -676,6 +706,8 @@ void CallManager::handleNewCandidate(const QJsonObject &candidate)
                                candidate.value("mid").toString());
 }
 ```
+
+ <!-- TODO:: -->
 
 ```c
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
@@ -697,6 +729,8 @@ std::vector<rtc::Candidate> CallManager::extractCandidates(const QString &sdp)
 }
 ```
 
+ <!-- TODO:: -->
+
 ```c
 void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 {
@@ -705,6 +739,8 @@ void CallManager::handleSingalingAnswer(const QJsonObject &answer)
     webrtc->setRemoteCandidate(webrtcPeerId, answer.value("candidate").toString(), answer.value("mid").toString());
 }
 ```
+
+ <!-- TODO:: -->
 
 ```c
 void CallManager::handleIncomingSocketMessage(const QString &message)
@@ -720,6 +756,8 @@ void CallManager::handleIncomingSocketMessage(const QString &message)
         handleNewCandidate(jsonDoc);
 }
 ```
+
+ <!-- TODO:: -->
 
 ```c
 QString CallManager::createJsonRequest(const std::vector<QString> &keys, const std::vector<QString> &values) {
