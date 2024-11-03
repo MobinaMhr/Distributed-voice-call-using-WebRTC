@@ -698,7 +698,24 @@ void CallManager::registerUser()
 }
 ```
 
+This method handles the incomming message from server via socket. it calls other handler methods to handle `offer`, `answer`, `registration` messages.
+```c
+void CallManager::handleIncomingSocketMessage(const QString &message)
+{
+    QJsonObject jsonDoc;
+    jsonDoc = QJsonDocument::fromJson(message.toUtf8()).object();
 
+    if (jsonDoc.value("type").toString() == "offer")
+        handleSingalingOffer(jsonDoc);
+    else if (jsonDoc.value("type").toString() == "answer")
+        handleSingalingAnswer(jsonDoc);
+    else
+        handleNewCandidate(jsonDoc);
+}
+```
+
+<!-- Hashem -->
+<!-- This method  -->
 ```c
 void CallManager::handleNewCandidate(const QJsonObject &candidate)
 {
@@ -707,8 +724,8 @@ void CallManager::handleNewCandidate(const QJsonObject &candidate)
 }
 ```
 
- <!-- TODO:: -->
-
+<!-- Hashem -->
+<!-- This method handles outgoing message with offer type to the server. Sets the `callerId`, initialized the webrtc protocol with `webrtcPeerId`  -->
 ```c
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
@@ -729,8 +746,9 @@ std::vector<rtc::Candidate> CallManager::extractCandidates(const QString &sdp)
 }
 ```
 
- <!-- TODO:: -->
-
+<!-- Hashem -->
+<!-- This method handles incomming message with answer type from the server. Sets the `callerId`, sets the remote description and remote candidate with required fields.
+This is done to join to the started call.  -->
 ```c
 void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 {
@@ -740,25 +758,7 @@ void CallManager::handleSingalingAnswer(const QJsonObject &answer)
 }
 ```
 
- <!-- TODO:: -->
-
-```c
-void CallManager::handleIncomingSocketMessage(const QString &message)
-{
-    QJsonObject jsonDoc;
-    jsonDoc = QJsonDocument::fromJson(message.toUtf8()).object();
-
-    if (jsonDoc.value("type").toString() == "offer")
-        handleSingalingOffer(jsonDoc);
-    else if (jsonDoc.value("type").toString() == "answer")
-        handleSingalingAnswer(jsonDoc);
-    else
-        handleNewCandidate(jsonDoc);
-}
-```
-
- <!-- TODO:: -->
-
+The `createJsonRequest` method constructs a JSON-formatted string from two vectors of keys and values.
 ```c
 QString CallManager::createJsonRequest(const std::vector<QString> &keys, const std::vector<QString> &values) {
     int size = keys.size();
