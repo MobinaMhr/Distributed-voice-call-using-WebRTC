@@ -7,53 +7,13 @@ CallManager::CallManager(QObject *parent)
 {
     audioInput = new AudioInput(this);
     audioOutput = new AudioOutput(this);
+    callStartedComeOn = false;
+    createWebrtc();
 
-    callStartedComeOn = false;    
-    webrtcPeerId = "1";
-
-    webrtc = new WebRTC(this);
-    webrtc->init(webrtcPeerId, false);
-
-    const QUrl url(QStringLiteral("ws://165.232.44.143:3000"));
-
-    socket = new Socket(url);
-    socket->connectToServer();
-
-    connect(webrtc, &WebRTC::offerIsReady, this, [this](const QString &peerId, const QString& description) {
-        if (callStartedComeOn){
-            QString updatedJsonString = getCompletedJson(description, "offer");
-            this->socket->sendMessage(updatedJsonString);
-        }
-    }, Qt::AutoConnection);
-
-    connect(webrtc, &WebRTC::answerIsReady, this,[this](const QString &peerId, const QString& description) {
-        QString updatedJsonString = getCompletedJson(description, "answer");
-        this->socket->sendMessage(updatedJsonString);
-    }, Qt::AutoConnection);
-
-    connect(webrtc, &WebRTC::incommingPacket, this, [this](const QString &peerId, const QByteArray &data, qint64 len) {
-        audioOutput->addData(data);
-    }, Qt::AutoConnection);
-
-    connect(socket, &Socket::messageReceived, this, &CallManager::handleIncomingSocketMessage, Qt::AutoConnection);
-
-    connect(webrtc, &WebRTC::localCandidateGenerated, this, [this] (const QString &peerID, const QString &candidate,
-                                                           const QString &mid){
-        m_candidate = candidate;
-        candidate_mid = mid;
-    }, Qt::AutoConnection);
-
-    connect(webrtc, &WebRTC::connectionStablished, this, [this] (){
-        audioInput->start();
-    }, Qt::AutoConnection);
+    createSocket();
 
     connect(audioInput, &AudioInput::bufferIsReady, this, [this](const QByteArray &buffer){
         webrtc->sendTrack(webrtcPeerId, buffer);
-    }, Qt::AutoConnection);
-
-    connect(webrtc, &WebRTC::connectionClosed, this, [this](){
-        //this->webrtc->closePeerConnection(this->webrtcPeerId);
-        this->audioInput->stop();
     }, Qt::AutoConnection);
 }
 
@@ -102,6 +62,49 @@ void CallManager::setIceCandidate(const QString &iceCandidate)
         m_iceCandidate = iceCandidate;
         emit iceCandidateChanged();
     }
+}
+
+void CallManager::handleWebrtcConncetions()
+{
+    connect(webrtc, &WebRTC::offerIsReady, this, [this](const QString &peerId, const QString& description) {
+        if (callStartedComeOn){
+            QString updatedJsonString = getCompletedJson(description, "offer");
+            this->socket->sendMessage(updatedJsonString);
+        }
+    }, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::answerIsReady, this,[this](const QString &peerId, const QString& description) {
+        QString updatedJsonString = getCompletedJson(description, "answer");
+        this->socket->sendMessage(updatedJsonString);
+    }, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::incommingPacket, this, [this](const QString &peerId, const QByteArray &data, qint64 len) {
+        audioOutput->addData(data);
+    }, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::connectionStablished, this, [this] (){
+        audioInput->start();
+    }, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::connectionClosed, this, [this](){
+        this->audioInput->stop();
+    }, Qt::AutoConnection);
+}
+
+void CallManager::createSocket()
+{
+    const QUrl url(QStringLiteral("ws://165.232.44.143:3000"));
+    socket = new Socket(url);
+    socket->connectToServer();
+    connect(socket, &Socket::messageReceived, this, &CallManager::handleIncomingSocketMessage, Qt::AutoConnection);
+}
+
+void CallManager::createWebrtc()
+{
+    webrtcPeerId = "1";
+    webrtc = new WebRTC(this);
+    webrtc->init(webrtcPeerId, false);
+    handleWebrtcConncetions();
 }
 
 void CallManager::setCallerId(const QString &callerId)
@@ -157,7 +160,6 @@ QString CallManager::createJsonRequest(const std::vector<QString> &keys, const s
 
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
-    qDebug() <<"\n\n\ninja\n\n\n";
     m_callerId = offer.value("user").toString();
     webrtc->init(webrtcPeerId, false);
     webrtc->addPeer(webrtcPeerId);

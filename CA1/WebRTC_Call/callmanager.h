@@ -31,6 +31,9 @@ public:
 
     void setIpAddress(const QString &ipAddress);
     void setIceCandidate(const QString &iceCandidate);
+    void handleWebrtcConncetions();
+    void createSocket();
+    void createWebrtc();
 
     Q_INVOKABLE void setCallerId(const QString &callerId);
     Q_INVOKABLE void setUserName(const QString &userName);
