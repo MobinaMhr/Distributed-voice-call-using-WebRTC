@@ -1,40 +1,29 @@
-// #ifndef AUDIOPROCESSOR_H
-// #define AUDIOPROCESSOR_H
+#ifndef AUDIOPROCESSOR_H
+#define AUDIOPROCESSOR_H
 
-// #include <QObject>
-// #include <opus.h>
-// #include <QDebug>
-// #include <QByteArray>
+#include <QObject>
+#include <QAudioFormat>
+#include <opus.h>
+#include <QDebug>
+#include <QByteArray>
 
-// class AudioProcessor : public QObject
-// {
-//     Q_OBJECT
+class AudioProcessor {
 
-// public:
-//     explicit AudioProcessor(QObject *parent = nullptr);
-//     ~AudioProcessor();
+public:
+    explicit AudioProcessor(QObject *parent = nullptr);
+    ~AudioProcessor();
 
-//     // Initialize both encoder and decoder
-//     bool initializeEncoder();  // Initializes the Opus encoder
-//     bool initializeDecoder();  // Initializes the Opus decoder
+    static QAudioFormat createAudioFormat();
 
-//     // Encode raw microphone audio
-//     void encodeAudio(const QByteArray &rawAudioData);
+    bool initializeDecoder();
+    bool initializeEncoder();
 
-//     // Decode incoming encoded audio
-//     void decodeAudio(const QByteArray &encodedAudio);
+    int encodeAudio(const char *input, int frameSize, unsigned char* output, int maxPacketSize);
+    int decodeAudio(const QByteArray *data, opus_int16 *output, int frameSize);
 
-// signals:
-//     void audioEncoded(const QByteArray &encodedData);  // Signal to send encoded data (for transmission)
-//     void audioDecoded(const QByteArray &decodedData);  // Signal to provide decoded data (for playback)
+private:
+    OpusEncoder* encoder = nullptr;
+    OpusDecoder *decoder = nullptr;
+};
 
-// private:
-//     // Opus encoder and decoder
-//     OpusEncoder *opusEncoder;
-//     OpusDecoder *opusDecoder;
-
-//     int opusFrameSize;         // Frame size for Opus encoding/decoding
-//     int maxPacketSize;         // Maximum packet size for encoding
-// };
-
-// #endif // AUDIOPROCESSOR_H
+#endif // AUDIOPROCESSOR_H
