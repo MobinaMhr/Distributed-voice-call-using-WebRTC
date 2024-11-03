@@ -190,7 +190,7 @@ void AudioOutput::play()
 }
 ```
 
-<!-- #### AudioProcessor Implementation -->
+#### AudioProcessor Implementation
 
 ### Network
 #### WebRTC Implementation
@@ -409,15 +409,44 @@ void WebRTC::closePeerConnection(const QString &peerId)
 
 #### Socket Implementation
 
-```c
-Socket::Socket(const QUrl &url, QObject *parent)
-: QObject(parent), m_url(url) {
-    m_webSocket = new QWebSocket();
+In this class, `QWebSocket::connected`, ``, and `` signals are used and connected to 
 
-    connect(m_webSocket, &QWebSocket::connected, this, &Socket::onConnected);
-    connect(m_webSocket, &QWebSocket::disconnected, this, &Socket::onDisconnected);
-    connect(m_webSocket, &QWebSocket::textMessageReceived, this, &Socket::onMessageReceived);
-}
+In the constructore of this class, we bind all th signals built into the `QWebSocket` with private slots.
+
+```c
+connect(m_webSocket, &QWebSocket::connected, this, &Socket::onConnected);
+connect(m_webSocket, &QWebSocket::disconnected, this, &Socket::onDisconnected);
+connect(m_webSocket, &QWebSocket::textMessageReceived, this, &Socket::onMessageReceived);
+```
+
+- `QWebSocket::connected` informs the successful connection to the websocket.</br>
+-  `QWebSocket::disconnected` informs losing the connection to the websocket.</br>
+- `QWebSocket::textMessageReceived` informs arrival of new message to the peer.</br>
+
+The destructor of this class deletes the created `m_webSocket`.
+
+The `connectToServer` method initiates a WebSocket connection to the specified server URL. It uses the open function of the m_webSocket object, which represents the WebSocket client.
+
+```c
+m_webSocket->open(m_url);
+```
+The `disconnectFromServer` method gracefully closes an active WebSocket connection. It leverages the close function of the m_webSocket object to terminate the connection.
+
+```c
+m_webSocket->close();
+```
+
+The `sendMessage` method allows the client to send a text message via the WebSocket. Before sending, it checks if the WebSocket connection is valid using isValid.
+
+```c
+if (m_webSocket->isValid())
+    m_webSocket->sendTextMessage(message);
+```
+
+The `isConnected` method checks the current state of the WebSocket connection. It returns true if the WebSocket's state is ConnectedState, indicating an active connection, and false otherwise.
+
+```c
+return m_webSocket->state() == QAbstractSocket::ConnectedState;
 ```
 
 ### Src
