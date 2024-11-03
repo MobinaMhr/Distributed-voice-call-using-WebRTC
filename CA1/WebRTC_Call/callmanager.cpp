@@ -89,6 +89,15 @@ void CallManager::handleWebrtcConncetions()
     connect(webrtc, &WebRTC::connectionClosed, this, [this](){
         this->audioInput->stop();
     }, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::localCandidateGenerated, this, [this](const QString &peerID,
+                                                    const QString &candidate, const QString &mid){
+        if (callStartedComeOn){
+            QString jsonReq = createJsonRequest({"reqType", "target", "candidate", "mid"},
+                                                {"candidate", m_callerId, candidate, mid});
+
+        }
+    }, Qt::AutoConnection);
 }
 
 void CallManager::createSocket()
@@ -105,6 +114,13 @@ void CallManager::createWebrtc()
     webrtc = new WebRTC(this);
     webrtc->init(webrtcPeerId, false);
     handleWebrtcConncetions();
+}
+
+void CallManager::handleNewCandidate(const QJsonObject &candidate)
+{
+    qDebug() << "\n\n\nnewCandidate recieved\n\n\n";
+    webrtc->setRemoteCandidate(webrtcPeerId, candidate.value("Candidate").toString(),
+                               candidate.value("mid").toString());
 }
 
 void CallManager::setCallerId(const QString &callerId)
@@ -132,6 +148,7 @@ void CallManager::startCall()
 
 void CallManager::endCall()
 {
+    callStartedComeOn = false;
     webrtc->closePeerConnection(webrtcPeerId);
 }
 
@@ -183,8 +200,10 @@ void CallManager::handleIncomingSocketMessage(const QString &message)
 
     if (jsonDoc.value("type").toString() == "offer")
         handleSingalingOffer(jsonDoc);
-    else
+    else if (jsonDoc.value("type").toString() == "answer")
         handleSingalingAnswer(jsonDoc);
+    else
+        handleNewCandidate(jsonDoc);
 }
 
 QString CallManager::getCompletedJson(const QString& description, const QString type)

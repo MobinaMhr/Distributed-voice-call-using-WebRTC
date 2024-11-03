@@ -34,6 +34,7 @@ public:
     void handleWebrtcConncetions();
     void createSocket();
     void createWebrtc();
+    void handleNewCandidate(const QJsonObject &candidate);
 
     Q_INVOKABLE void setCallerId(const QString &callerId);
     Q_INVOKABLE void setUserName(const QString &userName);
