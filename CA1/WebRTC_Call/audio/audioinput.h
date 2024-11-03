@@ -24,8 +24,6 @@ public:
 private:
     QAudioSource *audioSource;
 
-    QByteArray audioBuffer;
-
     OpusEncoder *encoder;
 
     int bufferSize;

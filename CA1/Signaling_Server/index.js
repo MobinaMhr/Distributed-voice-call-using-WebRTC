@@ -14,7 +14,6 @@ let peers = {};
 ws.on("request", (req) => {
     const connection = req.accept(null, req.origin)
     console.log("Connection established")
-
     connection.on("message", (message) => {
         const data = JSON.parse(message.utf8Data)
         console.log(data)

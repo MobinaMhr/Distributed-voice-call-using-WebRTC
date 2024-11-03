@@ -6,10 +6,10 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDebug>
-#include <webrtc.h>
-#include <socket.h>
-#include <audioinput.h>
-#include <audiooutput.h>
+#include "../network/webrtc.h"
+#include "../network/socket.h"
+#include "../audio/audioinput.h"
+#include "../audio/audiooutput.h"
 
 class CallManager : public QObject
 {

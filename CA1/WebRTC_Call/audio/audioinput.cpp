@@ -1,8 +1,8 @@
 #include "audioinput.h"
 
 AudioInput::AudioInput(QObject *parent)
-    : QIODevice(parent), audioSource(nullptr), bufferSize(4096),
-    encoder(nullptr), frameSize(960) {
+    : QIODevice(parent), audioSource(nullptr), encoder(nullptr),
+    bufferSize(4096), frameSize(960) {
 
     int status;
     encoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_VOIP, &status);
