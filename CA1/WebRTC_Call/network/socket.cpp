@@ -29,7 +29,6 @@ void Socket::sendMessage(const QString &message)
 {
     if (m_webSocket->isValid())
         m_webSocket->sendTextMessage(message);
-
 }
 
 bool Socket::isConnected() const
