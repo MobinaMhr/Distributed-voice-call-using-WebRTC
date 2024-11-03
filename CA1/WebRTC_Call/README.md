@@ -1,4 +1,3 @@
-### Project
 ### main Implementation
 This is the entrly point of the application. It initializes the Qt application adn sets up the main window(UI).
 - `QGuiApplication app(argc, argv)` Initializes the Qt application
@@ -255,29 +254,38 @@ int AudioProcessor::decodeAudio(const QByteArray *data, opus_int16 *output, int 
 ### Network
 #### WebRTC Implementation
 
+##### Public Methods 
+
+WebRTC, short for **Web Real-Time Communication**, is a technology that allows peer-to-peer audio, video, and data sharing directly between web browsers and mobile applications. It's an open-source project that provides web applications and sites with real-time communication capabilities via simple JavaScript APIs.
+
+In the constructor of it, we code for some signal handlings.
+The `gatheringComplited` Signal connects the gatheringComplited signal to a lambda function that handles the completion of ICE candidate gathering. It generates the local description and emits the localDescriptionGenerated signal. And depending on the role (offerer or answerer), emits either the offerIsReady or answerIsReady signal.
 ```c
-WebRTC::WebRTC(QObject *parent)
-    : QObject{parent},
-    m_audio("Audio")
-{
-    connect(this, &WebRTC::gatheringComplited, [this] (const QString &peerID) {
+connect(this, &WebRTC::gatheringComplited, [this] (const QString &peerID) {
 
-        m_localDescription = descriptionToJson(peerID);
-        Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
-        if (m_isOfferer)
-            Q_EMIT this->offerIsReady(peerID, m_localDescription);
-        else
-            Q_EMIT this->answerIsReady(peerID, m_localDescription);
-    });
-
-    connect(this, &WebRTC::localCandidateGenerated, [this] (const QString &peerID, const QString &candidate,
-                                                           const QString &mid){
-        rtc::Candidate localCandidate(candidate.toStdString(), mid.toStdString());
-        m_peerConnections[peerID]->localDescription()->addCandidate(localCandidate);
-    });
-}
+    m_localDescription = descriptionToJson(peerID);
+    Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
+    if (m_isOfferer)
+        Q_EMIT this->offerIsReady(peerID, m_localDescription);
+    else
+        Q_EMIT this->answerIsReady(peerID, m_localDescription);
+});
 ```
 
+The `localCandidateGenerated` Signal connects the localCandidateGenerated signal to a lambda function that handles the generation of local ICE candidates. It converts the candidate data to an rtc::Candidate and adds it to the local description of the peer connection.
+```c
+connect(this, &WebRTC::localCandidateGenerated, [this] (const QString &peerID, const QString &candidate,
+                                                       const QString &mid){
+    rtc::Candidate localCandidate(candidate.toStdString(), mid.toStdString());
+    m_peerConnections[peerID]->localDescription()->addCandidate(localCandidate);
+});
+```
+
+In the `init()` method, we :
+- Initializes the logging system with a debug level to capture detailed logs.
+- We set some default values to some attributes.
+- we build a config of ICE server configurations.
+- We sets up an audio description for sending and receiving audio streams.
 ```c
 void WebRTC::init(const QString &id, bool isOfferer)
 {
@@ -300,6 +308,21 @@ void WebRTC::init(const QString &id, bool isOfferer)
 }
 ```
 
+In the `addPeer()` method, sets up a new peer connection and configures all necessary event handlers to manage the connection's lifecycle, including handling local descriptions, ICE candidates, state changes, and gathering state.
+
+- **Peer Connection Initialization**
+  - Creates a new `PeerConnection` object using the previously configured `m_config`.
+  - Stores the peer connection in the `m_peerConnections` map using `peerId` as the key.
+- **Local Description Handler**:
+  - Sets up a handler to emit the localDescriptionGenerated signal when a local description is created.
+- **Local Candidate Handler**:
+  - Sets up a handler to emit the localCandidateGenerated signal when a local ICE candidate is generated.
+- **State Change Handler**:
+  - Monitors the state of the peer connection and logs changes or emits signals as appropriate.
+- **Gathering State Change Handler**:
+  - Monitors the ICE candidate gathering state and emits the gatheringComplited signal when gathering is complete.
+- **Add Audio Track and Set Local Description**:
+  - Adds an audio track to the peer connection and sets the local description.
 ```c
 void WebRTC::addPeer(const QString &peerId)
 {
@@ -356,6 +379,9 @@ void WebRTC::addPeer(const QString &peerId)
 }
 ```
 
+
+The `generateOfferSDP` and `generateAnswerSDP` methods are responsible for generating the Session Description Protocol (SDP) offers and answers in a WebRTC connection.
+Thye are crucial for setting up the SDP offers and answers in the WebRTC handshake process. By calling setLocalDescription with the appropriate type (Offer or Answer), they ensure that the peer connection is correctly configured for initiating or responding to a connection request.
 ```c
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
@@ -368,6 +394,13 @@ void WebRTC::generateAnswerSDP(const QString &peerId)
 }
 ```
 
+The `addAudioTrack` method adds an audio track to a peer connection and sets up a handler to process and emit incoming audio packets.
+- Retrieves the peer connection associated with the specified peerId.
+- Adds the pre-configured audio description (m_audio) to the peer connection and creates a track.
+- Stores the audio track in the m_peerTracks map using peerId as the key.
+- Sets up a handler to process incoming messages on the audio track:
+  - Converts the incoming binary message to a QByteArray and removes the RTP header if present.
+  - Emits the incommingPacket signal with the processed data.
 ```c
 void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 {
@@ -385,6 +418,20 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 }
 ```
 
+The `sendTrack` method handles the process of sending an audio track to a peer connection. It constructs an RTP packet by adding a properly formatted header and the audio data. It then sends the packet over the WebRTC connection, ensuring the data is transmitted to the intended peer.
+- RTP Header Construction:
+- first: Set to 0x80, indicating the RTP version.
+  - `marker`: Set to 0, not marking the end of a frame.
+  - `payloadType`: Set using payloadType(), indicating the codec type.
+  - `sequenceNumber`: Incremented and converted to big endian using qToBigEndian.
+  - `timestamp`: Current timestamp, converted to big endian using qToBigEndian.
+  - `ssrc`: Synchronization source identifier, converted to big endian using qToBigEndian.
+- RTP Packet Construction:
+  - Append Header: The header is appended to the RTP packet.
+  - Append Buffer: The buffer containing the audio data is appended to the RTP packet.
+- Sending Data:
+  - The RTP packet data is converted to rtc::byte and sent to the peer track.
+  - Error Handling: If an error occurs during sending, it is caught and logged.
 ```c
 void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 {
@@ -408,6 +455,12 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
     }
 }
 ```
+
+##### Public Slots 
+
+##### Private Methods 
+
+##### Getters and Setters
 
 ```c
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
@@ -520,7 +573,7 @@ return m_webSocket->state() == QAbstractSocket::ConnectedState;
 <!-- TODO:: tell them about signalling server with js -->
 <!-- This Node.js WebSocket server handles real-time communication between peers, enabling functionalities like registration, offer/answer exchanges, and candidate sharing, crucial for WebRTC-based applications. -->
 
-### Src
+### backend
 #### CallManager Implementation
 
 The CallManager constructor initializes the call manager, sets up audio input and output, and handles WebRTC and socket creation.

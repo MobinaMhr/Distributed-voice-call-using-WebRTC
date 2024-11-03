@@ -9,7 +9,7 @@ SOURCES += \
         main.cpp \
         network/socket.cpp \
         network/webrtc.cpp \
-        src/callmanager.cpp
+        backend/callmanager.cpp
 
 resources.files = ui/main.qml
 resources.prefix = /$${TARGET}
@@ -32,7 +32,7 @@ HEADERS += \
     audio/audioprocessor.h \
     network/socket.h \
     network/webrtc.h \
-    src/callmanager.h \
+    backend/callmanager.h \
 
 INCLUDEPATH += C:/Users/USER/Desktop/Github/libraries/libdatachannel/include
 LIBS += -LC:/Users/USER/Desktop/Github/libraries/libdatachannel/Windows/Mingw64 -ldatachannel

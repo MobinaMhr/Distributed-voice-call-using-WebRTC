@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "./src/callmanager.h"
+#include "./backend/callmanager.h"
 #include "./network/socket.h"
 
 int main(int argc, char *argv[])
