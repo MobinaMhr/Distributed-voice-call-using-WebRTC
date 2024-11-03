@@ -31,13 +31,13 @@ Window {
                 Layout.preferredHeight: 30
             }
             Label{
-                text: "Id: " + textfield1.text
+                text: "Id: " + callManager.m_userName
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
             }
 
             Label{
-                text: "CallerId: " + textfield.text
+                text: "CallerId: " + callManager.m_callerId
                 Layout.fillWidth: true
                 Layout.preferredHeight: 80
             }
