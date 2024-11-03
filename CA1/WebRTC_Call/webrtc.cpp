@@ -50,6 +50,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_config.iceServers.clear();
     m_config = rtc::Configuration();
     m_config.iceServers.emplace_back("stun:165.232.44.143:3478");
+    rtc::IceServer turnServer("turn:165.232.44.143", "3479", "myturn", "mewmew");
     // m_config.iceServers.emplace_back("stun:stun.l.google.com:19302");
 
     m_audio = rtc::Description::Audio("audio", rtc::Description::Direction::SendRecv);
