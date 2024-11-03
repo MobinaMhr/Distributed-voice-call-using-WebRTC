@@ -52,6 +52,7 @@ CallManager::CallManager(QObject *parent)
     }, Qt::AutoConnection);
 
     connect(webrtc, &WebRTC::connectionClosed, this, [this](){
+        //this->webrtc->closePeerConnection(this->webrtcPeerId);
         this->audioInput->stop();
     }, Qt::AutoConnection);
 }
@@ -156,7 +157,9 @@ QString CallManager::createJsonRequest(const std::vector<QString> &keys, const s
 
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
+    qDebug() <<"\n\n\ninja\n\n\n";
     m_callerId = offer.value("user").toString();
+    webrtc->init(webrtcPeerId, false);
     webrtc->addPeer(webrtcPeerId);
     webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());
     std::vector<rtc::Candidate> candidates = extractCandidates(offer.value("sdp").toString());

@@ -51,6 +51,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_config = rtc::Configuration();
     m_config.iceServers.emplace_back("stun:165.232.44.143:3478");
     rtc::IceServer turnServer("turn:165.232.44.143", "3479", "myturn", "mewmew");
+    m_config.iceServers.emplace_back(turnServer);
     // m_config.iceServers.emplace_back("stun:stun.l.google.com:19302");
 
     m_audio = rtc::Description::Audio("audio", rtc::Description::Direction::SendRecv);
@@ -218,13 +219,15 @@ void WebRTC::closePeerConnection(const QString &peerId)
     if (m_peerConnections.contains(peerId)) {
         // Stop and remove the track associated with the peer
         if (m_peerTracks.contains(peerId)) {
-            m_peerTracks[peerId]->close();  // Stop the track
+            if (m_isOfferer)
+                m_peerTracks[peerId]->close();  // Stop the track
             m_peerTracks.remove(peerId);   // Remove from the track map
         }
 
         // Close and remove the PeerConnection
         auto pc = m_peerConnections[peerId];
-        pc->close();                    // Close the PeerConnection
+        if (m_isOfferer)
+            pc->close();                    // Close the PeerConnection
         m_peerConnections.remove(peerId); // Remove from the connection map
 
         qDebug() << "WEBRTC(___)" << "Peer connection closed for peer:" << peerId;
