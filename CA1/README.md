@@ -1,60 +1,21 @@
-# Computer-Networks-Course-S2025
-Computer Networks course projects in the spring semester of the University of Tehran under the supervision of Dr.Yazdani. 
+# Distributed voice call using WebRTC
 
-### Main Files
-#### main.cpp
-This is the entrly point of the application. It initializes the Qt application adn sets up the main window(UI).
-#### main.qml
-This is the main QML file for the user interface. It displays the call controls, connected peers, and other UI elements.
+## How to Run
 
-### WebRTC Implementation
-The provided WebRTC class is designed to manage WebRTC peer connections, handling SDP (Session Description Protocol) generation, ICE (Interactive Connectivity Establishment) candidate gathering, and the management of audio streams. It integrates with the libdatachannel library and uses Qt 6 for event-driven communication. The class includes functionalities for creating peer connections, managing SDP offers/answers, adding audio tracks, and handling RTP (Real-time Transport Protocol) packet transmission.
+1. Open the Qt application and select the WebRTC_Call.pro file in the directory of `Computer-Networks-Course-S2025\CA1\WebRTC_Call\WebRTC_Call.pro`.
 
-The WebRTC class can be used for real-time audio communication, where it establishes peer-to-peer connections, negotiates media capabilities, and transmits audio data in the form of RTP packets.
+2. Build the project from the toolbar at the bottom left of the application.
 
-#### Class Structure
-- Constructor and Destructor
-    - Initializes the WebRTC object with a default audio track and sets up signal connections.
-    - Cleans up resources in the destructor.
-- Public Methods
-    - Methods to initialize the WebRTC instance, add peers, generate SDP offers/answers, and send audio tracks.
-- Public Slots
-    - Slots for setting remote descriptions and ICE candidates.
-- Private Methods
-    - Utility methods to generate SDP in JSON format and retrieve the current timestamp for RTP synchronization.
-- RTP Header Definition
-    - A packed structure that defines the RTP header used for audio data packetization.
+![build](https://github.com/MobinaMhr/Computer-Networks-Course-S2025/tree/main/CA1/WebRTC_Call/assets/build.png)
 
+1. Run the project from the toolbar at the bottom left of the application.
 
-<!-- #### webrtc.h
-- Header file for the WebRTC class.
-- Contains declarations for methods and member variables.
-#### webrtc.cpp
-- Source file for the WebRTC class.
-- Implements the signaling, peer connection management, and media handling (audio tracks). -->
+![run](https://github.com/MobinaMhr/Computer-Networks-Course-S2025/tree/main/CA1/WebRTC_Call/assets/run.png)
 
-### Audio Handling
-#### AudioInput Class
-This class captures audio from the microphone, encodes it using the Opus codec, and sends it to the WebRTC connection.
-- audioinput.hpp
-Header file for the AudioInput class.
-Contains declarations for audio capture methods and signals.
+2. Enter your ID in the popup window and set it..
 
-- audioinput.cpp
-Source file for the AudioInput class.
-Implements audio capture from the microphone, encoding with Opus, and sending the encoded audio.
-#### AudioOutput Class
-This class is responsible for receiving audio packets from the WebRTC track, decoding them using Opus codec, and playing them through the speaker.
+![setId](https://github.com/MobinaMhr/Computer-Networks-Course-S2025/tree/main/CA1/WebRTC_Call/assets/setId.png)
 
-- audiooutput.hpp
-Header file for the AudioOutput class.
-Contains declarations for audio playback methods and signals.
+3. Enter the phone number of the user you want to start a call with and then, call them.
 
-- audiooutput.cpp
-Source file for the AudioOutput class.
-Implements receiving Opus-encoded audio, decoding it, and playing it through the speaker.
-
-### Call Management
-The `CallManager` class handles call-related data and operations, such as managing the caller ID, IP address, and ICE candidates necessary for establishing a WebRTC call.
-
-<!-- ### Signaling Server (Optional) -->
+![startCall](https://github.com/MobinaMhr/Computer-Networks-Course-S2025/tree/main/CA1/WebRTC_Call/assets/startCall.png)
