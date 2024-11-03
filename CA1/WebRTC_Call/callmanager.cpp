@@ -177,7 +177,7 @@ QString CallManager::createJsonRequest(const std::vector<QString> &keys, const s
 
 void CallManager::handleSingalingOffer(const QJsonObject &offer)
 {
-    m_callerId = offer.value("user").toString();
+    setCallerId( offer.value("user").toString());
     webrtc->init(webrtcPeerId, false);
     webrtc->addPeer(webrtcPeerId);
     webrtc->setRemoteDescription(webrtcPeerId, offer.value("sdp").toString());

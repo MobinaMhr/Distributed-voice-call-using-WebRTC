@@ -31,13 +31,15 @@ Window {
                 Layout.preferredHeight: 30
             }
             Label{
+                id: userNameLabel
                 text: "Id: " + callManager.m_userName
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
             }
 
             Label{
-                text: "CallerId: " + callManager.m_callerId
+                id: callerIdLabel
+                text: callManager.callerId ? callManager.m_callerId : "CallerId: "
                 Layout.fillWidth: true
                 Layout.preferredHeight: 80
             }
@@ -134,6 +136,20 @@ Window {
                     text = "Call"
                     callManager.endCall()
                     textfield.clear()
+                }
+            }
+            Connections {
+                target: callManager
+                onCallerIdChanged: {
+                    callerIdLabel.text = callManager.callerId ? "CallerId: " + callManager.callerId : "CallerId:"
+                }
+            }
+
+                    // Connections for userName
+            Connections {
+                target: callManager
+                onUserNameChanged: {
+                userNameLabel.text = callManager.m_userName ? "Id: " + callManager.m_userName : "id :"
                 }
             }
         }
