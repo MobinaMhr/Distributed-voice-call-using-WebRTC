@@ -1,6 +1,19 @@
 ### Project
 ### main Implementation
 This is the entrly point of the application. It initializes the Qt application adn sets up the main window(UI).
+- `QGuiApplication app(argc, argv)` Initializes the Qt application
+- `QQmlApplicationEngine engine` Sets up the QML application engine
+- `CallManager callManager` Creates an instance of CallManager
+- `const QUrl url0(QStringLiteral("ws://localhost:3000"))` Defines the WebSocket server URL
+- `Socket socket(url0)` Creates a new Socket object with the specified URL
+- `socket.connectToServer()` Connects to the WebSocket server
+- `QString message = ...` Prepares a message
+- `socket.sendMessage(message)` Sends the message to the server
+- `engine.rootContext()->setContextProperty("callManager", &callManager)` Exposes the callManager instance to the QML context
+- `const QUrl url(...)` Specifies the path to the QML file
+- Connects the objectCreated signal to a lambda function that checks if the QML file loaded successfully
+- `engine.load(url)` Loads the QML file
+- `return app.exec();` Starts the Qt event loop, running the application
 
 ### Audio
 #### AudioInput Implementation
@@ -780,5 +793,17 @@ QString CallManager::createJsonRequest(const std::vector<QString> &keys, const s
 ### UI
 #### QML main Implementation
 
+In this file, we've coded for the UI part of the project, the popuop window mentioned in [How to Run](https://github.com/MobinaMhr/Computer-Networks-Course-S2025/blob/main/CA1/README.md), shows the `Ip`, `IceCandidate`, `Id`, `CallerId` which are in `ColumnLayout`.
+At the bellow of them, there are two `TextField`s for Your Id and Phone Number. Two `Button`s are bellow. 
+
+- ColumnLayout
+    It arranges its child items vertically in a column, one below the other.
+- TextField
+    These have some visual features as anchors and ... 
+    The `onTextChanged` part, does all of what is done after writing the corresponding box of text. 
+- Button
+    these have some visual features as anchors, height, width and ...
+    The `onClicket` part, does all of what is done after corresponding buttons are clicked by user.
+  
 ```c
 ```
