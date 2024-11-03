@@ -41,6 +41,7 @@ public:
     int bitRate() const;
     void setBitRate(int newBitRate);
     void resetBitRate();
+    void closePeerConnection(const QString &peerId);
 
     std::vector<rtc::Candidate> getCandidates(const QString &peerID);
     QString getMid(const QString &peerID);
@@ -52,8 +53,8 @@ Q_SIGNALS:
     void gatheringComplited(const QString &peerID);
     void offerIsReady(const QString &peerID, const QString& description);
     void answerIsReady(const QString &peerID, const QString& description);
-
     void connectionStablished();
+    void connectionClosed();
     void isOffererChanged();
     void ssrcChanged();
     void payloadTypeChanged();

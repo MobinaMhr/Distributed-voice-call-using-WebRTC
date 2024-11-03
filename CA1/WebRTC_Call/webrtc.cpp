@@ -92,6 +92,7 @@ void WebRTC::addPeer(const QString &peerId)
             qDebug() << "WEBRTC(___)" << "Peer connection state: Failed" ;
             break;
         case rtc::PeerConnection::State::Closed:
+            Q_EMIT connectionClosed();
             qDebug() << "WEBRTC(___)" << "Peer connection state: Closed" ;
             break;
         }
@@ -210,6 +211,27 @@ void WebRTC::setBitRate(int newBitRate)
 void WebRTC::resetBitRate()
 {
     m_bitRate = 48000;
+}
+
+void WebRTC::closePeerConnection(const QString &peerId)
+{
+    if (m_peerConnections.contains(peerId)) {
+        // Stop and remove the track associated with the peer
+        if (m_peerTracks.contains(peerId)) {
+            m_peerTracks[peerId]->close();  // Stop the track
+            m_peerTracks.remove(peerId);   // Remove from the track map
+        }
+
+        // Close and remove the PeerConnection
+        auto pc = m_peerConnections[peerId];
+        pc->close();                    // Close the PeerConnection
+        m_peerConnections.remove(peerId); // Remove from the connection map
+
+        qDebug() << "WEBRTC(___)" << "Peer connection closed for peer:" << peerId;
+
+    } else {
+        qWarning() << "WEBRTC(___)" << "No peer connection found for peer:" << peerId;
+    }
 }
 
 std::vector<rtc::Candidate> WebRTC::getCandidates(const QString &peerID)

@@ -50,6 +50,10 @@ CallManager::CallManager(QObject *parent)
     connect(audioInput, &AudioInput::bufferIsReady, this, [this](const QByteArray &buffer){
         webrtc->sendTrack(webrtcPeerId, buffer);
     }, Qt::AutoConnection);
+
+    connect(webrtc, &WebRTC::connectionClosed, this, [this](){
+        this->audioInput->stop();
+    }, Qt::AutoConnection);
 }
 
 CallManager::~CallManager()
@@ -124,7 +128,7 @@ void CallManager::startCall()
 
 void CallManager::endCall()
 {
-    audioInput->stop();
+    webrtc->closePeerConnection(webrtcPeerId);
 }
 
 void CallManager::registerUser()
