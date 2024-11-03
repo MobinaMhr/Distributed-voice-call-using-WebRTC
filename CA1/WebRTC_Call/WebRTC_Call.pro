@@ -30,15 +30,9 @@ HEADERS += \
     audio/audioinput.h \
     audio/audiooutput.h \
     audio/audioprocessor.h \
-    audioinput.h \
-    audiooutput.h \
-    audioprocessor.h \
-    callmanager.h \
     network/socket.h \
     network/webrtc.h \
-    socket.h \
     src/callmanager.h \
-    webrtc.h
 
 INCLUDEPATH += C:/Users/USER/Desktop/Github/libraries/libdatachannel/include
 LIBS += -LC:/Users/USER/Desktop/Github/libraries/libdatachannel/Windows/Mingw64 -ldatachannel

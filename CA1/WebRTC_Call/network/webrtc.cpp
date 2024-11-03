@@ -77,35 +77,35 @@ void WebRTC::addPeer(const QString &peerId)
     pc->onStateChange([this, peerId](rtc::PeerConnection::State state) {
         switch(state) {
         case rtc::PeerConnection::State::New:
-            qDebug() << "WEBRTC(___)" << "Peer connection state: New";
+            qDebug() << "WebRTC: Peer connection state: New";
             break;
         case rtc::PeerConnection::State::Connecting:
-            qDebug() << "WEBRTC(___)" << "Peer connection state: Connecting" ;
+            qDebug() << "WebRTC: Peer connection state: Connecting" ;
             break;
         case rtc::PeerConnection::State::Connected:
             Q_EMIT connectionStablished();
-            qDebug() << "WEBRTC(___)" << "Peer connection state: Connected" ;
+            qDebug() << "WebRTC: Peer connection state: Connected" ;
             break;
         case rtc::PeerConnection::State::Disconnected:
-            qDebug() << "WEBRTC(___)" << "Peer connection state: Disconnected" ;
+            qDebug() << "WebRTC: Peer connection state: Disconnected" ;
             break;
         case rtc::PeerConnection::State::Failed:
-            qDebug() << "WEBRTC(___)" << "Peer connection state: Failed" ;
+            qDebug() << "WebRTC: Peer connection state: Failed" ;
             break;
         case rtc::PeerConnection::State::Closed:
             Q_EMIT connectionClosed();
-            qDebug() << "WEBRTC(___)" << "Peer connection state: Closed" ;
+            qDebug() << "WebRTC: Peer connection state: Closed" ;
             break;
         }
     });
 
     pc->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         if (state == rtc::PeerConnection::GatheringState::New)
-            qDebug() << "WEBRTC(___)" << "state is New";
+            qDebug() << "WebRTC: state is New";
         if (state == rtc::PeerConnection::GatheringState::InProgress)
-            qDebug() << "WEBRTC(___)" << "state is inProgress";
+            qDebug() << "WebRTC: state is inProgress";
         if (state == rtc::PeerConnection::GatheringState::Complete){
-            qDebug() << "WEBRTC(___)" << "state is complete";
+            qDebug() << "WebRTC: state is complete";
             Q_EMIT gatheringComplited(peerId);
         }
     });
@@ -157,7 +157,7 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
     try {
         m_peerTracks[peerId]->send(data, rtpPacket.size());
     } catch (const std::exception &e) {
-        qWarning() << "Error sending track: " << e.what();
+        qWarning() << "WebRTC: Error sending track: " << e.what();
     }
 }
 
@@ -229,10 +229,10 @@ void WebRTC::closePeerConnection(const QString &peerId)
             pc->close();
         m_peerConnections.remove(peerId);
 
-        qDebug() << "WEBRTC(___)" << "Peer connection closed for peer:" << peerId;
+        qDebug() << "WebRTC: Peer connection closed for peer:" << peerId;
 
     } else {
-        qWarning() << "WEBRTC(___)" << "No peer connection found for peer:" << peerId;
+        qWarning() << "WebRTC: No peer connection found for peer:" << peerId;
     }
 }
 
