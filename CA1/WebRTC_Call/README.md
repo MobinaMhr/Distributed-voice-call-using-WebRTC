@@ -5,7 +5,54 @@ This is the entrly point of the application. It initializes the Qt application a
 ### Audio
 #### AudioInput Implementation
 
+This class leverages the `QIODevice` framework for reading and writing data.
 
+The AudioInput constructor initializes the audio input device.
+```c
+QMediaDevices mediaDevices;
+QAudioDevice inputDevice;
+inputDevice = mediaDevices.defaultAudioInput();
+if (!inputDevice.isFormatSupported(format)) {
+    qFatal("Audio format not supported");
+}
+
+audioSource = new QAudioSource(inputDevice, format, this);
+```
+It first initializes the pointer to an object of AudioProcessor class to handle encoding raw audio.
+```c
+if (!processor->initializeEncoder()) {
+    qWarning() << "AudioInput: Audio processor is not initialized!";
+    return;
+}
+```
+it also uses the static method of `AudioProcessor` to create a format for audio in `format` attribute.
+```c
+QAudioFormat format = AudioProcessor::createAudioFormat();
+```
+
+The desctructore deletes processor and audioSource if they exist.
+
+The `start` method of this class checks if the audioSource exists, attempts to open the device for reading and writing with `QIODevice::ReadWrite`, and Starts the `audioSource` with the current instance (`this`) as the device to which it will write audio data.
+
+After all it checks if the audioSource is in `QAudio::ActiveState`.
+
+
+The `stop` method halts the audio input process.
+The method first checks if audioSource is initialized, and then calls audioSource->stop(), which stops the audio data capture.
+
+The `readData` method is designed to read audio data from the device. It uses the `Q_UNUSED` macro for both `data` and `maxLen` parameters, indicating that these parameters are intentionally unused within the function. This method simply returns 0.
+
+The `writeData` responsible for handling and encoding raw audio data, then emitting a signal when the buffer is ready.
+
+It first defines a constant `maxPacketSize` which represents the maximum size of the encoded data packet.
+After that a declaration of a buffer named `encodedData` to hold the encoded audio data.
+It declares a buffer named `encodedData` to hold the encoded audio data.
+The encoding Audio Data process starts as:
+1. Calls `processor->encodeAudio` to encode the raw audio data. It takes the input data, frame size (half of the length since it's 16-bit), and the output buffer with the max packet size.
+2. Checks if the encoding process is successful. If it fails, returns -1.
+
+After all it creates a QByteArray object named `audioData` from the encoded data.
+At the end the `bufferIsReady` signal is emited with the encoded audioData, and returns the length of the data written.
 
 #### AudioOutput Implementation
 
