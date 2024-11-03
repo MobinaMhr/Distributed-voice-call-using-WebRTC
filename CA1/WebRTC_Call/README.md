@@ -458,10 +458,9 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 
 ##### Public Slots 
 
-##### Private Methods 
-
-##### Getters and Setters
-
+The `setRemoteDescription` method configures the remote description for a WebRTC peer connection, allowing the session to be properly established with the other peer. 
+It is used for establishing the WebRTC session by setting the remote description.
+It ensures that the connection is properly configured for communication with the other peer. The description type is dynamically set based on the instance's role (offerer or answerer).
 ```c
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
@@ -473,6 +472,10 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 }
 ```
 
+This `setRemoteCandidate` method sets a remote ICE candidate for a specific peer connection.
+It is crucial for establishing the peer-to-peer connection in WebRTC.
+
+It handles the ICE negotiation process in WebRTC. By adding the remote candidate, it ensures that the peer connection can establish the optimal network path for real-time communication. 
 ```c
 void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
 {
@@ -481,6 +484,9 @@ void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate,
 }
 ```
 
+##### Private Methods 
+
+The `descriptionToJson()` method converts the local description of a peer connection into a JSON format string, in order to share it and do process on it.
 ```c
 QString WebRTC::descriptionToJson(const QString &peerID)
 {
@@ -496,6 +502,10 @@ QString WebRTC::descriptionToJson(const QString &peerID)
 }
 ```
 
+The `closePeerConnection` method handles the closing of a peer connection in a WebRTC session, ensuring that resources are properly released and connections are terminated.
+- First checks if there is an active peer connection for the specified peerId
+- If the peer tracks contain an entry for peerId and the instance is the offerer, it closes the audio track.
+- It then closes the peer connection if the instance is the offerer and removes it from the m_peerConnections map.
 ```c
 void WebRTC::closePeerConnection(const QString &peerId)
 {
@@ -519,6 +529,17 @@ void WebRTC::closePeerConnection(const QString &peerId)
     }
 }
 ```
+
+This method retrieves all ICE candidates for a specified peer connection.
+```c
+std::vector<rtc::Candidate> WebRTC::getCandidates(const QString &peerID)
+{
+    return m_peerConnections[peerID]->localDescription()->candidates();
+}
+```
+
+##### Getters and Setters
+There are some getters and setters for this attributes. They simply return the value, sets the new value of the attribute and emits corresponding signal.
 
 #### Socket Implementation
 
