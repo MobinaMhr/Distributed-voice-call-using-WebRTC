@@ -10,6 +10,7 @@
 #include <QMediaDevices>
 #include <QDebug>
 #include <opus.h>
+#include "audioprocessor.h"
 
 class AudioOutput : public QObject
 {
@@ -33,8 +34,6 @@ private:
 
     QAudioSink *audioSink;
 
-    OpusDecoder *opusDecoder;
-
     QIODevice *audioDevice;
 
     QMutex mutex;
@@ -42,6 +41,8 @@ private:
     QQueue<QByteArray> packetQueue;
 
     int frameSize;
+
+    AudioProcessor *processor;
 };
 
 #endif // AUDIOOUTPUT_H
