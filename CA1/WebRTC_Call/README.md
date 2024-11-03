@@ -423,6 +423,14 @@ connect(m_webSocket, &QWebSocket::textMessageReceived, this, &Socket::onMessageR
 -  `QWebSocket::disconnected` informs losing the connection to the websocket.</br>
 - `QWebSocket::textMessageReceived` informs arrival of new message to the peer.</br>
 
+The `onConnected`, `onDisconnected`, and `onMessageReceived` private slots emit the corresponding signals.
+
+The first one is called when the WebSocket connection is successfully established. It serves as a notification mechanism to other components in the application that rely on the connection status.
+
+The second one is invoked when the WebSocket connection is closed. It notifies other components of the disconnection, allowing the application to handle the loss of connection appropriately.
+
+The third one is called whenever a new message is received through the WebSocket. It enables the application to process incoming messages and react accordingly.
+
 The destructor of this class deletes the created `m_webSocket`.
 
 The `connectToServer` method initiates a WebSocket connection to the specified server URL. It uses the open function of the m_webSocket object, which represents the WebSocket client.
