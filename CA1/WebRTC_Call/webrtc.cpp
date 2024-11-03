@@ -217,18 +217,17 @@ void WebRTC::resetBitRate()
 void WebRTC::closePeerConnection(const QString &peerId)
 {
     if (m_peerConnections.contains(peerId)) {
-        // Stop and remove the track associated with the peer
+
         if (m_peerTracks.contains(peerId)) {
             if (m_isOfferer)
-                m_peerTracks[peerId]->close();  // Stop the track
-            m_peerTracks.remove(peerId);   // Remove from the track map
+                m_peerTracks[peerId]->close();
+            m_peerTracks.remove(peerId);
         }
 
-        // Close and remove the PeerConnection
         auto pc = m_peerConnections[peerId];
         if (m_isOfferer)
-            pc->close();                    // Close the PeerConnection
-        m_peerConnections.remove(peerId); // Remove from the connection map
+            pc->close();
+        m_peerConnections.remove(peerId);
 
         qDebug() << "WEBRTC(___)" << "Peer connection closed for peer:" << peerId;
 
