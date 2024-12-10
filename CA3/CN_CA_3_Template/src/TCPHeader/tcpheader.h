@@ -7,6 +7,10 @@ class TCPHeader : public QObject {
     Q_OBJECT
 public:
     explicit TCPHeader(uint16_t srcPort, uint16_t destPort, QObject *parent = nullptr);
+    TCPHeader(const TCPHeader &other);
+    TCPHeader& operator=(const TCPHeader &other);
+    TCPHeader(TCPHeader &&other) noexcept;
+    TCPHeader& operator=(TCPHeader &&other) noexcept;
 
     uint16_t sourcePort() const;
     uint16_t destinationPort() const;

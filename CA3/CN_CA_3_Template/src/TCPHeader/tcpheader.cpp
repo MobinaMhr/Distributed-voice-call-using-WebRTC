@@ -3,6 +3,54 @@
 TCPHeader::TCPHeader(uint16_t srcPort, uint16_t destPort, QObject *parent)
     : QObject(parent), m_sourcePort(srcPort), m_destPort(destPort) {}
 
+TCPHeader::TCPHeader(const TCPHeader &other) : QObject(other.parent()),
+    m_sourcePort(other.m_sourcePort), m_destPort(other.m_destPort),
+    m_sequenceNumber(other.m_sequenceNumber), m_acknowledgmentNumber(other.m_acknowledgmentNumber),
+    m_dataOffset(other.m_dataOffset), m_flags(other.m_flags), m_windowSize(other.m_windowSize),
+    m_checksum(other.m_checksum), m_urgentPointer(other.m_urgentPointer) {}
+
+TCPHeader& TCPHeader::operator=(const TCPHeader &other) {
+    if (this != &other) {
+        m_sourcePort = other.m_sourcePort;
+        m_destPort = other.m_destPort;
+        m_sequenceNumber = other.m_sequenceNumber;
+        m_acknowledgmentNumber = other.m_acknowledgmentNumber;
+        m_dataOffset = other.m_dataOffset;
+        m_flags = other.m_flags;
+        m_windowSize = other.m_windowSize;
+        m_checksum = other.m_checksum;
+        m_urgentPointer = other.m_urgentPointer;
+        setParent(other.parent());
+    }
+    return *this;
+}
+
+TCPHeader::TCPHeader(TCPHeader &&other) noexcept : QObject(other.parent()),
+    m_sourcePort(other.m_sourcePort), m_destPort(other.m_destPort),
+    m_sequenceNumber(other.m_sequenceNumber),
+    m_acknowledgmentNumber(other.m_acknowledgmentNumber),
+    m_dataOffset(other.m_dataOffset), m_flags(other.m_flags), m_windowSize(other.m_windowSize),
+    m_checksum(other.m_checksum), m_urgentPointer(other.m_urgentPointer) {
+    other.setParent(nullptr);
+}
+
+TCPHeader& TCPHeader::operator=(TCPHeader &&other) noexcept {
+    if (this != &other) {
+        m_sourcePort = other.m_sourcePort;
+        m_destPort = other.m_destPort;
+        m_sequenceNumber = other.m_sequenceNumber;
+        m_acknowledgmentNumber = other.m_acknowledgmentNumber;
+        m_dataOffset = other.m_dataOffset;
+        m_flags = other.m_flags;
+        m_windowSize = other.m_windowSize;
+        m_checksum = other.m_checksum;
+        m_urgentPointer = other.m_urgentPointer;
+        setParent(other.parent());
+        other.setParent(nullptr);
+    }
+    return *this;
+}
+
 uint16_t TCPHeader::sourcePort() const {
     return this->m_sourcePort;
 }
