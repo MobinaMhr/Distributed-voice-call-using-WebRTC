@@ -25,3 +25,16 @@ bool TestMacAddress::testConstructorQString()
         return false;
     }
 }
+
+bool TestMacAddress::testInvalidMacAddress()
+{
+    try {
+        QString invalidAddress = "zz:zz:zz:zz:zz:zz";
+        MacAddress mac(invalidAddress);
+        return false;
+    } catch (const std::invalid_argument&) {
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
