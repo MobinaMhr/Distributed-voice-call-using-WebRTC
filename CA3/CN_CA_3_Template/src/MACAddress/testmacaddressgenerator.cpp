@@ -21,3 +21,8 @@ bool TestMacAddressGenerator::testGenerateUniqueAddresses()
         return false;
     }
 }
+
+void TestMacAddressGenerator::runAllTests()
+{
+    qDebug() << "testGenerateUniqueAddresses: " << (testGenerateUniqueAddresses() ? "PASSED" : "FAILED");
+}
