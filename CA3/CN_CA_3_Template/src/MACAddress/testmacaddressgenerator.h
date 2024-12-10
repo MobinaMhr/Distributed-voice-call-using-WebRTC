@@ -2,6 +2,7 @@
 #define TESTMACADDRESSGENERATOR_H
 
 #include <QObject>
+#include "./macaddressgenerator.h"
 
 class TestMacAddressGenerator : public QObject
 {
