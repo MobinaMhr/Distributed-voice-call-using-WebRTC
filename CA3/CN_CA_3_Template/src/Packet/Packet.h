@@ -17,14 +17,14 @@ public:
                     quint32 totalCycles, const QString destIP, const QByteArray &payload,
                     const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader, QObject *parent);
 
-    void updatePath(const QString& ipAddress);
+    void updateRoute(const QString& ipAddress);
     void increaseWaitingCyclesByOne();
     void increaseTotalCyclesByOne();
 
     // Getters
     UT::PacketType packetType() const;
     UT::PacketControlType controlType() const;
-    QStringList path() const;
+    QStringList route() const;
     quint32 sequenceNumber() const;
     quint32 waitingCycles() const;
     quint32 totalCycles() const;
@@ -43,7 +43,7 @@ public:
     void setTcpHeader(const TCPHeader &tcpHeader);
 
 private:
-    QStringList m_path;
+    QStringList m_route;
     UT::PacketType m_packetType;
     UT::PacketControlType m_controlType;
 

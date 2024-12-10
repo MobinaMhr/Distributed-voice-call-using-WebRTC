@@ -9,8 +9,8 @@ Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, qui
     m_waitingCycles(waitCycles), m_totalCycles(totalCycles), m_destinationIP(destIP), m_payload(payload),
     m_dataLinkHeader(dataLinkHeader), m_tcpHeader(tcpHeader) {}
 
-void Packet::updatePath(const QString& ipAddress) {
-    m_path.append(ipAddress);
+void Packet::updateRoute(const QString& ipAddress) {
+    m_route.append(ipAddress);
 }
 void Packet::increaseWaitingCyclesByOne() {
     m_waitingCycles = m_waitingCycles + 1;
@@ -26,8 +26,8 @@ UT::PacketType Packet::packetType() const {
 UT::PacketControlType Packet::controlType() const {
     return m_controlType;
 }
-QStringList Packet::path() const {
-    return m_path;
+QStringList Packet::route() const {
+    return m_route;
 }
 quint32 Packet::sequenceNumber() const {
     return m_sequenceNumber;
