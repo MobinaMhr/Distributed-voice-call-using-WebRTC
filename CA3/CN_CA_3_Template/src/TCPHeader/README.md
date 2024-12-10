@@ -1,6 +1,68 @@
 # TCPHeader
 
-This class reports a TCP (Transmission Control Protocol) packet.
+The `TCPHeader` class represents the header of a TCP (Transmission Control Protocol) packet. It encapsulates various fields such as source and destination ports, sequence and acknowledgment numbers, data offset, flags, window size, checksum, and urgent pointer. The class also supports copying, moving, and assigning instances, ensuring efficient resource management. It inherits from QObject, making it suitable for use in Qt applications.
+
+
+The copy constructor creates a copy of an existing TCPHeader object.
+```cpp
+TCPHeader::TCPHeader(const TCPHeader &other) : QObject(other.parent()),
+    m_sourcePort(other.m_sourcePort), m_destPort(other.m_destPort),
+    m_sequenceNumber(other.m_sequenceNumber), m_acknowledgmentNumber(other.m_acknowledgmentNumber),
+    m_dataOffset(other.m_dataOffset), m_flags(other.m_flags), m_windowSize(other.m_windowSize),
+    m_checksum(other.m_checksum), m_urgentPointer(other.m_urgentPointer) {}
+```
+
+
+Cssignment Operator assigns the values from one TCPHeader object to another.
+```cpp
+TCPHeader& TCPHeader::operator=(const TCPHeader &other) {
+    if (this != &other) {
+        m_sourcePort = other.m_sourcePort;
+        m_destPort = other.m_destPort;
+        m_sequenceNumber = other.m_sequenceNumber;
+        m_acknowledgmentNumber = other.m_acknowledgmentNumber;
+        m_dataOffset = other.m_dataOffset;
+        m_flags = other.m_flags;
+        m_windowSize = other.m_windowSize;
+        m_checksum = other.m_checksum;
+        m_urgentPointer = other.m_urgentPointer;
+        setParent(other.parent());
+    }
+    return *this;
+}
+```
+
+Move Constructor moves the resources from one TCPHeader object to another.
+```cpp
+TCPHeader::TCPHeader(TCPHeader &&other) noexcept : QObject(other.parent()),
+    m_sourcePort(other.m_sourcePort), m_destPort(other.m_destPort),
+    m_sequenceNumber(other.m_sequenceNumber),
+    m_acknowledgmentNumber(other.m_acknowledgmentNumber),
+    m_dataOffset(other.m_dataOffset), m_flags(other.m_flags), m_windowSize(other.m_windowSize),
+    m_checksum(other.m_checksum), m_urgentPointer(other.m_urgentPointer) {
+    other.setParent(nullptr);
+}
+```
+
+Move assignment operator moves the resources from one TCPHeader object to another.
+```cpp
+TCPHeader& TCPHeader::operator=(TCPHeader &&other) noexcept {
+    if (this != &other) {
+        m_sourcePort = other.m_sourcePort;
+        m_destPort = other.m_destPort;
+        m_sequenceNumber = other.m_sequenceNumber;
+        m_acknowledgmentNumber = other.m_acknowledgmentNumber;
+        m_dataOffset = other.m_dataOffset;
+        m_flags = other.m_flags;
+        m_windowSize = other.m_windowSize;
+        m_checksum = other.m_checksum;
+        m_urgentPointer = other.m_urgentPointer;
+        setParent(other.parent());
+        other.setParent(nullptr);
+    }
+    return *this;
+}
+```
 
 It has some getter and setter methods:
 ```cpp
