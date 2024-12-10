@@ -10,7 +10,7 @@ class DataGenerator : public QObject {
 
 public:
     explicit DataGenerator(QObject* parent = nullptr);
-    void setParameters(int cycleCount, int packetCount, int pcCount, double lambda);
+    void setParameters(int cycleCount, int packetCount, int pcCount, double lambda, float threshold);
     QVector<int> generatePacketDistribution();
 
 Q_SIGNALS:
@@ -20,14 +20,17 @@ private:
     int cycleCount;
     int packetCount;
     int pcCount;
+    int devidingStep;
     double lambda;
 
     std::random_device rd;
     std::mt19937 generator;
 
     float getUniformRandom();
-    int getCycle(float value);
+    int poissonInverseCDF(float value);
     double poissonPMF(int x);
+    int calculate_deviding_step(float tr);
+    int getRandomCycle();
 };
 
 #endif // DATAGENERATOR_H
