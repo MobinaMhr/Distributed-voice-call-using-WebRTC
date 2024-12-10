@@ -2,7 +2,7 @@
 #define DATALINKHEADER_H
 
 #include <QObject>
-#include "../MACAddress/macAddress.h"
+#include "../MACAddress/MacAddress.h"
 
 class DataLinkHeader : public QObject {
     Q_OBJECT
