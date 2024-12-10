@@ -1,15 +1,17 @@
 #include "EventsCoordinator.h"
 
-EventsCoordinator::EventsCoordinator(QThread *parent) :
-    QThread {parent}
-{}
+EventsCoordinator::EventsCoordinator(double lambda, int cycleCount, int packetCount, int pcCount, QThread *parent) :
+    QThread {parent}, m_timer(new QTimer(this))
+{
+    m_dataGenerator->setParameters(cycleCount, packetCount, pcCount, lambda, 0.99999);
+}
 
 EventsCoordinator *
-EventsCoordinator::instance(QThread *parent)
+EventsCoordinator::instance(double lambda, int cycleCount, int packetCount, int pcCount, QThread *parent)
 {
     if(!m_self)
     {
-        m_self = new EventsCoordinator(parent);
+        m_self = new EventsCoordinator(lambda, cycleCount, packetCount, pcCount, parent);
     }
 
     return m_self;
@@ -24,3 +26,4 @@ EventsCoordinator::release()
         m_self = nullptr;
     }
 }
+

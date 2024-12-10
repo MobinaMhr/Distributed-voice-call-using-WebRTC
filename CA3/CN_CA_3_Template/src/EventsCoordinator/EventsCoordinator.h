@@ -5,6 +5,9 @@
 
 #include <QObject>
 #include <QThread>
+#include <QTimer>
+
+#include "../DataGenerator/datagenerator.h"
 
 class EventsCoordinator : public QThread
 {
@@ -12,17 +15,17 @@ class EventsCoordinator : public QThread
 
     typedef std::chrono::milliseconds Millis;
 
-    explicit EventsCoordinator(QThread *parent = nullptr);
+    explicit EventsCoordinator(double lambda, int cycleCount, int packetCount, int pcCount, QThread *parent = nullptr);
 
 public:    // constructors
     ~EventsCoordinator() override = default;
-    static EventsCoordinator *instance(QThread *parent = nullptr);
+    static EventsCoordinator *instance(double lambda, int cycleCount, int packetCount, int pcCount, QThread *parent = nullptr);
     static void               release();
 
 public:    // methods
 
 public:    // getter and setters
-Q_SIGNALS:
+
 
 
 public Q_SLOTS:
@@ -31,6 +34,8 @@ private Q_SLOTS:
 
 private:    // members
     inline static EventsCoordinator *m_self = nullptr;
+    DataGenerator *m_dataGenerator;
+    QTimer *m_timer = nullptr;
 };
 
 #endif    // EVENTSCOORDINATOR_H
