@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/EventsCoordinator/EventsCoordinator.cpp \
     $$PWD/IP/IP.cpp \
     $$PWD/MACAddress/macAddress.cpp \
+    $$PWD/MACAddress/macaddressgenerator.cpp \
     $$PWD/MACAddress/testmacaddress.cpp \
     $$PWD/PortBindingManager/PortBindingManager.cpp \
     $$PWD/Port/Port.cpp \
@@ -21,6 +22,7 @@ HEADERS += \
     $$PWD/Globals/Globals.h \
     $$PWD/IP/IP.h \
     $$PWD/MACAddress/macAddress.h \
+    $$PWD/MACAddress/macaddressgenerator.h \
     $$PWD/MACAddress/testmacaddress.h \
     $$PWD/PortBindingManager/PortBindingManager.h \
     $$PWD/Port/Port.h \
