@@ -12,6 +12,7 @@ SOURCES += \
     $$PWD/MACAddress/macAddress.cpp \
     $$PWD/MACAddress/macaddressgenerator.cpp \
     $$PWD/MACAddress/testmacaddress.cpp \
+    $$PWD/MACAddress/testmacaddressgenerator.cpp \
     $$PWD/PortBindingManager/PortBindingManager.cpp \
     $$PWD/Port/Port.cpp \
     $$PWD/main.cpp
@@ -24,6 +25,7 @@ HEADERS += \
     $$PWD/MACAddress/macAddress.h \
     $$PWD/MACAddress/macaddressgenerator.h \
     $$PWD/MACAddress/testmacaddress.h \
+    $$PWD/MACAddress/testmacaddressgenerator.h \
     $$PWD/PortBindingManager/PortBindingManager.h \
     $$PWD/Port/Port.h \
 
