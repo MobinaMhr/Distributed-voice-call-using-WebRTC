@@ -20,4 +20,21 @@ int DataGenerator::getCycleFromValue(float value) {
 }
 
 QVector<int> DataGenerator::generatePacketDistribution() {
+    QVector<int> distribution(cycleCount, 0);
+
+    for (int i = 0; i < packetCount; ++i) {
+        bool valid = false;
+        while (!valid) {
+            float randomValue = getUniformRandom();
+            int cycle = getCycleFromValue(randomValue);
+
+            if (distribution[cycle] < pcCount) {
+                ++distribution[cycle];
+                valid = true;
+            }
+        }
+    }
+
+    Q_EMIT distributionGenerated(distribution);
+    return distribution;
 }
