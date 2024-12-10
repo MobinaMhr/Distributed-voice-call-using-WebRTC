@@ -22,15 +22,4 @@ private:
     bool validate() const;
     uint64_t parseAddress(const QString &address) const;
 };
-
-// class MACAddressGenerator : public QObject {
-//     Q_OBJECT
-// public:
-//     explicit MACAddressGenerator(QObject *parent = nullptr);
-//     MACAddress generate();
-
-// private:
-//     uint64_t m_counter;
-// };
-
 #endif // MACADDRESS_H
