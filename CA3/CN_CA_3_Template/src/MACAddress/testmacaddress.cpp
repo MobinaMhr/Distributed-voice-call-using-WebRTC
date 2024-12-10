@@ -38,3 +38,13 @@ bool TestMacAddress::testInvalidMacAddress()
         return false;
     }
 }
+
+bool TestMacAddress::testToString()
+{
+    try {
+        MacAddress mac(0xAABBCCDDEEFF);
+        return mac.toString() == "aa:bb:cc:dd:ee:ff";
+    } catch (...) {
+        return false;
+    }
+}
