@@ -48,3 +48,11 @@ bool TestMacAddress::testToString()
         return false;
     }
 }
+
+void TestMacAddress::runAllTests()
+{
+    qDebug() << "testConstructorUint64: " << (testConstructorUint64() ? "PASSED" : "FAILED");
+    qDebug() << "testConstructorQString: " << (testConstructorQString() ? "PASSED" : "FAILED");
+    qDebug() << "testInvalidMacAddress: " << (testInvalidMacAddress() ? "PASSED" : "FAILED");
+    qDebug() << "testToString: " << (testToString() ? "PASSED" : "FAILED");
+}
