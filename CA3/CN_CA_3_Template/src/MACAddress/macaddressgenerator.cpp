@@ -10,3 +10,11 @@ MacAddress MacAddressGenerator::generateMacAddress()
     generatedAddresses.insert(newAddress);
     return MacAddress(newAddress);
 }
+
+uint64_t MacAddressGenerator::generateUniqueAddress()
+{
+    uint64_t address;
+    do { address = rng() & 0xFFFFFFFFFFFF;
+    } while (generatedAddresses.contains(address));
+    return address;
+}
