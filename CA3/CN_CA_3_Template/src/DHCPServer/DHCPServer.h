@@ -1,24 +1,24 @@
-#ifndef DHCPSERVER_H
-#define DHCPSERVER_H
+// #ifndef DHCPSERVER_H
+// #define DHCPSERVER_H
 
-#include <QObject>
+// #include <QObject>
 
-class DHCPServer : public QObject
-{
-    Q_OBJECT
+// class DHCPServer : public QObject
+// {
+//     Q_OBJECT
 
-public:    // constructors
-    explicit DHCPServer(QObject *parent = nullptr);
-    ~DHCPServer() override;
+// public:    // constructors
+//     explicit DHCPServer(QObject *parent = nullptr);
+//     ~DHCPServer() override;
 
-public:    // methods
-Q_SIGNALS:
+// public:    // methods
+// Q_SIGNALS:
 
-public Q_SLOTS:
+// public Q_SLOTS:
 
-private:    // methods
+// private:    // methods
 
-private:    // members
-};
+// private:    // members
+// };
 
-#endif      // DHCPSERVER_H
+// #endif      // DHCPSERVER_H
