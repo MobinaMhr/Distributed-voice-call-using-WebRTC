@@ -14,3 +14,14 @@ bool TestMacAddress::testConstructorUint64()
         return false;
     }
 }
+
+bool TestMacAddress::testConstructorQString()
+{
+    try {
+        QString address = "aa:bb:cc:dd:ee:ff";
+        MacAddress mac(address);
+        return mac.toString() == address;
+    } catch (...) {
+        return false;
+    }
+}
