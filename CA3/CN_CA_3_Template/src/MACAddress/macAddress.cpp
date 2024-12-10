@@ -10,6 +10,21 @@ MacAddress::MacAddress(const QString &address): m_address(parseAddress(address))
         throw std::invalid_argument("Invalid MAC address");
 }
 
+QString MacAddress::toString() const
+{
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0') << std::setw(12) << m_address;
+    std::string hexString = ss.str();
+    QString macString;
+    for (size_t i = 0; i < hexString.size(); i += 2) {
+        macString.append(QString::fromStdString(hexString.substr(i, 2)));
+        if (i < hexString.size() - 2) {
+            macString.append(":");
+        }
+    }
+    return macString;
+}
+
 bool MacAddress::validate() const
 {
     return m_address <= MAX_MAC_ADDRESS;
