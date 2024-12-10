@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QTimer>
 
 #include "../DataGenerator/datagenerator.h"
 
@@ -34,6 +35,7 @@ private Q_SLOTS:
 private:    // members
     inline static EventsCoordinator *m_self = nullptr;
     DataGenerator *m_dataGenerator;
+    QTimer *m_timer = nullptr;
 };
 
 #endif    // EVENTSCOORDINATOR_H

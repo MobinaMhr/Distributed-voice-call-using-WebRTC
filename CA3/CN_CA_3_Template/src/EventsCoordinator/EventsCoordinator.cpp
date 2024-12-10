@@ -1,7 +1,7 @@
 #include "EventsCoordinator.h"
 
 EventsCoordinator::EventsCoordinator(double lambda, int cycleCount, int packetCount, int pcCount, QThread *parent) :
-    QThread {parent}
+    QThread {parent}, m_timer(new QTimer(this))
 {
     m_dataGenerator->setParameters(cycleCount, packetCount, pcCount, lambda, 0.99999);
 }
