@@ -5,7 +5,7 @@ DataLinkHeader::DataLinkHeader(const MacAddress &src, const MacAddress &dest, QO
 
 DataLinkHeader::DataLinkHeader(const DataLinkHeader &other) : QObject(other.parent()),
     m_sourceMACAddress(other.m_sourceMACAddress),
-    m_destinationMACAddress(other.m_destinationMACAddress) {} // Copy assignment operator
+    m_destinationMACAddress(other.m_destinationMACAddress) {}
 
 DataLinkHeader& DataLinkHeader::operator=(const DataLinkHeader &other) {
     if (this != &other) {

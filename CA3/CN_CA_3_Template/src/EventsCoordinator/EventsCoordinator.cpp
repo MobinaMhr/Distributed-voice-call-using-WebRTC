@@ -1,8 +1,5 @@
 #include "EventsCoordinator.h"
 
-#include <QRandomGenerator>
-#include <set>
-
 EventsCoordinator::EventsCoordinator(double lambda, int cycleCount, int packetCount, int pcCount, int cycleLength, QThread* parent)
     : QThread(parent), m_cycleCount(cycleCount), m_cycleLength(cycleLength) {
     m_dataGenerator = new DataGenerator(this);

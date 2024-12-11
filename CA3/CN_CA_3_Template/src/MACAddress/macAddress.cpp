@@ -30,7 +30,6 @@ bool MacAddress::validate() const
     return m_address <= MAX_MAC_ADDRESS;
 }
 
-
 uint64_t MacAddress::parseAddress(const QString &address) const
 {
     QRegularExpression re("([0-9A-Fa-f]{2}[:\\-]?){6}");

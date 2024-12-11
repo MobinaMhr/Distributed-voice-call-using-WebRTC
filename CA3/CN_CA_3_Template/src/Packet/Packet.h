@@ -13,8 +13,8 @@ class Packet : public QObject {
     Q_OBJECT
 
 public:
-    explicit Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber, quint32 waitCycles,
-                    quint32 totalCycles, const QString destIP, const QByteArray &payload,
+    explicit Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber,
+                    quint32 waitCycles, quint32 totalCycles, const QString destIP, const QByteArray &payload,
                     const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader, QObject *parent);
 
     void updateRoute(const QString& ipAddress);

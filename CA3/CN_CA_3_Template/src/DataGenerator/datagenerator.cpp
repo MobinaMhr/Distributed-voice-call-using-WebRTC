@@ -23,7 +23,6 @@ double DataGenerator::poissonPMF(int x) {
 }
 
 int DataGenerator::poissonInverseCDF(float p) {
-    // poissonInverseCDF
     double cumulative = 0.0;
     int x = 0;
 

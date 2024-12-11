@@ -5,6 +5,8 @@
 #include <QThread>
 #include <QTimer>
 #include <QVector>
+#include <QRandomGenerator>
+#include <set>
 #include "../DataGenerator/datagenerator.h"
 #include "../Globals/Globals.h"
 
@@ -17,11 +19,7 @@ class EventsCoordinator : public QThread
 public:
     ~EventsCoordinator() override;
     static EventsCoordinator *instance(double lambda, int cycleCount, int packetCount, int pcCount, int cycleLength, QThread *parent = nullptr);
-    static void               release();
-
-public:
-
-public:
+    static void release();
 
 protected:
     void run() override;
