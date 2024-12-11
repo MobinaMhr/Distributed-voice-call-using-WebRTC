@@ -1,5 +1,6 @@
 # MACAddress
-This class 
+
+The `MacAddress` class is designed to represent and manipulate MAC (Media Access Control) addresses. It provides constructors for initializing MAC addresses from both uint64_t and QString types, methods for converting the address to a string, validating the address, and parsing a string representation of a MAC address. The class ensures that only valid MAC addresses are accepted and throws exceptions for invalid formats.
 
 The `toString()` method 
 ```cpp
@@ -56,9 +57,10 @@ Then convert the sanitized string to a `uint64_t` value using base 16 or hexadec
 The checked Mac address is returned.
 
 # MACAddressGenerator
-This class handles the creation of unique MAC addresses.
-This class has a public method named `generateMacAddress()` implemented as:
 
+The `MacAddressGenerator` class is designed to generate unique MAC (Media Access Control) addresses. It ensures that each generated address is unique by maintaining a set of previously generated addresses. The class inherits from QObject.
+
+This class has a public method named `generateMacAddress()` implemented as:
 ```cpp
 MacAddress MacAddressGenerator::generateMacAddress()
 {

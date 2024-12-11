@@ -1,5 +1,6 @@
 # DataGenerator
-This class 
+
+The `DataGenerator` class is designed to generate packets based on a ***Poisson distribution**. It provides methods for setting parameters, generating uniform random numbers, calculating Poisson probability mass functions (PMF), and generating packet distributions. The class inherits from QObject.
 
 in the `setParameters()` method of this class, some input parameters are set as bellow:
 ```cpp
