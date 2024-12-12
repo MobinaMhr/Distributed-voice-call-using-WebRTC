@@ -177,3 +177,17 @@ void IP<UT::IPVersion::IPv6>::setPrefixLength(int prefixLength)
         throw std::invalid_argument(INVALID_PREFIX_LENGTH_ERROR);
     m_prefixLength = prefixLength;
 }
+
+QPair<QString, QString> IP<UT::IPVersion::IPv6>::getSubnetRange() const
+{
+    QByteArray lowerBound = m_ipValue;
+    QByteArray upperBound = m_ipValue;
+    int hostBits = IPV6_Length_IN_BITES - m_prefixLength;
+
+    for (int i = 15; i >= 0 && hostBits > 0; --i) {
+        int clearBits = std::min(8, hostBits);
+        upperBound[i] |= (0xFF >> (8 - clearBits));
+        hostBits -= clearBits;
+    }
+    return { QHostAddress(lowerBound).toString(), QHostAddress(upperBound).toString() };
+}
