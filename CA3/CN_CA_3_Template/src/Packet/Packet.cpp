@@ -7,7 +7,7 @@ Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, qui
        const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header, QObject *parent)
     : QObject(parent),           m_packetType(packetType),
     m_controlType(controlType),  m_destinationIP(destIP),
-    m_ipv4Header(ipv4Header),    m_ipv6Header(ipv6Header),
+    // m_ipv4Header(ipv4Header),    m_ipv6Header(ipv6Header),
     m_tcpHeader(tcpHeader),      m_dataLinkHeader(dataLinkHeader),
     m_payload(payload),          m_sequenceNumber(seqNumber),
     m_waitingCycles(waitCycles), m_totalCycles(totalCycles) {}
