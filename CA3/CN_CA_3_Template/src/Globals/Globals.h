@@ -4,8 +4,6 @@
 #include <QObject>
 #include <vector>
 
-// int MAX_BUFFER_SIZE = 20;
-
 namespace UT
 {
 

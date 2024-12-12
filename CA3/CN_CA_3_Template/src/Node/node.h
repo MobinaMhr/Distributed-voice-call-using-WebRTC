@@ -10,6 +10,7 @@
 #include "../IP/IP.h"
 #include "../Globals/Globals.h"
 #include "../MACAddress/macaddress.h"
+#include "../Packet/Packet.h"
 #include <QString>
 #include <vector>
 
@@ -23,7 +24,7 @@ public:
     // static Node *instance(int id, const MacAddress &macAddress, QThread *parent = nullptr);
     static void release();
 
-    virtual void processPacket(const QString &packetInfo);
+    virtual void processPacket(const Packet &packet);
     int id() const;
     QString name() const;
     virtual QString ipAddress() const = 0;

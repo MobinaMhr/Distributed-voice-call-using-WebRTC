@@ -34,7 +34,3 @@ QString Node::name() const {
 QString Node::macAddress() const {
     return m_macAddress.toString();
 }
-
-void Node::processPacket(const QString &packetInfo) {
-    qDebug() << "Node" << m_name << "processing packet:" << packetInfo;
-}
