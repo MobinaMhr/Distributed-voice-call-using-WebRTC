@@ -43,6 +43,14 @@ IP<UT::IPVersion::IPv4>::IP(uint32_t ipValue, const QString &subnetMask, QObject
 
 IP<UT::IPVersion::IPv4>::~IP() {};
 
+QString IP<UT::IPVersion::IPv4>::toString() const
+{
+    QStringList parts;
+    for (int i = 0; i < 4; ++i)
+        parts << QString::number((m_ipValue >> (24 - 8 * i)) & 0xFF);
+    return parts.join('.');
+}
+
 /**
  * ===========================================
  * ===========================================
@@ -76,8 +84,3 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
-
-
-
-
-
