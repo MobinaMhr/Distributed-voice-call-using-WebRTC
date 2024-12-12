@@ -1,6 +1,25 @@
 #include "IP.h"
 #include <stdio.h>
 
+namespace {
+uint32_t subnetMaskToValue(const QString &subnetMask) {
+    QStringList parts = subnetMask.split('.');
+    if (parts.size() != 4)
+        throw std::invalid_argument("Invalid subnet mask format");
+    uint32_t value = 0;
+    for (int i = 0; i < 4; ++i)
+        value |= (parts[i].toInt() & 0xFF) << (24 - 8 * i);
+    return value;
+    }
+
+QString valueToSubnetMask(uint32_t value) {
+    QStringList parts;
+    for (int i = 0; i < 4; ++i)
+        parts << QString::number((value >> (24 - 8 * i)) & 0xFF);
+    return parts.join('.');
+    }
+}
+
 AbstractIP::AbstractIP(QObject *parent) :
     QObject {parent}
 {}
@@ -43,12 +62,21 @@ IP<UT::IPVersion::IPv4>::IP(uint32_t ipValue, const QString &subnetMask, QObject
 
 IP<UT::IPVersion::IPv4>::~IP() {};
 
-QString IP<UT::IPVersion::IPv4>::toString() const
-{
+QString IP<UT::IPVersion::IPv4>::toString() const{
     QStringList parts;
     for (int i = 0; i < 4; ++i)
         parts << QString::number((m_ipValue >> (24 - 8 * i)) & 0xFF);
     return parts.join('.');
+}
+
+uint32_t IP<UT::IPVersion::IPv4>::toValue() const{
+    return m_ipValue;
+}
+
+
+QString IP<UT::IPVersion::IPv4>::getSubnetMask() const
+{
+    return valueToSubnetMask(m_subnetMask);
 }
 
 /**
@@ -84,3 +112,4 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
+
