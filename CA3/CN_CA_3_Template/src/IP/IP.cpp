@@ -20,6 +20,18 @@ QString valueToSubnetMask(uint32_t value) {
         parts << QString::number((value >> (24 - 8 * i)) & 0xFF);
     return parts.join('.');
     }
+
+QByteArray bitwiseAnd(const QByteArray &array1, const QByteArray &array2) {
+    if (array1.size() != array2.size()) {
+        qWarning() << "Byte arrays must have the same size for bitwise operations.";
+        return QByteArray();
+    }
+    QByteArray result(array1.size(), 0);
+    for (int i = 0; i < array1.size(); ++i) {
+        result[i] = array1[i] & array2[i];
+    }
+    return result;
+    }
 }
 
 AbstractIP::AbstractIP(QObject *parent) :
@@ -190,4 +202,24 @@ QPair<QString, QString> IP<UT::IPVersion::IPv6>::getSubnetRange() const
         hostBits -= clearBits;
     }
     return { QHostAddress(lowerBound).toString(), QHostAddress(upperBound).toString() };
+}
+
+bool IP<UT::IPVersion::IPv6>::isInSubnet(const QString &otherIP) const
+{
+    QHostAddress addr(otherIP);
+    if (addr.protocol() != QAbstractSocket::IPv6Protocol) {
+        return false;
+    }
+    QString modifiedString = otherIP;
+    modifiedString.remove(IPV6_DELIM);
+    QByteArray otherValue = QByteArray::fromHex(modifiedString.toUtf8());
+    QByteArray mask(IPV6_Length_IN_BYTES, IPV6_DEFAULT_FILL_VALUE);
+    int hostBits = IPV6_Length_IN_BITES - m_prefixLength;
+
+    for (int i = 15; i >= 0 && hostBits > 0; --i) {
+        int clearBits = std::min(8, hostBits);
+        mask[i] = ~((1 << clearBits) - 1);
+        hostBits -= clearBits;
+    }
+    return bitwiseAnd(m_ipValue, mask) == bitwiseAnd(otherValue, mask);
 }
