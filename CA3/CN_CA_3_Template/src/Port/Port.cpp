@@ -31,7 +31,3 @@ uint8_t Port::number()
 void Port::setIpAddress(QString ipAddress) {
     m_ipAddress = ipAddress;
 }
-
-void Port::setMacAddress(MacAddress macAddress) {
-    m_macAddress = macAddress;
-}

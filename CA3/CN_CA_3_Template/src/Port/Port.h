@@ -20,7 +20,6 @@ public: // Getters
 
 public: // Setters
     void setIpAddress(QString ipAddress);
-    void setMacAddress(MacAddress macAddress);
 
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
@@ -34,7 +33,6 @@ private:
     uint8_t m_number;
     uint64_t m_numberOfPacketsSent;
     QString m_ipAddress;
-    MacAddress m_macAddress;
 };
 
 typedef QSharedPointer<Port> PortPtr_t;
