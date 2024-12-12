@@ -79,6 +79,11 @@ QString IP<UT::IPVersion::IPv4>::getSubnetMask() const
     return valueToSubnetMask(m_subnetMask);
 }
 
+void IP<UT::IPVersion::IPv4>::setSubnetMask(const QString &subnetMask)
+{
+    m_subnetMask = subnetMaskToValue(subnetMask);
+}
+
 /**
  * ===========================================
  * ===========================================
@@ -112,4 +117,3 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
-
