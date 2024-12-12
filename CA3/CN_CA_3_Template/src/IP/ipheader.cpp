@@ -1,5 +1,6 @@
 #include "ipheader.h"
 
-IPHeader::IPHeader(QObject *parent) :
+AbstractIPHeader::AbstractIPHeader(QObject *parent) :
     QObject {parent}
 {}
+
