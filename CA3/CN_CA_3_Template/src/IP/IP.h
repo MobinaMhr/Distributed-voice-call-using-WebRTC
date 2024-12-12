@@ -7,6 +7,9 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QTextStream>
+#include <QHostAddress>
+#include <QPair>
+#include <QByteArray>
 
 template <UT::IPVersion version>
 class IP;
@@ -15,6 +18,18 @@ typedef IP<UT::IPVersion::IPv4> IPv4_t;
 typedef IP<UT::IPVersion::IPv6> IPv6_t;
 typedef QSharedPointer<IPv4_t>  IPv4Ptr_t;
 typedef QSharedPointer<IPv6_t>  IPv6Ptr_t;
+const QString DEFAULT_SUBNET_MASK = "255.255.255.255";
+const uint32_t DEFAULT_IP_VALUE = std::numeric_limits<uint32_t>::max();
+const uint32_t DEFAULT_SUBNET_MASK_VALUE = std::numeric_limits<uint32_t>::max();
+const int DEFAULT_IPV6_PREFIX_LENGTH = 64;
+const int IPV6_Length_IN_BYTES = 16;
+const int IPV6_Length_IN_BITES = 128;
+const char IPV6_DEFAULT_FILL_VALUE = 0xFF;
+const char IPV6_DELIM = ':';
+const std::string IPV6_VALUE_ERROR = "Invalid IPv6 format";
+const std::string SUBNET_MASK_FORMAT_ERROR = "Invalid subnet mask format";
+const std::string EMPTY_GATEWAY_ERROR = "Gateway is not set";
+const std::string INVALID_PREFIX_LENGTH_ERROR = "invalid prefix length";
 
 class AbstractIP : public QObject
 {
@@ -46,11 +61,24 @@ class IP<UT::IPVersion::IPv4> : public AbstractIP
 
 public:    // constructors
     explicit IP(QObject *parent = nullptr);
-    explicit IP(const QString &ipString, QObject *parent = nullptr);
-    explicit IP(uint64_t ipValue, QObject *parent = nullptr);
+    explicit IP(const QString &ipString, const QString &subnetMask = "", QObject *parent = nullptr);
+    explicit IP(uint32_t ipValue, const QString &subnetMask = "", QObject *parent = nullptr);//TODO: may change to uint32_t
     ~IP() override;
 
 public:    // methods
+    QString toString() const;
+    uint32_t toValue() const;
+
+    QString getSubnetMask() const;
+    void setSubnetMask(const QString &subnetMask);
+
+    IPv4Ptr_t getGateway() const;
+    void setGateway(IPv4Ptr_t &gateway);
+
+    QPair<QString, QString> getSubnetRange() const;
+    bool isInSubnet(const QString &otherIP) const;
+
+    // IPv6_t toIPv6() const;
 
 
 public:    // operators
@@ -64,6 +92,9 @@ private:    // methods
 
 
 private:
+    uint32_t m_ipValue;
+    uint32_t m_subnetMask;
+    IPv4Ptr_t m_gateway;
 };
 
 /**
@@ -84,12 +115,24 @@ class IP<UT::IPVersion::IPv6> : public AbstractIP
 
 public:    // constructors
     explicit IP(QObject *parent = nullptr);
-    explicit IP(const QString &ipString, QObject *parent = nullptr);
-    explicit IP(uint64_t ipValue, QObject *parent = nullptr);
+    explicit IP(const QString &ipString, int prefixLength = 128, QObject *parent = nullptr);
+    explicit IP(const QByteArray &ipValue, int prefixLength = 128, QObject *parent = nullptr);
     ~IP() override;
 
 public:    // methods
+    QString toString() const;
+    QByteArray toValue() const;
 
+    int getPrefixLength() const;
+    void setPrefixLength(int prefixLength);
+
+    IPv6Ptr_t getGateway() const;
+    void setGateway(const IPv6Ptr_t &gateway);
+
+    QPair<QString, QString> getSubnetRange() const;
+    bool isInSubnet(const QString &otherIP) const;
+
+    // IPv4_t toIPv4() const;
 
 public:    // operators
     bool
@@ -101,6 +144,9 @@ public:    // operators
 private:    // methods
 
 private:
+    QByteArray m_ipValue;
+    int m_prefixLength;
+    IPv6Ptr_t m_gateway;
 };
 
 #endif    // IP_H

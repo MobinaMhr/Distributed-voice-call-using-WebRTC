@@ -7,7 +7,7 @@ BUNDLE_VERSION = 6
 
 # QT += core ## Added by me
 
-
+QT += network
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
