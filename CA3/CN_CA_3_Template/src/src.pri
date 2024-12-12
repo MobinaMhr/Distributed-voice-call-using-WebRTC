@@ -8,7 +8,7 @@ INCLUDEPATH += $$PWD\Globals
 SOURCES += \
     # $$PWD/DHCPServer/DHCPServer.cpp \
     $$PWD/DataGenerator/datagenerator.cpp \
-    # $$PWD/EventsCoordinator/EventsCoordinator.cpp \
+    $$PWD/EventsCoordinator/EventsCoordinator.cpp \
     $$PWD/DataLinkHeader/datalinkheader.cpp \
     $$PWD/IP/IP.cpp \
     $$PWD/MACAddress/macAddress.cpp \
@@ -24,7 +24,7 @@ SOURCES += \
 HEADERS += \
     # $$PWD/DHCPServer/DHCPServer.h \
     $$PWD/DataGenerator/datagenerator.h \
-    # $$PWD/EventsCoordinator/EventsCoordinator.h \
+    $$PWD/EventsCoordinator/EventsCoordinator.h \
     $$PWD/DataLinkHeader/datalinkheader.h \
     $$PWD/Globals/Globals.h \
     $$PWD/IP/IP.h \
