@@ -65,7 +65,8 @@ void EventsCoordinator::handleCurrentCyclePackets(const int &packetsCount) {
             receiverID = QRandomGenerator::global()->bounded(m_pcCount);
         } while (receiverID == senderID);
 
-        int packetType = 0;
+        UT::PacketType packetType = (QRandomGenerator::global()->bounded(2) == 0) ?
+                                      UT::PacketType::Data : UT::PacketType::Control;
 
         packets.emplace_back(senderID, receiverID, packetType);
         usedSenders.insert(senderID);

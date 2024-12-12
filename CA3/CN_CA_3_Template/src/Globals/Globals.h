@@ -50,9 +50,9 @@ enum class TopologyType
 struct PacketDetails {
     int senderID;
     int receiverID;
-    int packetType;
+    PacketType packetType;
 
-    PacketDetails(int sender, int receiver, int type)
+    PacketDetails(int sender, int receiver, PacketType type)
         : senderID(sender), receiverID(receiver), packetType(type) {}
 };
 }    // namespace UT
