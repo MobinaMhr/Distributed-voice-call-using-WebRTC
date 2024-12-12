@@ -4,6 +4,8 @@
 #include <QObject>
 #include <vector>
 
+int MAX_BUFFER_SIZE = 20;
+
 namespace UT
 {
 
@@ -47,7 +49,8 @@ enum class TopologyType
     Torus
 };
 
-struct PacketDetails {
+struct PacketDetails
+{
     int senderID;
     int receiverID;
     PacketType packetType;
