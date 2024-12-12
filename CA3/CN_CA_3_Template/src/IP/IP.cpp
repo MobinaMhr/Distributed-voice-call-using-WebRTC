@@ -126,10 +126,8 @@ bool IP<UT::IPVersion::IPv4>::isInSubnet(const QString &otherIP) const
  */
 
 IP<UT::IPVersion::IPv6>::IP(QObject *parent) :
-    AbstractIP(parent)
-{
-    m_ipValue = std::numeric_limits<uint64_t>::max();
-}
+    AbstractIP(parent), m_ipValue(IPV6_Length_IN_BYTES, IPV6_DEFAULT_FILL_VALUE),
+    m_prefixLength(DEFAULT_IPV6_PREFIX_LENGTH){}
 
 IP<UT::IPVersion::IPv6>::IP(const QString &ipString, QObject *parent) :
     AbstractIP(parent)

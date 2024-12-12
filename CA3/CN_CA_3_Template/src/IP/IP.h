@@ -21,6 +21,7 @@ typedef QSharedPointer<IPv6_t>  IPv6Ptr_t;
 const QString DEFAULT_SUBNET_MASK = "255.255.255.255";
 const uint32_t DEFAULT_IP_VALUE = std::numeric_limits<uint32_t>::max();
 const uint32_t DEFAULT_SUBNET_MASK_VALUE = std::numeric_limits<uint32_t>::max();
+const int DEFAULT_IPV6_PREFIX_LENGTH = 64;
 
 class AbstractIP : public QObject
 {
@@ -135,9 +136,9 @@ public:    // operators
 private:    // methods
 
 private:
-    QByteArray ipValue_;
-    int prefixLength_;
-    IPv6Ptr_t gateway_;
+    QByteArray m_ipValue;
+    int m_prefixLength;
+    IPv6Ptr_t m_gateway;
 };
 
 #endif    // IP_H
