@@ -78,6 +78,9 @@ private:    // methods
 
 
 private:
+    uint32_t m_ipValue;
+    uint32_t m_subnetMask;
+    QSharedPointer<IP<UT::IPVersion::IPv4>> m_gateway;
 };
 
 /**

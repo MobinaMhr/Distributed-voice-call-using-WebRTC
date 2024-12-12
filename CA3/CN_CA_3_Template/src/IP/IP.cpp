@@ -1,4 +1,5 @@
 #include "IP.h"
+#include <stdio.h>
 
 AbstractIP::AbstractIP(QObject *parent) :
     QObject {parent}
@@ -15,10 +16,8 @@ AbstractIP::AbstractIP(QObject *parent) :
  */
 
 IP<UT::IPVersion::IPv4>::IP(QObject *parent) :
-    AbstractIP(parent)
-{
-    m_ipValue = std::numeric_limits<uint64_t>::max();
-}
+    AbstractIP(parent), m_ipValue(std::numeric_limits<uint32_t>::max()),
+    m_subnetMask(std::numeric_limits<uint32_t>::max()){} //TODO:check subnetMask value
 
 IP<UT::IPVersion::IPv4>::IP(const QString &ipString, QObject *parent) :
     AbstractIP(parent)
@@ -67,3 +66,4 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
+
