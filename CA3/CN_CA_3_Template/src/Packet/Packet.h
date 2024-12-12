@@ -5,8 +5,9 @@
 #include <QString>
 #include <QStringList>
 #include <QByteArray>
-#include "../TCPHeader/tcpheader.h"
 #include "../Globals/globals.h"
+// #include "../IP/IP.h"
+#include "../TCPHeader/tcpheader.h"
 #include "../DataLinkHeader/datalinkheader.h"
 
 class Packet : public QObject {
@@ -17,14 +18,18 @@ public:
                     quint32 waitCycles, quint32 totalCycles, const QString destIP, const QByteArray &payload,
                     const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader, QObject *parent);
 
-    void updateRoute(const QString& ipAddress);
-    void increaseWaitingCyclesByOne();
-    void increaseTotalCyclesByOne();
+    void updatePath(const QString& ipAddress);
+
+    void increaseWaitingCyclesBy(int additionalCycles);
+    void increaseTotalCyclesBy(int additionalCycles);
+
+    void increaseWaitingCycles();
+    void increaseTotalCycles();
 
     // Getters
     UT::PacketType packetType() const;
     UT::PacketControlType controlType() const;
-    QStringList route() const;
+    QStringList path() const;
     quint32 sequenceNumber() const;
     quint32 waitingCycles() const;
     quint32 totalCycles() const;
@@ -43,18 +48,18 @@ public:
     void setTcpHeader(const TCPHeader &tcpHeader);
 
 private:
-    QStringList m_route;
     UT::PacketType m_packetType;
     UT::PacketControlType m_controlType;
 
+    QString m_destinationIP;
+    // IP and BGP header
+    TCPHeader m_tcpHeader;
+    DataLinkHeader m_dataLinkHeader;
+    QByteArray m_payload;
     quint32 m_sequenceNumber;
     quint32 m_waitingCycles;
     quint32 m_totalCycles;
-
-    QString m_destinationIP;
-    QByteArray m_payload;
-    DataLinkHeader m_dataLinkHeader;
-    TCPHeader m_tcpHeader;
+    QStringList m_path;
 };
 
 #endif // PACKET_H
