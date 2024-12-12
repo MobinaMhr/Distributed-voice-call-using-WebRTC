@@ -16,6 +16,9 @@ typedef IP<UT::IPVersion::IPv4> IPv4_t;
 typedef IP<UT::IPVersion::IPv6> IPv6_t;
 typedef QSharedPointer<IPv4_t>  IPv4Ptr_t;
 typedef QSharedPointer<IPv6_t>  IPv6Ptr_t;
+const QString DEFAULT_SUBNET_MASK = "255.255.255.255";
+const uint32_t DEFAULT_IP_VALUE = std::numeric_limits<uint32_t>::max();
+const uint32_t DEFAULT_SUBNET_MASK_VALUE = std::numeric_limits<uint32_t>::max();
 
 class AbstractIP : public QObject
 {
