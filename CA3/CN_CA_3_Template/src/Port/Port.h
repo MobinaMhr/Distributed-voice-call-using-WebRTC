@@ -15,8 +15,12 @@ public:
     ~Port() override;
 
 public: // Getters
-    QString routerIp();
+    QString ipAddress();
     uint8_t number();
+
+public: // Setters
+    void setIpAddress(QString ipAddress);
+    void setMacAddress(MacAddress macAddress);
 
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
@@ -29,7 +33,8 @@ public Q_SLOTS:
 private:
     uint8_t m_number;
     uint64_t m_numberOfPacketsSent;
-    QString m_routerIP;
+    QString m_ipAddress;
+    MacAddress m_macAddress;
 };
 
 typedef QSharedPointer<Port> PortPtr_t;

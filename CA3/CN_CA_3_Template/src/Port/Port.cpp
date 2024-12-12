@@ -18,12 +18,20 @@ void Port::receivePacket(const PacketPtr_t &data)
     Q_EMIT packetReceived(data);
 }
 
-QString Port::routerIp()
+QString Port::ipAddress()
 {
-    return m_routerIP;
+    return m_ipAddress;
 }
 
 uint8_t Port::number()
 {
     return m_number;
+}
+
+void Port::setIpAddress(QString ipAddress) {
+    m_ipAddress = ipAddress;
+}
+
+void Port::setMacAddress(MacAddress macAddress) {
+    m_macAddress = macAddress;
 }
