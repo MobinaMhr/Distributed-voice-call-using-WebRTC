@@ -7,7 +7,7 @@ namespace {
 uint32_t subnetMaskToValue(const QString &subnetMask) {
     QStringList parts = subnetMask.split('.');
     if (parts.size() != 4)
-        throw std::invalid_argument("Invalid subnet mask format");
+        throw std::invalid_argument(SUBNET_MASK_FORMAT_ERROR);
     uint32_t value = 0;
     for (int i = 0; i < 4; ++i)
         value |= (parts[i].toInt() & 0xFF) << (24 - 8 * i);
@@ -91,7 +91,7 @@ IPv4Ptr_t IP<UT::IPVersion::IPv4>::getGateway() const
     if (m_gateway) {
         return m_gateway;//may cause bug!!
     } else {
-        throw std::logic_error("Gateway is not set");
+        throw std::logic_error(EMPTY_GATEWAY_ERROR);
     }
 }
 
@@ -138,8 +138,23 @@ IP<UT::IPVersion::IPv6>::IP(const QString &ipString, int prefixLength, QObject *
     AbstractIP(parent), m_ipValue(IPV6_Length_IN_BYTES, IPV6_DEFAULT_FILL_VALUE),
     m_prefixLength(prefixLength){
     QString modifiedString = ipString;
-    modifiedString.remove(':');
+    modifiedString.remove(IPV6_DELIM);
     m_ipValue = QByteArray::fromHex(modifiedString.toUtf8());
-    if (m_ipValue.size() != 16)
-        throw std::invalid_argument("Invalid IPv6 format");
+    if (m_ipValue.size() != IPV6_Length_IN_BYTES)
+        throw std::invalid_argument(IPV6_VALUE_ERROR);
+}
+
+IP<UT::IPVersion::IPv6>::IP(const QByteArray &ipValue, int prefixLength, QObject *parent) :
+    AbstractIP(parent), m_ipValue(ipValue), m_prefixLength(prefixLength){
+    if (m_ipValue.size() != IPV6_Length_IN_BYTES)
+        throw std::invalid_argument(IPV6_VALUE_ERROR);
+}
+
+QString IP<UT::IPVersion::IPv6>::toString() const{
+    QString result;
+    for (int i = 0; i < m_ipValue.size(); i += 2) {
+        if (i > 0) result += ':';
+        result += QString::number((m_ipValue[i] << 8) | m_ipValue[i + 1], 16);
+    }
+    return result;
 }

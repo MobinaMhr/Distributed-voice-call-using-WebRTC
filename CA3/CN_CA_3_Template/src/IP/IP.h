@@ -24,6 +24,10 @@ const uint32_t DEFAULT_SUBNET_MASK_VALUE = std::numeric_limits<uint32_t>::max();
 const int DEFAULT_IPV6_PREFIX_LENGTH = 64;
 const int IPV6_Length_IN_BYTES = 16;
 const char IPV6_DEFAULT_FILL_VALUE = 0xFF;
+const char IPV6_DELIM = ':';
+const std::string IPV6_VALUE_ERROR = "Invalid IPv6 format";
+const std::string SUBNET_MASK_FORMAT_ERROR = "Invalid subnet mask format";
+const std::string EMPTY_GATEWAY_ERROR = "Gateway is not set";
 
 class AbstractIP : public QObject
 {
