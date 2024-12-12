@@ -98,6 +98,13 @@ void IP<UT::IPVersion::IPv4>::setGateway(IPv4Ptr_t &gateway)
     m_gateway = gateway;
 }
 
+QPair<QString, QString> IP<UT::IPVersion::IPv4>::getSubnetRange() const
+{
+    uint32_t network = m_ipValue & m_subnetMask;
+    uint32_t broadcast = network | ~m_subnetMask;
+    return { QHostAddress(network).toString(), QHostAddress(broadcast).toString() };
+}
+
 /**
  * ===========================================
  * ===========================================
@@ -131,7 +138,3 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
-
-
-
-

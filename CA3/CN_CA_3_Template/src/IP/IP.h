@@ -7,6 +7,8 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QTextStream>
+#include <QHostAddress>
+
 
 
 template <UT::IPVersion version>
@@ -62,7 +64,7 @@ public:    // methods
     void setSubnetMask(const QString &subnetMask);
 
     IPv4Ptr_t getGateway() const;
-    void setGateway(const IP<UT::IPVersion::IPv4> &gateway);
+    void setGateway(IPv4Ptr_t &gateway);
 
     QPair<QString, QString> getSubnetRange() const;
     bool isInSubnet(const QString &otherIP) const;
