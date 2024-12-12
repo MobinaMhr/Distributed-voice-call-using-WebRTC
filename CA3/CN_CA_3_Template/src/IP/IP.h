@@ -61,7 +61,7 @@ public:    // methods
     QString getSubnetMask() const;
     void setSubnetMask(const QString &subnetMask);
 
-    IP<UT::IPVersion::IPv4> getGateway() const;
+    IPv4Ptr_t getGateway() const;
     void setGateway(const IP<UT::IPVersion::IPv4> &gateway);
 
     QPair<QString, QString> getSubnetRange() const;
@@ -74,7 +74,7 @@ public:    // operators
     bool
     operator==(const IP<UT::IPVersion::IPv4> &other) const
     {
-        //return toValue() == other.toValue();
+        return toValue() == other.toValue();
     }
 
 private:    // methods
@@ -115,7 +115,7 @@ public:    // operators
     bool
     operator==(const IP<UT::IPVersion::IPv6> &other) const
     {
-        return toValue() == other.toValue();
+        // return toValue() == other.toValue();
     }
 
 private:    // methods

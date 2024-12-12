@@ -84,6 +84,15 @@ void IP<UT::IPVersion::IPv4>::setSubnetMask(const QString &subnetMask)
     m_subnetMask = subnetMaskToValue(subnetMask);
 }
 
+IPv4Ptr_t IP<UT::IPVersion::IPv4>::getGateway() const
+{
+    if (m_gateway) {
+        return m_gateway;//may cause bug!!
+    } else {
+        throw std::logic_error("Gateway is not set");
+    }
+}
+
 /**
  * ===========================================
  * ===========================================
@@ -117,3 +126,5 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
+
+
