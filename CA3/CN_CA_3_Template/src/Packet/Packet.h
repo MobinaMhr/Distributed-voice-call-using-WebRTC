@@ -6,7 +6,7 @@
 #include <QStringList>
 #include <QByteArray>
 #include "../Globals/globals.h"
-// #include "../IP/IP.h"
+#include "../IP/ipheader.h"
 #include "../TCPHeader/tcpheader.h"
 #include "../DataLinkHeader/datalinkheader.h"
 
@@ -52,6 +52,8 @@ private:
     UT::PacketControlType m_controlType;
 
     QString m_destinationIP;
+    IPHv4_t ipv4Header;
+    IPHv6_t ipv6Header;
     // IP and BGP header
     TCPHeader m_tcpHeader;
     DataLinkHeader m_dataLinkHeader;
