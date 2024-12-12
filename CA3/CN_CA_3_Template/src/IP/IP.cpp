@@ -129,6 +129,18 @@ bool IP<UT::IPVersion::IPv4>::isInSubnet(const QString &otherIP) const
     return (m_ipValue & m_subnetMask) == (otherValue & m_subnetMask);
 }
 
+IPv6_t IP<UT::IPVersion::IPv4>::toIPv6() const
+{
+    QByteArray ipv6Bytes(IPV6_Length_IN_BYTES, 0);
+    ipv6Bytes[10] = static_cast<char>(0xFF);
+    ipv6Bytes[11] = static_cast<char>(0xFF);
+    ipv6Bytes[12] = static_cast<char>((m_ipValue >> 24) & 0xFF);
+    ipv6Bytes[13] = static_cast<char>((m_ipValue >> 16) & 0xFF);
+    ipv6Bytes[14] = static_cast<char>((m_ipValue >> 8) & 0xFF);
+    ipv6Bytes[15] = static_cast<char>(m_ipValue & 0xFF);
+    return IPv6_t(ipv6Bytes, IPV6_Length_IN_BITS);
+}
+
 /**
  * ===========================================
  * ===========================================
@@ -185,7 +197,7 @@ int IP<UT::IPVersion::IPv6>::getPrefixLength() const
 
 void IP<UT::IPVersion::IPv6>::setPrefixLength(int prefixLength)
 {
-    if (prefixLength < 0 || prefixLength > IPV6_Length_IN_BITES)
+    if (prefixLength < 0 || prefixLength > IPV6_Length_IN_BITS)
         throw std::invalid_argument(INVALID_PREFIX_LENGTH_ERROR);
     m_prefixLength = prefixLength;
 }
@@ -194,7 +206,7 @@ QPair<QString, QString> IP<UT::IPVersion::IPv6>::getSubnetRange() const
 {
     QByteArray lowerBound = m_ipValue;
     QByteArray upperBound = m_ipValue;
-    int hostBits = IPV6_Length_IN_BITES - m_prefixLength;
+    int hostBits = IPV6_Length_IN_BITS - m_prefixLength;
 
     for (int i = 15; i >= 0 && hostBits > 0; --i) {
         int clearBits = std::min(8, hostBits);
@@ -214,7 +226,7 @@ bool IP<UT::IPVersion::IPv6>::isInSubnet(const QString &otherIP) const
     modifiedString.remove(IPV6_DELIM);
     QByteArray otherValue = QByteArray::fromHex(modifiedString.toUtf8());
     QByteArray mask(IPV6_Length_IN_BYTES, IPV6_DEFAULT_FILL_VALUE);
-    int hostBits = IPV6_Length_IN_BITES - m_prefixLength;
+    int hostBits = IPV6_Length_IN_BITS - m_prefixLength;
 
     for (int i = 15; i >= 0 && hostBits > 0; --i) {
         int clearBits = std::min(8, hostBits);
@@ -222,4 +234,17 @@ bool IP<UT::IPVersion::IPv6>::isInSubnet(const QString &otherIP) const
         hostBits -= clearBits;
     }
     return bitwiseAnd(m_ipValue, mask) == bitwiseAnd(otherValue, mask);
+}
+
+IPv4_t IP<UT::IPVersion::IPv6>::toIPv4() const
+{
+    if (m_ipValue.startsWith(QByteArray::fromHex("00000000000000000000FFFF"))) {
+        uint32_t ipv4Value = (static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[12])) << 24) |
+                             (static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[13])) << 16) |
+                             (static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[14])) << 8) |
+                             static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[15]));
+        return IPv4_t(ipv4Value);
+    } else {
+        throw std::invalid_argument("Not a mapped IPv4 address");
+    }
 }

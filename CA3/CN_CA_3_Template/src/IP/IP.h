@@ -23,7 +23,7 @@ const uint32_t DEFAULT_IP_VALUE = std::numeric_limits<uint32_t>::max();
 const uint32_t DEFAULT_SUBNET_MASK_VALUE = std::numeric_limits<uint32_t>::max();
 const int DEFAULT_IPV6_PREFIX_LENGTH = 64;
 const int IPV6_Length_IN_BYTES = 16;
-const int IPV6_Length_IN_BITES = 128;
+const int IPV6_Length_IN_BITS = 128;
 const char IPV6_DEFAULT_FILL_VALUE = 0xFF;
 const char IPV6_DELIM = ':';
 const std::string IPV6_VALUE_ERROR = "Invalid IPv6 format";
@@ -78,7 +78,7 @@ public:    // methods
     QPair<QString, QString> getSubnetRange() const;
     bool isInSubnet(const QString &otherIP) const;
 
-    // IPv6_t toIPv6() const;
+    IPv6_t toIPv6() const;
 
 
 public:    // operators
@@ -132,7 +132,7 @@ public:    // methods
     QPair<QString, QString> getSubnetRange() const;
     bool isInSubnet(const QString &otherIP) const;
 
-    // IPv4_t toIPv4() const;
+    IPv4_t toIPv4() const;
 
 public:    // operators
     bool
