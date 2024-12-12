@@ -8,6 +8,7 @@
 #include <QString>
 #include <QTextStream>
 
+
 template <UT::IPVersion version>
 class IP;
 
@@ -46,18 +47,31 @@ class IP<UT::IPVersion::IPv4> : public AbstractIP
 
 public:    // constructors
     explicit IP(QObject *parent = nullptr);
-    explicit IP(const QString &ipString, QObject *parent = nullptr);
-    explicit IP(uint64_t ipValue, QObject *parent = nullptr);
+    explicit IP(const QString &ipString, const QString &subnetMask = "", QObject *parent = nullptr);
+    explicit IP(uint64_t ipValue, const QString &subnetMask = "", QObject *parent = nullptr);//TODO: may change to uint32_t
     ~IP() override;
 
 public:    // methods
+    QString toString() const;
+    uint32_t toValue() const;
+
+    QString getSubnetMask() const;
+    void setSubnetMask(const QString &subnetMask);
+
+    IP<UT::IPVersion::IPv4> getGateway() const;
+    void setGateway(const IP<UT::IPVersion::IPv4> &gateway);
+
+    QPair<QString, QString> getSubnetRange() const;
+    bool isInSubnet(const QString &otherIP) const;
+
+    IPv6_t toIPv6() const;
 
 
 public:    // operators
     bool
     operator==(const IP<UT::IPVersion::IPv4> &other) const
     {
-        return toValue() == other.toValue();
+        //return toValue() == other.toValue();
     }
 
 private:    // methods
