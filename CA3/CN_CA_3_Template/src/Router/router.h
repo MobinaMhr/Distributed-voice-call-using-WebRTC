@@ -2,7 +2,7 @@
 #define ROUTER_H
 
 #include "../Node/node.h"
-// #include "../Port/Port.h"
+#include "../Port/Port.h"
 // #include "../DHCPServer/DHCPServer.h"
 // #include "../BGP/BGP.h"
 #include <QString>
@@ -20,15 +20,15 @@ public:
     void processPacket(const Packet &packet) override;
 
     void addRoutingEntry(const QString &destination, const QString &nextHop);
-    // // void routePacket(const IPHeader &header);
+    // void routePacket(const IPHeader &header);
 
     void printRoutingTable() const;
 
-    // void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
+    void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
 
 private:
     QMap<QString, QString> m_routingTable; // Maps destination IP to next hop
-    // std::array<PortPtr_t, 4> m_ports;      // Four ports as QSharedPointer<Port>
+    std::array<PortPtr_t, 4> m_ports;      // Four ports as QSharedPointer<Port>
     // UT::IPVersion m_ipvVersion;
     // std::deque<std::unique_ptr<Packet>> m_buffer;  // Infinite size buffer to hold packets temporarily
     // DHCPServer m_dhcpServer;              // Embedded DHCP server

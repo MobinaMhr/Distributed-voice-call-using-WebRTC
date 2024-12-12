@@ -86,15 +86,15 @@ void Router::printRoutingTable() const {
     // }
 }
 
-// void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress) {
-//     if (portIndex < 0 || portIndex >= static_cast<int>(m_ports.size())) {
-//         qDebug() << LOG_TITLE << "Invalid port index:" << portIndex;
-//         return;
-//     }
+void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress) {
+    if (portIndex < 0 || portIndex >= static_cast<int>(m_ports.size())) {
+        qDebug() << LOG_TITLE << "Invalid port index:" << portIndex;
+        return;
+    }
 
-//     PortPtr_t configedPort = PortPtr_t::create();
-//     configedPort->setIpAddress(ipAddress.toString());
-//     m_ports[portIndex] = configedPort;
+    // PortPtr_t configedPort = PortPtr_t::create();
+    // configedPort->setIpAddress(ipAddress.toString());
+    // m_ports[portIndex] = configedPort;
 
-//     qDebug() << LOG_TITLE << "Configured port" << portIndex << "with IP" << ipAddress.toString() << "and MAC" << macAddress.toString();
-// }
+    qDebug() << LOG_TITLE << "Configured port" << portIndex << "with IP" << ipAddress.toString() << "and MAC" << macAddress.toString();
+}
