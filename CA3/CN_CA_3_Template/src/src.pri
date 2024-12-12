@@ -13,9 +13,9 @@ SOURCES += \
     $$PWD/IP/IP.cpp \
     $$PWD/MACAddress/macAddress.cpp \
     $$PWD/MACAddress/macaddressgenerator.cpp \
-    # $$PWD/MACAddress/testmacaddress.cpp \
-    # $$PWD/MACAddress/testmacaddressgenerator.cpp \
-    # $$PWD/PortBindingManager/PortBindingManager.cpp \
+    $$PWD/MACAddress/testmacaddress.cpp \
+    $$PWD/MACAddress/testmacaddressgenerator.cpp \
+    $$PWD/PortBindingManager/PortBindingManager.cpp \
     $$PWD/Port/Port.cpp \
     $$PWD/Packet/Packet.cpp \
     $$PWD/TCPHeader/tcpheader.cpp \
@@ -30,9 +30,9 @@ HEADERS += \
     $$PWD/IP/IP.h \
     $$PWD/MACAddress/macAddress.h \
     $$PWD/MACAddress/macaddressgenerator.h \
-    # $$PWD/MACAddress/testmacaddress.h \
-    # $$PWD/MACAddress/testmacaddressgenerator.h \
-    # $$PWD/PortBindingManager/PortBindingManager.h \
+    $$PWD/MACAddress/testmacaddress.h \
+    $$PWD/MACAddress/testmacaddressgenerator.h \
+    $$PWD/PortBindingManager/PortBindingManager.h \
     $$PWD/Port/Port.h \
     $$PWD/Packet/Packet.h \
     $$PWD/TCPHeader/tcpheader.h
