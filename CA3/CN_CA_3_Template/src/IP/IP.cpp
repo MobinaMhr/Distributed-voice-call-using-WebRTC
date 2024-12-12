@@ -158,3 +158,22 @@ QString IP<UT::IPVersion::IPv6>::toString() const{
     }
     return result;
 }
+
+
+
+QByteArray IP<UT::IPVersion::IPv6>::toValue() const
+{
+    return m_ipValue;
+}
+
+int IP<UT::IPVersion::IPv6>::getPrefixLength() const
+{
+    return m_prefixLength;
+}
+
+void IP<UT::IPVersion::IPv6>::setPrefixLength(int prefixLength)
+{
+    if (prefixLength < 0 || prefixLength > IPV6_Length_IN_BITES)
+        throw std::invalid_argument(INVALID_PREFIX_LENGTH_ERROR);
+    m_prefixLength = prefixLength;
+}
