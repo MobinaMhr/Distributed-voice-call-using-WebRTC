@@ -105,6 +105,16 @@ QPair<QString, QString> IP<UT::IPVersion::IPv4>::getSubnetRange() const
     return { QHostAddress(network).toString(), QHostAddress(broadcast).toString() };
 }
 
+bool IP<UT::IPVersion::IPv4>::isInSubnet(const QString &otherIP) const
+{
+    QHostAddress addr(otherIP);
+    if (addr.protocol() != QAbstractSocket::IPv4Protocol) {
+        return false;
+    }
+    uint32_t otherValue = addr.toIPv4Address();
+    return (m_ipValue & m_subnetMask) == (otherValue & m_subnetMask);
+}
+
 /**
  * ===========================================
  * ===========================================
@@ -138,3 +148,5 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
+
+
