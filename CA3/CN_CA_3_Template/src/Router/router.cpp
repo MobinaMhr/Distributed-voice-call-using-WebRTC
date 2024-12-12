@@ -27,24 +27,32 @@ void Router::addRoutingEntry(const QString &destination, const QString &nextHop)
 void Router::processPacket(const Packet &packet) {
     qDebug() << LOG_TITLE << "Router";
 
-    // if (m_buffer.size() >= static_cast<std::size_t>(MAX_BUFFER_SIZE)) {
-    //     if (packet.packetType() == UT::PacketType::Data) {
-    //         qDebug() << LOG_TITLE << "Packet Dropped due to full buffer.";
-    //         // Optional: Set a flag or log dropped packet details
-    //         return;
-    //     }
-    //     if (packet.packetType() == UT::PacketType::Control) {
-    //         m_buffer.pop_back();
-    //         qDebug() << LOG_TITLE << "Buffer full. Oldest packet removed.";
-    //     }
-    // }
+    if (m_buffer.size() >= static_cast<std::size_t>(MAX_BUFFER_SIZE)) {
+        if (packet.packetType() == UT::PacketType::Data) {
+            qDebug() << LOG_TITLE << "Packet Dropped due to full buffer.";
+            // Optional: Set a flag or log dropped packet details
+            return;
+        }
+        if (packet.packetType() == UT::PacketType::Control) {
+            m_buffer.pop_back();
+            qDebug() << LOG_TITLE << "Buffer full. Oldest packet removed.";
+        }
+    }
 
-    // auto newPacket = std::make_unique<Packet>(
-    //   packet.packetType(),      packet.controlType(),
-    //   packet.sequenceNumber(),  packet.waitingCycles(),
-    //   packet.totalCycles(),     packet.destinationIP(),
-    //   packet.payload(),         packet.dataLinkHeader(),
-    //   packet.tcpHeader(), nullptr);
+
+        // m_ipv4Header(),              m_ipv6Header(),
+        // m_tcpHeader(tcpHeader),      m_dataLinkHeader(dataLinkHeader),
+        // m_payload(payload),          m_sequenceNumber(seqNumber),
+        // m_waitingCycles(waitCycles), m_totalCycles(totalCycles) {}
+
+    auto newPacket = std::make_unique<Packet>(
+      packet.packetType(), packet.controlType(),
+      packet.destinationIP(),
+
+      packet.tcpHeader(),
+      packet.dataLinkHeader(), packet.payload(),
+      packet.sequenceNumber(), packet.waitingCycles(),
+      packet.totalCycles(), nullptr);
 
     // if (packet.packetType() == UT::PacketType::Data) {
     //     m_buffer.push_back(std::move(newPacket));
@@ -63,9 +71,9 @@ void Router::processPacket(const Packet &packet) {
     //     qDebug() << LOG_TITLE << "Control Packet added to buffer. Current buffer size:" << m_buffer.size();
     // }
 
-    // // Extracting header information
-    // // IPHeader header; // Logic to parse packetInfo into header
-    // // routePacket(header);
+    // Extracting header information
+    // IPHeader header; // Logic to parse packetInfo into header
+    // routePacket(header);
 }
 
 // void Router::routePacket(const IPHeader &header) {

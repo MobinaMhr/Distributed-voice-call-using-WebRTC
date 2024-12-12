@@ -29,8 +29,8 @@ public:
 private:
     QMap<QString, QString> m_routingTable; // Maps destination IP to next hop
     std::array<PortPtr_t, 4> m_ports;      // Four ports as QSharedPointer<Port>
-    // UT::IPVersion m_ipvVersion;
-    // std::deque<std::unique_ptr<Packet>> m_buffer;  // Infinite size buffer to hold packets temporarily
+    UT::IPVersion m_ipvVersion;
+    std::deque<std::unique_ptr<Packet>> m_buffer;  // Infinite size buffer to hold packets temporarily
     // DHCPServer m_dhcpServer;              // Embedded DHCP server
 };
 
