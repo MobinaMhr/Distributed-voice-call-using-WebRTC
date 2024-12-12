@@ -19,10 +19,10 @@ QString Router::ipAddress() const {
     return ips.join(", ");
 }
 
-// void Router::addRoutingEntry(const QString &destination, const QString &nextHop) {
-//     m_routingTable.insert(destination, nextHop);
-//     qDebug() << LOG_TITLE << "Routing entry added: Destination" << destination << "Next hop" << nextHop;
-// }
+void Router::addRoutingEntry(const QString &destination, const QString &nextHop) {
+    m_routingTable.insert(destination, nextHop);
+    qDebug() << LOG_TITLE << "Routing entry added: Destination" << destination << "Next hop" << nextHop;
+}
 
 void Router::processPacket(const Packet &packet) {
     qDebug() << LOG_TITLE << "Router";
