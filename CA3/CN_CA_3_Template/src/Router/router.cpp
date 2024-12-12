@@ -9,15 +9,15 @@ Router::Router(int id, const MacAddress &macAddress, QThread *parent)
 
 Router::~Router() {}
 
-// QString Router::ipAddress() const {
-//     QStringList ips;
-//     for (const auto &port : m_ports) {
-//         if (!port->ipAddress().toStdString().empty()) {
-//             ips.append(port->ipAddress());
-//         }
-//     }
-//     return ips.join(", ");
-// }
+QString Router::ipAddress() const {
+    QStringList ips;
+    // for (const auto &port : m_ports) {
+    //     if (!port->ipAddress().toStdString().empty()) {
+    //         ips.append(port->ipAddress());
+    //     }
+    // }
+    return ips.join(", ");
+}
 
 // void Router::addRoutingEntry(const QString &destination, const QString &nextHop) {
 //     m_routingTable.insert(destination, nextHop);
@@ -81,9 +81,9 @@ void Router::processPacket(const Packet &packet) {
 
 void Router::printRoutingTable() const {
     qDebug() << LOG_TITLE << "Routing Table:";
-    for (auto it = m_routingTable.cbegin(); it != m_routingTable.cend(); ++it) {
-        qDebug() << "Destination:" << it.key() << "Next Hop:" << it.value();
-    }
+    // for (auto it = m_routingTable.cbegin(); it != m_routingTable.cend(); ++it) {
+    //     qDebug() << "Destination:" << it.key() << "Next Hop:" << it.value();
+    // }
 }
 
 // void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress) {
