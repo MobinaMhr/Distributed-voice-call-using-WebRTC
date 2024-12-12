@@ -1,5 +1,7 @@
 #include "IP.h"
 #include <stdio.h>
+#include <stdexcept>
+#include <QStringList>
 
 namespace {
 uint32_t subnetMaskToValue(const QString &subnetMask) {
@@ -129,22 +131,16 @@ IP<UT::IPVersion::IPv6>::IP(QObject *parent) :
     AbstractIP(parent), m_ipValue(IPV6_Length_IN_BYTES, IPV6_DEFAULT_FILL_VALUE),
     m_prefixLength(DEFAULT_IPV6_PREFIX_LENGTH){}
 
-IP<UT::IPVersion::IPv6>::IP(const QString &ipString, QObject *parent) :
-    AbstractIP(parent)
-{
-    m_ipValue = std::numeric_limits<uint64_t>::max();
-    fromString(ipString);
-    toValueImpl();
-}
-
-IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
-    AbstractIP(parent)
-{
-    m_ipValue = ipValue;
-    fromIPValue(ipValue);
-    toStringImpl();
-}
-
 IP<UT::IPVersion::IPv6>::~IP() {};
 
 
+
+IP<UT::IPVersion::IPv6>::IP(const QString &ipString, int prefixLength, QObject *parent) :
+    AbstractIP(parent), m_ipValue(IPV6_Length_IN_BYTES, IPV6_DEFAULT_FILL_VALUE),
+    m_prefixLength(prefixLength){
+    QString modifiedString = ipString;
+    modifiedString.remove(':');
+    m_ipValue = QByteArray::fromHex(modifiedString.toUtf8());
+    if (m_ipValue.size() != 16)
+        throw std::invalid_argument("Invalid IPv6 format");
+}

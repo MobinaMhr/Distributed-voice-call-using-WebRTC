@@ -8,8 +8,8 @@
 #include <QString>
 #include <QTextStream>
 #include <QHostAddress>
-
-
+#include <QPair>
+#include <QByteArray>
 
 template <UT::IPVersion version>
 class IP;
@@ -22,6 +22,8 @@ const QString DEFAULT_SUBNET_MASK = "255.255.255.255";
 const uint32_t DEFAULT_IP_VALUE = std::numeric_limits<uint32_t>::max();
 const uint32_t DEFAULT_SUBNET_MASK_VALUE = std::numeric_limits<uint32_t>::max();
 const int DEFAULT_IPV6_PREFIX_LENGTH = 64;
+const int IPV6_Length_IN_BYTES = 16;
+const char IPV6_DEFAULT_FILL_VALUE = 0xFF;
 
 class AbstractIP : public QObject
 {
