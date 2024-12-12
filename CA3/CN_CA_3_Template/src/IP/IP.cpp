@@ -16,12 +16,10 @@ AbstractIP::AbstractIP(QObject *parent) :
  */
 
 IP<UT::IPVersion::IPv4>::IP(QObject *parent) :
-    AbstractIP(parent), m_ipValue(std::numeric_limits<uint32_t>::max()),
-    m_subnetMask(std::numeric_limits<uint32_t>::max()){} //TODO:check subnetMask value
+    AbstractIP(parent), m_ipValue(DEFAULT_IP_VALUE), m_subnetMask(DEFAULT_SUBNET_MASK_VALUE){} //TODO:check subnetMask value
 
 IP<UT::IPVersion::IPv4>::IP(const QString &ipString, const QString &subnetMask, QObject *parent) :
-    AbstractIP(parent), m_ipValue(std::numeric_limits<uint32_t>::max()),
-    m_subnetMask(std::numeric_limits<uint32_t>::max()){
+    AbstractIP(parent), m_ipValue(DEFAULT_IP_VALUE), m_subnetMask(DEFAULT_SUBNET_MASK_VALUE){
 
     QStringList parts = ipString.split('.');
     if (parts.size() != 4)
@@ -35,10 +33,12 @@ IP<UT::IPVersion::IPv4>::IP(const QString &ipString, const QString &subnetMask, 
         setSubnetMask(DEFAULT_SUBNET_MASK);
 }
 
-IP<UT::IPVersion::IPv4>::IP(uint64_t ipValue, QObject *parent) :
-    AbstractIP(parent)
-{
-    m_ipValue = ipValue;
+IP<UT::IPVersion::IPv4>::IP(uint32_t ipValue, const QString &subnetMask, QObject *parent) :
+    AbstractIP(parent), m_ipValue(ipValue), m_subnetMask(DEFAULT_SUBNET_MASK_VALUE){
+    if (!subnetMask.isEmpty())
+        setSubnetMask(subnetMask);
+    else
+        setSubnetMask(DEFAULT_SUBNET_MASK);
 }
 
 IP<UT::IPVersion::IPv4>::~IP() {};
@@ -76,6 +76,8 @@ IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
 }
 
 IP<UT::IPVersion::IPv6>::~IP() {};
+
+
 
 
 

@@ -51,7 +51,7 @@ class IP<UT::IPVersion::IPv4> : public AbstractIP
 public:    // constructors
     explicit IP(QObject *parent = nullptr);
     explicit IP(const QString &ipString, const QString &subnetMask = "", QObject *parent = nullptr);
-    explicit IP(uint64_t ipValue, const QString &subnetMask = "", QObject *parent = nullptr);//TODO: may change to uint32_t
+    explicit IP(uint32_t ipValue, const QString &subnetMask = "", QObject *parent = nullptr);//TODO: may change to uint32_t
     ~IP() override;
 
 public:    // methods
