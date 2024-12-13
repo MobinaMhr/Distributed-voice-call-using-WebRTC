@@ -18,23 +18,21 @@ public:
     explicit Router(int id, const MacAddress &macAddress, QThread *parent = nullptr);
     ~Router() override;
 
-    void processPacket(const Packet &packet) override; // should called in receive packet slot !!
-    void bufferPacket(const Packet &packet); // only used in router
+    void receivePacket(const Packet &packet) override; // should called in receive packet slot !!
+    void sendPacket(const Packet &packet) override; // should emit send signal!!
+
+    void bufferPacket(const Packet &packet);
     void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop); // used by routing algorithems
-    void routePacket(const AbstractIPHeader &header); // should emit send signal!!
-    void routePackets(); // traverse over buffer to send packets
-    // void printRoutingTable() const;
+    void routePackets();
 
     void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
 
 private:
-    RoutingTable* m_routing_table;
-    // std::unordered_map<AbstractIP, Port> m_routingTable; // Maps destination IP to next hop
-    std::array<UT::PortState, 4> m_portStates;      // Four ports as QSharedPointer<Port>
-    std::array<PortPtr_t, 4> m_ports;      // Four ports as QSharedPointer<Port>
-    UT::IPVersion m_ipvVersion;
-    std::deque<std::unique_ptr<Packet>> m_buffer;  // Infinite size buffer to hold packets temporarily
-    // DHCPServer m_dhcpServer;              // Embedded DHCP server
+    RoutingTable*                       m_routing_table;
+    std::array<UT::PortState, 4>        m_portStates;
+    std::array<PortPtr_t, 4>            m_ports;
+    UT::IPVersion                       m_ipvVersion;
+    std::deque<std::unique_ptr<Packet>> m_buffer;
 };
 
 #endif // ROUTER_H

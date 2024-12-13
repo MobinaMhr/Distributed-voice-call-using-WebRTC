@@ -12,8 +12,8 @@ public:
     ~PC() override;
 
     QString ipAddress() const override;
-    void sendPacket(const QString &destinationIP, const QString &data);
-    void processPacket(const Packet &packet) override;
+    void receivePacket(const Packet &packet) override; // should called in receive packet slot !!
+    void sendPacket(const Packet &packet) override;
 
 private:
     IPv4_t m_ipAddress;

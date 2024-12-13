@@ -9,12 +9,12 @@ QString PC::ipAddress() const {
     return m_ipAddress.toString();
 }
 
-void PC::sendPacket(const QString &destinationIP, const QString &data) {
-    qDebug() << "PC" << name() << "sending packet to" << destinationIP << ":" << data;
+void PC::sendPacket(const Packet &packet) {
+    qDebug() << "PC" << name();
     // Logic to send a packet using IP and MAC headers
 }
 
-void PC::processPacket(const Packet &packet) {
+void PC::receivePacket(const Packet &packet) {
     qDebug() << "PC" << name();
 
     // Process the packet based on specific PC logic

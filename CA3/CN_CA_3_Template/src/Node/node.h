@@ -24,7 +24,8 @@ public:
     // static Node *instance(int id, const MacAddress &macAddress, QThread *parent = nullptr);
     static void release();
 
-    virtual void processPacket(const Packet &packet) = 0;
+    virtual void receivePacket(const Packet &packet) = 0; // should called in receive packet slot !!
+    virtual void sendPacket(const Packet &packet) = 0;
     int id() const;
     QString name() const;
     virtual QString ipAddress() const = 0;

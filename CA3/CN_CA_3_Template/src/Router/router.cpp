@@ -18,7 +18,7 @@ void Router::addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedP
     m_routing_table->addRoute(destinationIp, nextHop);
 }
 
-void Router::processPacket(const Packet &packet) {
+void Router::receivePacket(const Packet &packet) {
     if (m_buffer.size() >= static_cast<std::size_t>(MAX_BUFFER_SIZE)) {
         if (packet.packetType() == UT::PacketType::Data) {
             qDebug() << LOG_TITLE << "Packet Dropped: Buffer Full. Sequence:" << packet.sequenceNumber();
@@ -57,11 +57,6 @@ void Router::bufferPacket(const Packet &packet) {
         qDebug() << LOG_TITLE << "Control Packet Added. Buffer Size:" << m_buffer.size();
     }
 }
-
-/// Find routing port
-/// if empty or not
-/// if empty send
-/// if not go to nex index
 
 void Router::routePackets() {
     for (auto it = m_buffer.begin(); it != m_buffer.end(); /* no increment here */) {
@@ -108,21 +103,11 @@ void Router::routePackets() {
     }
 }
 
-void Router::routePacket(const AbstractIPHeader &header) { // TODO : should get packet as input !!
-    if (header.ipVersion() == UT::IPVersion::IPv4) {// should send possible packets !!
-        const auto *ipHeader = dynamic_cast<const IPHv4_t *>(&header);
-        if (!ipHeader) {
-            qDebug() << LOG_TITLE << "Invalid Header";
-            return;
-        }
+void Router::sendPacket(const Packet &packet) {
+    if (packet.ipVersion() == UT::IPVersion::IPv4) {
         //
     }
-    else if (header.ipVersion() == UT::IPVersion::IPv6) {
-        const auto *ipHeader = dynamic_cast<const IPHv6_t *>(&header);
-        if (!ipHeader) {
-            qDebug() << LOG_TITLE << "Invalid Header";
-            return;
-        }
+    else if (packet.ipVersion() == UT::IPVersion::IPv6) {
         //
     }
 }
@@ -153,3 +138,7 @@ void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddr
 //         qDebug() << LOG_TITLE << "Invalid IP Header: Dropping Packet.";
 //         break;
 // }
+
+
+
+    // const auto *ipHeader = dynamic_cast<const IPHv4_t *>(&header);
