@@ -90,9 +90,9 @@ void Router::routePacket(const AbstractIPHeader &header) {
 
 void Router::printRoutingTable() const {
     qDebug() << LOG_TITLE << "Routing Table:";
-    // for (auto it = m_routingTable.cbegin(); it != m_routingTable.cend(); ++it) {
-    //     qDebug() << "Destination:" << it.key() << "Next Hop:" << it.value();
-    // }
+    for (auto it = m_routingTable.cbegin(); it != m_routingTable.cend(); ++it) {
+        qDebug() << "Destination:" << it.key() << "Next Hop:" << it.value();
+    }
 }
 
 void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress) {

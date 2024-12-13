@@ -4,6 +4,10 @@ AbstractIPHeader::AbstractIPHeader(QObject *parent) :
     QObject {parent}
 {}
 
+UT::IPVersion AbstractIPHeader::ipVersion() {
+    return m_ipVersion;
+}
+
 IPHeader<UT::IPVersion::IPv4>::IPHeader(QObject *parent)
     : AbstractIPHeader(parent),
     m_versionHeaderLength(0),
