@@ -108,8 +108,8 @@ void Router::routePackets() {
     }
 }
 
-void Router::routePacket(const AbstractIPHeader &header) {
-    if (header.ipVersion() == UT::IPVersion::IPv4) {
+void Router::routePacket(const AbstractIPHeader &header) { // TODO : should get packet as input !!
+    if (header.ipVersion() == UT::IPVersion::IPv4) {// should send possible packets !!
         const auto *ipHeader = dynamic_cast<const IPHv4_t *>(&header);
         if (!ipHeader) {
             qDebug() << LOG_TITLE << "Invalid Header";

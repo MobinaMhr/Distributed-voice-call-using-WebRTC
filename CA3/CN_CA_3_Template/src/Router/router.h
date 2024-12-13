@@ -18,11 +18,11 @@ public:
     explicit Router(int id, const MacAddress &macAddress, QThread *parent = nullptr);
     ~Router() override;
 
-    void processPacket(const Packet &packet) override;
-    void bufferPacket(const Packet &packet);
-    void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop);
-    void routePacket(const AbstractIPHeader &header);
-    void routePackets();
+    void processPacket(const Packet &packet) override; // should called in receive packet slot !!
+    void bufferPacket(const Packet &packet); // only used in router
+    void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop); // used by routing algorithems
+    void routePacket(const AbstractIPHeader &header); // should emit send signal!!
+    void routePackets(); // traverse over buffer to send packets
     // void printRoutingTable() const;
 
     void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);

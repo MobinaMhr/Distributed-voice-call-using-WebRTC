@@ -27,17 +27,17 @@ public: // Setters
     void setIpAddress(QString ipAddress);
 
 Q_SIGNALS:
-    void packetSent(const PacketPtr_t &data);
-    void packetReceived(const PacketPtr_t &data);
+    void packetSent(const PacketPtr_t &data); // connected to receivePacket slot of bined port!!
+    void packetReceived(const PacketPtr_t &data); // connected to receivePacket slot coresponding node!!
 
 public Q_SLOTS:
-    void sendPacket(const PacketPtr_t &data);
-    void receivePacket(const PacketPtr_t &data);
+    void sendPacket(const PacketPtr_t &data); // connected to coresponding node send signal!!
+    void receivePacket(const PacketPtr_t &data); // connected to the bined port packetSent signal!!
 
 private:
     uint8_t m_number;
     uint64_t m_numberOfPacketsSent;
-    QString m_ipAddress;
+    QString m_ipAddress; // TODO: should change to 2 different ips 1 ipv4 and 1 ipv6 and should be of type IP
 };
 
 typedef QSharedPointer<Port> PortPtr_t;
