@@ -4,10 +4,10 @@ using namespace UT;
 
 Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber, quint32 waitCycles,
        quint32 totalCycles, const QString destIP, const QByteArray &payload, const DataLinkHeader &dataLinkHeader,
-       const TCPHeader &tcpHeader, QObject *parent)
+       const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header, QObject *parent)
     : QObject(parent),           m_packetType(packetType),
     m_controlType(controlType),  m_destinationIP(destIP),
-    // m_ipv4Header(ipv4Header),    m_ipv6Header(ipv6Header),          //// IPHv4_t ipv4Header, IPHv6_t ipv6Header,
+    m_ipv4Header(ipv4Header),    m_ipv6Header(ipv6Header),
     m_tcpHeader(tcpHeader),      m_dataLinkHeader(dataLinkHeader),
     m_payload(payload),          m_sequenceNumber(seqNumber),
     m_waitingCycles(waitCycles), m_totalCycles(totalCycles) {}

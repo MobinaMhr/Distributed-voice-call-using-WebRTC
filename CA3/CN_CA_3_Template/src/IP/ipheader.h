@@ -7,6 +7,7 @@
 
 template <UT::IPVersion version>
 class IPHeader;
+
 typedef IPHeader<UT::IPVersion::IPv4> IPHv4_t;
 typedef IPHeader<UT::IPVersion::IPv6> IPHv6_t;
 
@@ -18,7 +19,6 @@ public:
     explicit AbstractIPHeader(QObject *parent = nullptr);
 
 public: // Getters and Setters
-    virtual QString destinationIP() const = 0;
 Q_SIGNALS:
 };
 
@@ -27,7 +27,21 @@ class IPHeader<UT::IPVersion::IPv4> : public AbstractIPHeader
 {
 public:    // constructors
     explicit IPHeader(QObject *parent = nullptr);
+    IPHeader(const IPHeader &other)
+        : AbstractIPHeader(other.parent())
+        , m_versionHeaderLength(other.m_versionHeaderLength)
+        , m_typeOfService(other.m_typeOfService)
+        , m_totalLength(other.m_totalLength)
+        , m_identification(other.m_identification)
+        , m_flagsFragmentOffset(other.m_flagsFragmentOffset)
+        , m_ttl(other.m_ttl)
+        , m_protocol(other.m_protocol)
+        , m_headerChecksum(other.m_headerChecksum)
+        , m_sourceIp(other.m_sourceIp)
+        , m_destIp(other.m_destIp)
+    {}
 
+public:    // Getters and Setters
     uint8_t versionHeaderLength() const;
     void setVersionHeaderLength(uint8_t newVersionHeaderLength);
 
@@ -80,7 +94,17 @@ class IPHeader<UT::IPVersion::IPv6> : public AbstractIPHeader
 {
 public:    // constructors
     explicit IPHeader(QObject *parent = nullptr);
+    IPHeader(const IPHeader &other)
+        : AbstractIPHeader(other.parent())
+        , m_versionTrafficClassFlowLabel(other.m_versionTrafficClassFlowLabel)
+        , m_payloadLength(other.m_payloadLength)
+        , m_nextHeader(other.m_nextHeader)
+        , m_hopLimit(other.m_hopLimit)
+        , m_sourceIp(other.m_sourceIp)
+        , m_destIp(other.m_destIp)
+    {}
 
+public:    // Getters and Setters
     uint32_t versionTrafficClassFlowLabel() const;
     void setVersionTrafficClassFlowLabel(uint32_t newVersionTrafficClassFlowLabel);
 
@@ -93,11 +117,11 @@ public:    // constructors
     uint8_t hopLimit() const;
     void setHopLimit(uint8_t newHopLimit);
 
-    QString sourceIP() const;
-    void setSourceIP(IPv6Ptr_t newSourceIP);
+    QString sourceIp() const;
+    void setSourceIp(IPv6Ptr_t newSourceIp);
 
-    QString destIP() const;
-    void setDestIP(IPv6Ptr_t newDestIP);
+    QString destIp() const;
+    void setDestIp(IPv6Ptr_t newDestIp);
 
 private:  // members
     uint32_t m_versionTrafficClassFlowLabel;
@@ -105,7 +129,7 @@ private:  // members
     uint8_t  m_nextHeader;
     uint8_t  m_hopLimit;
     IPv6Ptr_t m_sourceIp;
-    IPv6Ptr_t m_destIP;
+    IPv6Ptr_t m_destIp;
 };
 
 #endif    // IPHEADER_H

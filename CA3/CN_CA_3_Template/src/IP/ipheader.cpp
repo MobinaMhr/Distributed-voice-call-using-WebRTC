@@ -110,7 +110,7 @@ IPHeader<UT::IPVersion::IPv6>::IPHeader(QObject *parent)
     m_nextHeader(0),
     m_hopLimit(0),
     m_sourceIp(nullptr),
-    m_destIP(nullptr)
+    m_destIp(nullptr)
 {}
 
 // Getters and Setters for IPv6 Header
@@ -146,18 +146,18 @@ void IPHeader<UT::IPVersion::IPv6>::setHopLimit(uint8_t newHopLimit) {
     m_hopLimit = newHopLimit;
 }
 
-QString IPHeader<UT::IPVersion::IPv6>::sourceIP() const {
+QString IPHeader<UT::IPVersion::IPv6>::sourceIp() const {
     return m_sourceIp->toString();
 }
 
-void IPHeader<UT::IPVersion::IPv6>::setSourceIP(IPv6Ptr_t newSourceIP) {
-    m_sourceIp = newSourceIP;
+void IPHeader<UT::IPVersion::IPv6>::setSourceIp(IPv6Ptr_t newSourceIp) {
+    m_sourceIp = newSourceIp;
 }
 
-QString IPHeader<UT::IPVersion::IPv6>::destIP() const {
-    return m_destIP->toString();
+QString IPHeader<UT::IPVersion::IPv6>::destIp() const {
+    return m_destIp->toString();
 }
 
-void IPHeader<UT::IPVersion::IPv6>::setDestIP(IPv6Ptr_t newDestIP) {
-    m_destIP = newDestIP;
+void IPHeader<UT::IPVersion::IPv6>::setDestIp(IPv6Ptr_t newDestIp) {
+    m_destIp = newDestIp;
 }
