@@ -14,8 +14,8 @@ Router::Router(int id, const MacAddress &macAddress, QThread *parent)
 
 Router::~Router() {}
 
-void Router::addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop) {
-    m_routing_table->addRoute(destinationIp, nextHop);
+void Router::addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<AbstractIP> &nextHopIp, QSharedPointer<Port> &port) {
+    m_routing_table->addRoute(destinationIp, nextHopIp, port);
 }
 
 void Router::receivePacket(const Packet &packet) {

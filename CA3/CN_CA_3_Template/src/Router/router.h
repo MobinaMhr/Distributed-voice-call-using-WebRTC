@@ -21,7 +21,7 @@ public:
     void sendPacket(const Packet &packet) override;     // should emit send signal!!
 
     void bufferPacket(const Packet &packet);
-    void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop); // used by routing algorithems
+    void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<AbstractIP> &nextHopIp, QSharedPointer<Port> &port);
     void routePackets();
 
     void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
