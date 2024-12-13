@@ -39,6 +39,7 @@ public:
     QByteArray payload() const;
     const DataLinkHeader& dataLinkHeader() const;
     const TCPHeader& tcpHeader() const;
+    UT::IPVersion ipVersion() const;
     const IPHv4_t ipv4Header() const;
     const IPHv6_t ipv6Header() const;
 
@@ -57,6 +58,7 @@ private:
     UT::PacketControlType m_controlType;
 
     QString m_destinationIP;
+    UT::IPVersion m_ipVersion;
     IPHv4_t m_ipv4Header;
     IPHv6_t m_ipv6Header;
     // IP and BGP header

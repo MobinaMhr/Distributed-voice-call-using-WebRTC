@@ -61,6 +61,9 @@ const DataLinkHeader& Packet::dataLinkHeader() const {
 const TCPHeader& Packet::tcpHeader() const {
     return m_tcpHeader;
 }
+UT::IPVersion Packet::ipVersion() const {
+    return m_ipVersion;
+}
 const IPHv4_t Packet::ipv4Header() const {
     return m_ipv4Header;
 }

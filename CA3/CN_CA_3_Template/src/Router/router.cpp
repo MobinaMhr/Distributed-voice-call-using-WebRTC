@@ -60,16 +60,20 @@ void Router::processPacket(const Packet &packet) {
         qDebug() << LOG_TITLE << "Control Packet Added. Buffer Size:" << m_buffer.size();
     }
 
-    // // Extract header information
-    // if (packet.ipv4Header().isValid()) {
-    //     routePacket(packet.ipv4Header());
-    // } else if (packet.ipv6Header().isValid()) {
-    //     routePacket(packet.ipv6Header());
-    // } else {
-    //     qDebug() << LOG_TITLE << "Invalid IP Header: Dropping Packet.";
-    // }
-}
+    switch (packet.ipVersion()) {
+        case UT::IPVersion::IPv4:
+            routePacket(packet.ipv4Header());
+            break;
 
+        case UT::IPVersion::IPv6:
+            routePacket(packet.ipv6Header());
+            break;
+
+        default:
+            qDebug() << LOG_TITLE << "Invalid IP Header: Dropping Packet.";
+            break;
+    }
+}
 
 void Router::routePacket(const AbstractIPHeader &header) {
     if (header.ipVersion() == UT::IPVersion::IPv4) {
