@@ -39,12 +39,15 @@ public:
     QByteArray payload() const;
     const DataLinkHeader& dataLinkHeader() const;
     const TCPHeader& tcpHeader() const;
+    const IPHv4_t ipv4Header() const;
+    const IPHv6_t ipv6Header() const;
+
 
     // Setters
     void setPacketType(UT::PacketType packetType);
     void setControlType(UT::PacketControlType controlType);
     void setSequenceNumber(quint32 seqNumber);
-    void setDestinationIP(QString destIP);
+    // void setDestinationIP(QString destIP);
     void setPayload(const QByteArray &payload);
     void setDataLinkHeader(const DataLinkHeader &dataLinkHeader);
     void setTcpHeader(const TCPHeader &tcpHeader);

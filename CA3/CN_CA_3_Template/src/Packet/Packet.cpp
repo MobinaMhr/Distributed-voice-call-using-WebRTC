@@ -49,6 +49,9 @@ quint32 Packet::waitingCycles() const {
 quint32 Packet::totalCycles() const {
     return m_totalCycles;
 }
+QString Packet::destinationIP() const {
+    return m_destinationIP;
+}
 QByteArray Packet::payload() const {
     return m_payload;
 }
@@ -57,6 +60,12 @@ const DataLinkHeader& Packet::dataLinkHeader() const {
 }
 const TCPHeader& Packet::tcpHeader() const {
     return m_tcpHeader;
+}
+const IPHv4_t Packet::ipv4Header() const {
+    return m_ipv4Header;
+}
+const IPHv6_t Packet::ipv6Header() const {
+    return m_ipv6Header;
 }
 
 // Setters
