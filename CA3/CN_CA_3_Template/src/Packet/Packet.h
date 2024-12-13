@@ -15,7 +15,7 @@ class Packet : public QObject {
 
 public:
     explicit Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber,
-                    quint32 waitCycles, quint32 totalCycles, const QString destIP, const QByteArray &payload,
+                    quint32 waitCycles, quint32 totalCycles, QSharedPointer<AbstractIP> destIP, const QByteArray &payload,
                     const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header,
                     QObject *parent);
     // IPHv4_t ipv4Header, IPHv6_t ipv6Header,
@@ -35,7 +35,7 @@ public:
     quint32 sequenceNumber() const;
     quint32 waitingCycles() const;
     quint32 totalCycles() const;
-    QString destinationIP() const;
+    QSharedPointer<AbstractIP> destinationIP();
     QByteArray payload() const;
     const DataLinkHeader& dataLinkHeader() const;
     const TCPHeader& tcpHeader() const;
@@ -56,8 +56,7 @@ public:
 private:
     UT::PacketType m_packetType;
     UT::PacketControlType m_controlType;
-
-    QString m_destinationIP;
+    QSharedPointer<AbstractIP> m_destinationIP;
     UT::IPVersion m_ipVersion;
     IPHv4_t m_ipv4Header;
     IPHv6_t m_ipv6Header;

@@ -13,6 +13,12 @@ enum class IPVersion
     IPv6
 };
 
+enum class PortState
+{
+    Busy,
+    Idle
+};
+
 enum class PacketType
 {
     Data,

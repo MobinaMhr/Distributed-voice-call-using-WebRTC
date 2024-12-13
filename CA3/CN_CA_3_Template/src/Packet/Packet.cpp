@@ -49,7 +49,7 @@ quint32 Packet::waitingCycles() const {
 quint32 Packet::totalCycles() const {
     return m_totalCycles;
 }
-QString Packet::destinationIP() const {
+QSharedPointer<AbstractIP> Packet::destinationIP() {
     return m_destinationIP;
 }
 QByteArray Packet::payload() const {

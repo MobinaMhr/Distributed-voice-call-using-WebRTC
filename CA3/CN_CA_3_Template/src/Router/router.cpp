@@ -7,19 +7,12 @@ const QString LOG_TITLE = "Router:: ";
 const int MAX_BUFFER_SIZE = 20;
 
 Router::Router(int id, const MacAddress &macAddress, QThread *parent)
-    : Node(id, macAddress, parent), m_routing_table(new RoutingTable) {}
+    : Node(id, macAddress, parent), m_routing_table(new RoutingTable) {
+
+    m_portStates.fill(UT::PortState::Idle);
+}
 
 Router::~Router() {}
-
-QString Router::ipAddress() const {
-    QStringList ips;
-    // for (const auto &port : m_ports) {
-    //     if (!port->ipAddress().toStdString().empty()) {
-    //         ips.append(port->ipAddress());
-    //     }
-    // }
-    return ips.join(", ");
-}
 
 void Router::addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop) {
     m_routing_table->addRoute(destinationIp, nextHop);
@@ -59,19 +52,55 @@ void Router::processPacket(const Packet &packet) {
         }
         qDebug() << LOG_TITLE << "Control Packet Added. Buffer Size:" << m_buffer.size();
     }
+}
 
-    switch (packet.ipVersion()) {
-        case UT::IPVersion::IPv4:
-            routePacket(packet.ipv4Header());
-            break;
+/// Find routing port
+/// if empty or not
+/// if empty send
+/// if not go to nex index
 
-        case UT::IPVersion::IPv6:
-            routePacket(packet.ipv6Header());
-            break;
+void Router::routePackets() {
+    for (auto it = m_buffer.begin(); it != m_buffer.end(); /* no increment here */) {
+        const auto& packetPtr = *it;
 
-        default:
-            qDebug() << LOG_TITLE << "Invalid IP Header: Dropping Packet.";
+        if (!packetPtr) {
+            qDebug() << "Encountered a null packet pointer.";
+            it = m_buffer.erase(it);
+            continue;
+        }
+
+        qDebug() << "Processing packet with sequence number:" << packetPtr->sequenceNumber();
+
+        if (!m_routing_table->routeExists(packetPtr->destinationIP())) {
+            qDebug() << "No Route Exists for the packet";
+            continue;
+        }
+
+        QSharedPointer<Port> hostPort = m_routing_table->getPort(packetPtr->destinationIP());
+        int portIndex = hostPort->number();
+
+        if (m_portStates[portIndex] == UT::PortState::Idle) {
+            m_portStates[portIndex] = UT::PortState::Busy;
+            qDebug() << "Routing packet to port" << portIndex;
+
+/*            // Simulate packet processing
+            hostPort->sendPacket(*pa*/cketPtr);
+            it = m_buffer.erase(it);
+        } else {
+            qDebug() << "Port" << portIndex << "is busy. Keeping packet in buffer.";
+            ++it;
+        }
+
+
+        bool allPortsBusy = std::all_of(
+          m_portStates.begin(),
+          m_portStates.end(),
+          [](const UT::PortState& state) { return state == UT::PortState::Busy; });
+
+        if (allPortsBusy) {
+            qDebug() << "All ports are busy. Stopping packet routing.";
             break;
+        }
     }
 }
 
@@ -84,7 +113,7 @@ void Router::routePacket(const AbstractIPHeader &header) {
         }
         //
     }
-    if (header.ipVersion() == UT::IPVersion::IPv6) {
+    else if (header.ipVersion() == UT::IPVersion::IPv6) {
         const auto *ipHeader = dynamic_cast<const IPHv6_t *>(&header);
         if (!ipHeader) {
             qDebug() << LOG_TITLE << "Invalid Header";
@@ -106,3 +135,17 @@ void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddr
 
     qDebug() << LOG_TITLE << "Configured port" << portIndex << "with IP" << ipAddress.toString() << "and MAC" << macAddress.toString();
 }
+
+// switch (packet.ipVersion()) {
+//     case UT::IPVersion::IPv4:
+//         routePacket(packet.ipv4Header());
+//         break;
+
+//     case UT::IPVersion::IPv6:
+//         routePacket(packet.ipv6Header());
+//         break;
+
+//     default:
+//         qDebug() << LOG_TITLE << "Invalid IP Header: Dropping Packet.";
+//         break;
+// }

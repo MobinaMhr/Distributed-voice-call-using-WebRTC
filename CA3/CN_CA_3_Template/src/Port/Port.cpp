@@ -1,6 +1,6 @@
 #include "Port.h"
 
-Port::Port(QObject *parent) :
+Port::Port(QObject *parent) : // uint8_t number,
     QObject(parent), m_number(0), m_numberOfPacketsSent(0)
 {}
 
