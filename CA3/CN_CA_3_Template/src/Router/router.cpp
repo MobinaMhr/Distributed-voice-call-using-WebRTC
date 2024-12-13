@@ -83,8 +83,8 @@ void Router::routePackets() {
             m_portStates[portIndex] = UT::PortState::Busy;
             qDebug() << "Routing packet to port" << portIndex;
 
-/*            // Simulate packet processing
-            hostPort->sendPacket(*pa*/cketPtr);
+            // // Simulate packet processing
+            // hostPort->sendPacket(*packetPtr);
             it = m_buffer.erase(it);
         } else {
             qDebug() << "Port" << portIndex << "is busy. Keeping packet in buffer.";

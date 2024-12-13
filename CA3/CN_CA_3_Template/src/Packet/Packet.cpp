@@ -3,14 +3,13 @@
 using namespace UT;
 
 Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber, quint32 waitCycles,
-       quint32 totalCycles, const QString destIP, const QByteArray &payload, const DataLinkHeader &dataLinkHeader,
-       const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header, QObject *parent)
-    : QObject(parent),           m_packetType(packetType),
-    m_controlType(controlType),  m_destinationIP(destIP),
-    m_ipv4Header(ipv4Header),    m_ipv6Header(ipv6Header),
-    m_tcpHeader(tcpHeader),      m_dataLinkHeader(dataLinkHeader),
-    m_payload(payload),          m_sequenceNumber(seqNumber),
-    m_waitingCycles(waitCycles), m_totalCycles(totalCycles) {}
+               quint32 totalCycles, QSharedPointer<AbstractIP> destIP, const QByteArray &payload,
+               const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader,
+               IPHv4_t ipv4Header, IPHv6_t ipv6Header, QObject *parent)
+    : QObject(parent), m_packetType(packetType), m_controlType(controlType),
+    m_destinationIP(destIP), m_ipv4Header(ipv4Header), m_ipv6Header(ipv6Header),
+    m_tcpHeader(tcpHeader), m_dataLinkHeader(dataLinkHeader), m_payload(payload),
+    m_sequenceNumber(seqNumber), m_waitingCycles(waitCycles), m_totalCycles(totalCycles) {}
 
 void Packet::updatePath(const QString& ipAddress) {
     m_path.append(ipAddress);
@@ -49,7 +48,7 @@ quint32 Packet::waitingCycles() const {
 quint32 Packet::totalCycles() const {
     return m_totalCycles;
 }
-QSharedPointer<AbstractIP> Packet::destinationIP() {
+QSharedPointer<AbstractIP> Packet::destinationIP() const {
     return m_destinationIP;
 }
 QByteArray Packet::payload() const {
