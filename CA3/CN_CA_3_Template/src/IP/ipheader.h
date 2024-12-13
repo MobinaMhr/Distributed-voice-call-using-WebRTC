@@ -17,6 +17,8 @@ class AbstractIPHeader : public QObject
 public:
     explicit AbstractIPHeader(QObject *parent = nullptr);
 
+public: // Getters and Setters
+    virtual QString destinationIP() const = 0;
 Q_SIGNALS:
 };
 
@@ -50,10 +52,10 @@ public:    // constructors
     uint16_t headerChecksum() const;
     void setHeaderChecksum(uint16_t newHeaderChecksum);
 
-    IPv4Ptr_t sourceIp() const;
+    QString sourceIp() const;
     void setSourceIp(IPv4Ptr_t newSourceIp);
 
-    IPv4Ptr_t destIp() const;
+    QString destIp() const;
     void setDestIp(IPv4Ptr_t newDestIp);
 
 private:
@@ -91,10 +93,10 @@ public:    // constructors
     uint8_t hopLimit() const;
     void setHopLimit(uint8_t newHopLimit);
 
-    IPv6Ptr_t sourceIP() const;
+    QString sourceIP() const;
     void setSourceIP(IPv6Ptr_t newSourceIP);
 
-    IPv6Ptr_t destIP() const;
+    QString destIP() const;
     void setDestIP(IPv6Ptr_t newDestIP);
 
 private:  // members
@@ -102,7 +104,7 @@ private:  // members
     uint16_t m_payloadLength;
     uint8_t  m_nextHeader;
     uint8_t  m_hopLimit;
-    IPv6Ptr_t m_sourceIP;
+    IPv6Ptr_t m_sourceIp;
     IPv6Ptr_t m_destIP;
 };
 

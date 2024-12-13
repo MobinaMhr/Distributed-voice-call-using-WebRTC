@@ -16,8 +16,7 @@ IPHeader<UT::IPVersion::IPv4>::IPHeader(QObject *parent)
     m_headerChecksum(0),
     m_sourceIp(nullptr),
     m_destIp(nullptr)
-{
-}
+{}
 
 // Getters and Setters for IPv4 Header
 uint8_t IPHeader<UT::IPVersion::IPv4>::versionHeaderLength() const {
@@ -84,16 +83,19 @@ void IPHeader<UT::IPVersion::IPv4>::setHeaderChecksum(uint16_t newHeaderChecksum
     m_headerChecksum = newHeaderChecksum;
 }
 
-IPv4Ptr_t IPHeader<UT::IPVersion::IPv4>::sourceIp() const {
-    return m_sourceIp;
+QString IPHeader<UT::IPVersion::IPv4>::sourceIp() const {
+    return m_sourceIp->toString();
+    // return QString::fromStdString(m_sourceIp->toString());
 }
 
 void IPHeader<UT::IPVersion::IPv4>::setSourceIp(IPv4Ptr_t newSourceIp) {
     m_sourceIp = newSourceIp;
 }
 
-IPv4Ptr_t IPHeader<UT::IPVersion::IPv4>::destIp() const {
-    return m_destIp;
+QString IPHeader<UT::IPVersion::IPv4>::destIp() const {
+    return m_destIp->toString();
+    // return QString::fromStdString(m_sourceIp->toString());
+    // return m_destIp;
 }
 
 void IPHeader<UT::IPVersion::IPv4>::setDestIp(IPv4Ptr_t newDestIp) {
@@ -107,10 +109,9 @@ IPHeader<UT::IPVersion::IPv6>::IPHeader(QObject *parent)
     m_payloadLength(0),
     m_nextHeader(0),
     m_hopLimit(0),
-    m_sourceIP(nullptr),
+    m_sourceIp(nullptr),
     m_destIP(nullptr)
-{
-}
+{}
 
 // Getters and Setters for IPv6 Header
 uint32_t IPHeader<UT::IPVersion::IPv6>::versionTrafficClassFlowLabel() const {
@@ -145,16 +146,16 @@ void IPHeader<UT::IPVersion::IPv6>::setHopLimit(uint8_t newHopLimit) {
     m_hopLimit = newHopLimit;
 }
 
-IPv6Ptr_t IPHeader<UT::IPVersion::IPv6>::sourceIP() const {
-    return m_sourceIP;
+QString IPHeader<UT::IPVersion::IPv6>::sourceIP() const {
+    return m_sourceIp->toString();
 }
 
 void IPHeader<UT::IPVersion::IPv6>::setSourceIP(IPv6Ptr_t newSourceIP) {
-    m_sourceIP = newSourceIP;
+    m_sourceIp = newSourceIP;
 }
 
-IPv6Ptr_t IPHeader<UT::IPVersion::IPv6>::destIP() const {
-    return m_destIP;
+QString IPHeader<UT::IPVersion::IPv6>::destIP() const {
+    return m_destIP->toString();
 }
 
 void IPHeader<UT::IPVersion::IPv6>::setDestIP(IPv6Ptr_t newDestIP) {

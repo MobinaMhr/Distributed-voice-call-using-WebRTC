@@ -45,14 +45,14 @@ void Router::processPacket(const Packet &packet) {
         // m_payload(payload),          m_sequenceNumber(seqNumber),
         // m_waitingCycles(waitCycles), m_totalCycles(totalCycles) {}
 
-    auto newPacket = std::make_unique<Packet>(
-      packet.packetType(), packet.controlType(),
-      packet.destinationIP(),
+    // auto newPacket = std::make_unique<Packet>(
+    //   packet.packetType(), packet.controlType(),
+    //   packet.destinationIP(),
 
-      packet.tcpHeader(),
-      packet.dataLinkHeader(), packet.payload(),
-      packet.sequenceNumber(), packet.waitingCycles(),
-      packet.totalCycles(), nullptr);
+    //   packet.tcpHeader(),
+    //   packet.dataLinkHeader(), packet.payload(),
+    //   packet.sequenceNumber(), packet.waitingCycles(),
+    //   packet.totalCycles(), nullptr);
 
     // if (packet.packetType() == UT::PacketType::Data) {
     //     m_buffer.push_back(std::move(newPacket));
@@ -76,16 +76,17 @@ void Router::processPacket(const Packet &packet) {
     // routePacket(header);
 }
 
-// void Router::routePacket(const IPHeader &header) {
-//     QString destination = header.destinationIP();
-//     if (m_routingTable.contains(destination)) {
-//         QString nextHop = m_routingTable[destination];
-//         qDebug() << LOG_TITLE << "Routing packet destined for" << destination << "to next hop" << nextHop;
-//         // Logic to forward the packet to the next hop
-//     } else {
-//         qDebug() << LOG_TITLE << "No routing entry for destination" << destination << ". Dropping packet.";
-//     }
-// }
+void Router::routePacket(const AbstractIPHeader &header) {
+    QString destination;
+    // QString destination = header.destinationIP();
+    if (m_routingTable.contains(destination)) {
+        QString nextHop = m_routingTable[destination];
+        qDebug() << LOG_TITLE << "Routing packet destined for" << destination << "to next hop" << nextHop;
+        // Logic to forward the packet to the next hop
+    } else {
+        qDebug() << LOG_TITLE << "No routing entry for destination" << destination << ". Dropping packet.";
+    }
+}
 
 void Router::printRoutingTable() const {
     qDebug() << LOG_TITLE << "Routing Table:";

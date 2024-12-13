@@ -20,7 +20,7 @@ public:
     void processPacket(const Packet &packet) override;
 
     void addRoutingEntry(const QString &destination, const QString &nextHop);
-    // void routePacket(const IPHeader &header);
+    void routePacket(const AbstractIPHeader &header);
 
     void printRoutingTable() const;
 
