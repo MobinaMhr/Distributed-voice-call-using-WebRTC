@@ -37,7 +37,10 @@ class AbstractIP : public QObject
 
 public:
     explicit AbstractIP(QObject *parent = nullptr);
+    bool operator<(const AbstractIP& other) const;
 
+    virtual IPv4Ptr_t toIPv4() const = 0;
+    virtual IPv6Ptr_t toIPv6() const = 0;
 Q_SIGNALS:
 
 protected:
@@ -65,6 +68,9 @@ public:    // constructors
     explicit IP(uint32_t ipValue, const QString &subnetMask = "", QObject *parent = nullptr);//TODO: may change to uint32_t
     ~IP() override;
 
+    // Delete copy constructor and assignment operator to prevent copying
+    IP(const IP&) = delete;
+    IP& operator=(const IP&) = delete;
 public:    // methods
     QString toString() const;
     uint32_t toValue() const;
@@ -78,8 +84,8 @@ public:    // methods
     QPair<QString, QString> getSubnetRange() const;
     bool isInSubnet(const QString &otherIP) const;
 
-    IPv6_t toIPv6() const;
-
+    IPv4Ptr_t toIPv4() const override;
+    IPv6Ptr_t toIPv6() const override;
 
 public:    // operators
     bool
@@ -119,6 +125,9 @@ public:    // constructors
     explicit IP(const QByteArray &ipValue, int prefixLength = 128, QObject *parent = nullptr);
     ~IP() override;
 
+    // Delete copy constructor and assignment operator to prevent copying
+    IP(const IP&) = delete;
+    IP& operator=(const IP&) = delete;
 public:    // methods
     QString toString() const;
     QByteArray toValue() const;
@@ -132,7 +141,8 @@ public:    // methods
     QPair<QString, QString> getSubnetRange() const;
     bool isInSubnet(const QString &otherIP) const;
 
-    IPv4_t toIPv4() const;
+    IPv4Ptr_t toIPv4() const override;
+    IPv6Ptr_t toIPv6() const override;
 
 public:    // operators
     bool

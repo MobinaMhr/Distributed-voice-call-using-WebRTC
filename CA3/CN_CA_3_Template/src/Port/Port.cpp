@@ -4,6 +4,31 @@ Port::Port(QObject *parent) :
     QObject(parent), m_number(0), m_numberOfPacketsSent(0)
 {}
 
+// Copy Constructor
+Port::Port(const Port &other)
+    : QObject(other.parent()), // Copy the parent QObject if necessary
+    m_number(other.m_number),
+    m_numberOfPacketsSent(other.m_numberOfPacketsSent),
+    m_ipAddress(other.m_ipAddress)
+{
+    // If you have any other members that require deep copies, handle them here
+}
+
+// Assignment Operator
+Port& Port::operator=(const Port &other)
+{
+    if (this != &other) {
+        m_number = other.m_number;
+        m_numberOfPacketsSent = other.m_numberOfPacketsSent;
+        m_ipAddress = other.m_ipAddress;
+        // Copy other members if necessary
+
+        // Copy QObject parent if needed
+        QObject::setParent(other.parent());
+    }
+    return *this;
+}
+
 Port::~Port() {}
 
 void Port::sendPacket(const PacketPtr_t &data)

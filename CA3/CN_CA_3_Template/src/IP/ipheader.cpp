@@ -4,7 +4,7 @@ AbstractIPHeader::AbstractIPHeader(QObject *parent) :
     QObject {parent}
 {}
 
-UT::IPVersion AbstractIPHeader::ipVersion() {
+UT::IPVersion AbstractIPHeader::ipVersion() const{
     return m_ipVersion;
 }
 

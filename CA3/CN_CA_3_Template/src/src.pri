@@ -23,6 +23,7 @@ SOURCES += \
     $$PWD/Port/Port.cpp \
     $$PWD/Packet/Packet.cpp \
     $$PWD/Router/router.cpp \
+    $$PWD/Router/routingtable.cpp \
     $$PWD/TCPHeader/tcpheader.cpp \
     $$PWD/Topology/topologybuilder.cpp \
     $$PWD/Topology/topologycontroller.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     $$PWD/Port/Port.h \
     $$PWD/Packet/Packet.h \
     $$PWD/Router/router.h \
+    $$PWD/Router/routingtable.h \
     $$PWD/TCPHeader/tcpheader.h \
     $$PWD/Topology/topologybuilder.h \
     $$PWD/Topology/topologycontroller.h

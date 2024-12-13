@@ -38,6 +38,12 @@ AbstractIP::AbstractIP(QObject *parent) :
     QObject {parent}
 {}
 
+bool AbstractIP::operator<(const AbstractIP& other) const {
+    IPv4Ptr_t myIPV4 = this->toIPv4();
+    IPv4Ptr_t theirIPV4 = other.toIPv4();
+    return myIPV4->toValue() < theirIPV4->toValue();
+}
+
 /**
  * ===========================================
  * ===========================================
@@ -129,7 +135,12 @@ bool IP<UT::IPVersion::IPv4>::isInSubnet(const QString &otherIP) const
     return (m_ipValue & m_subnetMask) == (otherValue & m_subnetMask);
 }
 
-IPv6_t IP<UT::IPVersion::IPv4>::toIPv6() const
+IPv4Ptr_t IP<UT::IPVersion::IPv4>::toIPv4() const
+{
+    return QSharedPointer<IPv4_t>::create(new IPv4_t(m_ipValue, getSubnetMask()));
+}
+
+IPv6Ptr_t IP<UT::IPVersion::IPv4>::toIPv6() const
 {
     QByteArray ipv6Bytes(IPV6_Length_IN_BYTES, 0);
     ipv6Bytes[10] = static_cast<char>(0xFF);
@@ -138,7 +149,8 @@ IPv6_t IP<UT::IPVersion::IPv4>::toIPv6() const
     ipv6Bytes[13] = static_cast<char>((m_ipValue >> 16) & 0xFF);
     ipv6Bytes[14] = static_cast<char>((m_ipValue >> 8) & 0xFF);
     ipv6Bytes[15] = static_cast<char>(m_ipValue & 0xFF);
-    return IPv6_t(ipv6Bytes, IPV6_Length_IN_BITS);
+    // Create and return an IPv6 instance
+    return QSharedPointer<IPv6_t>::create(new IPv6_t(ipv6Bytes, IPV6_Length_IN_BITS));
 }
 
 /**
@@ -236,14 +248,20 @@ bool IP<UT::IPVersion::IPv6>::isInSubnet(const QString &otherIP) const
     return bitwiseAnd(m_ipValue, mask) == bitwiseAnd(otherValue, mask);
 }
 
-IPv4_t IP<UT::IPVersion::IPv6>::toIPv4() const
-{
+IPv6Ptr_t IP<UT::IPVersion::IPv6>::toIPv6() const {
+    return QSharedPointer<IPv6_t>::create(new IPv6_t(m_ipValue, m_prefixLength));
+}
+
+// explicit IP(const QString &ipString, int prefixLength = 128, QObject *parent = nullptr);
+// explicit IP(const QByteArray &ipValue, int prefixLength = 128, QObject *parent = nullptr);
+
+IPv4Ptr_t IP<UT::IPVersion::IPv6>::toIPv4() const {
     if (m_ipValue.startsWith(QByteArray::fromHex("00000000000000000000FFFF"))) {
         uint32_t ipv4Value = (static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[12])) << 24) |
                              (static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[13])) << 16) |
                              (static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[14])) << 8) |
                              static_cast<uint32_t>(static_cast<uint8_t>(m_ipValue[15]));
-        return IPv4_t(ipv4Value);
+        return IPv4Ptr_t::create(ipv4Value);
     } else {
         throw std::invalid_argument("Not a mapped IPv4 address");
     }

@@ -13,6 +13,11 @@ class Port : public QObject
 public:
     explicit Port(QObject *parent = nullptr);
     ~Port() override;
+    // Copy Constructor
+    Port(const Port &other);
+
+    // Assignment Operator (optional, to complement the copy constructor)
+    Port& operator=(const Port &other);
 
 public: // Getters
     QString ipAddress();

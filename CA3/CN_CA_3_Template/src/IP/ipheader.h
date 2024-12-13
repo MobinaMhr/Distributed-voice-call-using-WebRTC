@@ -17,12 +17,12 @@ class AbstractIPHeader : public QObject
 
 public:
     explicit AbstractIPHeader(QObject *parent = nullptr);
-    UT::IPVersion ipVersion();
+     UT::IPVersion ipVersion() const;
 
-public: // Getters and Setters
-Q_SIGNALS:
-private:
+protected: // Getters and Setters
     UT::IPVersion m_ipVersion;
+
+Q_SIGNALS:
 };
 
 template <>
