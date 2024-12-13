@@ -19,6 +19,7 @@ public:
     ~Router() override;
 
     void processPacket(const Packet &packet) override;
+    void bufferPacket(const Packet &packet);
     void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop);
     void routePacket(const AbstractIPHeader &header);
     void routePackets();

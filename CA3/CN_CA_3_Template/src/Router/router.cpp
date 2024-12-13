@@ -30,6 +30,10 @@ void Router::processPacket(const Packet &packet) {
         }
     }
 
+    bufferPacket(packet);
+}
+
+void Router::bufferPacket(const Packet &packet) {
     auto newPacket = std::make_unique<Packet>(
       packet.packetType(),      packet.controlType(),       packet.sequenceNumber(),
       packet.waitingCycles(),   packet.totalCycles(),       packet.destinationIP(),
