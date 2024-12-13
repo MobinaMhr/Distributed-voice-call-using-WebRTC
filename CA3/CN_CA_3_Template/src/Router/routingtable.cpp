@@ -33,3 +33,18 @@ QList<QPair<QSharedPointer<AbstractIP>, QSharedPointer<Port>>> RoutingTable::get
     }
     return routes;
 }
+
+void RoutingTable::printRoutingTable() const
+{
+    if (m_routingTable.isEmpty()) {
+        qDebug() << "Routing Table is empty.";
+        return;
+    }
+
+    qDebug() << "Routing Table:";
+    for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it) {
+        // Print the IP and associated port
+        // qDebug() << "Destination IP:" << it.key()->toString()
+        //          << ", Next Hop (Port):" << it.value()->toString();
+    }
+}

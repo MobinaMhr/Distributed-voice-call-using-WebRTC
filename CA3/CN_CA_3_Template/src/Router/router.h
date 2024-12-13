@@ -18,14 +18,14 @@ public:
     explicit Router(int id, const MacAddress &macAddress, QThread *parent = nullptr);
     ~Router() override;
     QString ipAddress() const override;
-    // void processPacket(const Packet &packet) override;
 
+    void processPacket(const Packet &packet) override;
     void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop);
-    // void routePacket(const AbstractIPHeader &header);
+    void routePacket(const AbstractIPHeader &header);
 
     // void printRoutingTable() const;
 
-    // void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
+    void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
 
 private:
     RoutingTable* m_routing_table;

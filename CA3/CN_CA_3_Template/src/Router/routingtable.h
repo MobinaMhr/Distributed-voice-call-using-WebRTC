@@ -31,6 +31,8 @@ public:
     // Get all routes in the table
     QList<QPair<QSharedPointer<AbstractIP>, QSharedPointer<Port>>> getAllRoutes() const;
 
+    void printRoutingTable() const;
+
 Q_SIGNALS:
 
 private:
