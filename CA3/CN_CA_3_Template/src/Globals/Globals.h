@@ -13,6 +13,12 @@ enum class IPVersion
     IPv6
 };
 
+enum class RoutingMode
+{
+    Routing,
+    Simulating
+};
+
 enum class PortState
 {
     Busy,

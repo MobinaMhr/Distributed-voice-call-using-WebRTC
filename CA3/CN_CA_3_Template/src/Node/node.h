@@ -46,6 +46,7 @@ private:
     int m_id;
     MacAddress m_macAddress;
     QString m_name;
+    UT::RoutingMode m_routingMode;
 };
 
 

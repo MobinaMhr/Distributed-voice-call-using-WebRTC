@@ -4,7 +4,6 @@
 #include "../Node/node.h"
 #include "../Port/Port.h"
 #include "routingtable.h"
-// #include "../DHCPServer/DHCPServer.h"
 // #include "../BGP/BGP.h"
 #include <QString>
 #include <unordered_map>
@@ -18,8 +17,8 @@ public:
     explicit Router(int id, const MacAddress &macAddress, QThread *parent = nullptr);
     ~Router() override;
 
-    void receivePacket(const Packet &packet) override; // should called in receive packet slot !!
-    void sendPacket(const Packet &packet) override; // should emit send signal!!
+    void receivePacket(const Packet &packet) override;  // should called in receive packet slot !!
+    void sendPacket(const Packet &packet) override;     // should emit send signal!!
 
     void bufferPacket(const Packet &packet);
     void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<Port> &nextHop); // used by routing algorithems
