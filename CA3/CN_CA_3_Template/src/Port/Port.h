@@ -16,7 +16,7 @@ public:
     explicit Port(uint8_t number, QObject *parent = nullptr);
     ~Port() override;
     Port(const Port &other);
-    Port& operator=(const Port &other);
+    // Port& operator=(const Port &other);
 
 public: // Getters
     uint8_t number();

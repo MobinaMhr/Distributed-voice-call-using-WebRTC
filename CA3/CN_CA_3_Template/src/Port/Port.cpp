@@ -19,16 +19,16 @@ Port::Port(const Port &other)
     m_ipVersion(other.m_ipVersion)
 {}
 
-Port& Port::operator=(const Port &other)
-{
-    if (this != &other) {
-        m_number = other.m_number;
-        m_numberOfPacketsSent = other.m_numberOfPacketsSent;
-        m_ipVersion = other.m_ipVersion;
-        QObject::setParent(other.parent());
-    }
-    return *this;
-}
+// Port& Port::operator=(const Port &other)
+// {
+//     if (this != &other) {
+//         m_number = other.m_number;
+//         m_numberOfPacketsSent = other.m_numberOfPacketsSent;
+//         m_ipVersion = other.m_ipVersion;
+//         QObject::setParent(other.parent());
+//     }
+//     return *this;
+// }
 
 Port::~Port() {}
 
