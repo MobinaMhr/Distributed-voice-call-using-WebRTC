@@ -31,6 +31,9 @@ public:
     virtual QString ipv6Address() const = 0;
     QString macAddress() const;
 
+    UT::NodeState state();
+    void setState(UT::NodeState state);
+
 protected:
     void run() override;
 
@@ -48,7 +51,7 @@ private:
     MacAddress      m_macAddress;
     QString         m_name;
     UT::RoutingMode m_routingMode;
-    // is alive ;
+    UT::NodeState   m_state;
 };
 
 

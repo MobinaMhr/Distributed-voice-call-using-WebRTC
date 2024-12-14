@@ -1,7 +1,12 @@
 #include "Node.h"
 
 Node::Node(int id, const MacAddress &macAddress, QThread* parent)
-    : QThread(parent), m_id(id), m_macAddress(macAddress), m_name("Node_" + QString::number(id)) {}
+    : QThread(parent),
+    m_id(id),
+    m_macAddress(macAddress),
+    m_name("Node_" + QString::number(id)) {
+    m_state = UT::NodeState::Alive;
+}
 
 Node::~Node() {}
 
@@ -33,4 +38,12 @@ QString Node::name() const {
 
 QString Node::macAddress() const {
     return m_macAddress.toString();
+}
+
+
+UT::NodeState Node::state() {
+    return m_state;
+}
+void Node::setState(UT::NodeState state) {
+    m_state = state;
 }

@@ -7,6 +7,12 @@
 namespace UT
 {
 
+enum class NodeState
+{
+    Alive,
+    Dead
+};
+
 enum class IPVersion
 {
     IPv4,
