@@ -5,8 +5,6 @@ PortBindingManager::PortBindingManager(QObject *parent) :
 {}
 
 PortPtr_t PortBindingManager::createPort() {
-    // port1->setIpAddress("192.168.0." + QString::number(node1->id()));
-    // port2->setIpAddress("192.168.0." + QString::number(node2->id()));
     return QSharedPointer<Port>::create(new Port(nullptr));
 }
 

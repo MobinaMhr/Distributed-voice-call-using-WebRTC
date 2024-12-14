@@ -7,7 +7,6 @@ TopologyController::TopologyController(QObject *parent) :
     m_isActive(false) {}
 
 TopologyController::~TopologyController() {
-    /// Do the nessessary deletes
     delete m_topologyBuilder;
 }
 
@@ -89,4 +88,9 @@ void TopologyController::deactivateNodes() {
         node->quit();
         node->wait();
     }
+}
+
+QVector<QSharedPointer<PC>> TopologyController::getPcs(int count, int offset, UT::IPVersion ipVersion, int portCount) {
+    m_personalComputers = m_topologyBuilder->getPCs(count, offset, ipVersion, portCount);
+    return m_personalComputers;
 }

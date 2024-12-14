@@ -38,7 +38,7 @@ protected:
     void run() override;
 
 public Q_SLOTS:
-    virtual void receivePacket(const PacketPtr_t &packet) = 0; // should called in receive packet slot !!
+    virtual void receivePacket(const PacketPtr_t &packet) = 0;
 
 private Q_SLOTS:
 

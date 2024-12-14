@@ -19,6 +19,7 @@ public:
 
     void activateNodes();
     void deactivateNodes();
+    QVector<QSharedPointer<PC>> getPcs(int count, int offset, UT::IPVersion ipVersion, int portCount);
 
 Q_SIGNALS:
     void topologyChanged(UT::TopologyType topologyType);
@@ -33,6 +34,7 @@ public Q_SLOTS:
 private:
     TopologyBuilder*                m_topologyBuilder;
     QVector<QSharedPointer<Router>> m_currentTopology;
+    QVector<QSharedPointer<PC>>     m_personalComputers;
     UT::TopologyType                m_activeTopologyType;
     bool                            m_isActive;
 };

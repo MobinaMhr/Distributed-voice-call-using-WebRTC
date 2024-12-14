@@ -12,10 +12,11 @@ class AutonomousSystem : public QObject
     Q_OBJECT
 
 public:
-    explicit AutonomousSystem(int node_count, UT::TopologyType topology_type, QObject *parent = nullptr);
+    explicit AutonomousSystem(int routerCount, int pcCount, int routerOffset, int pcOffset,
+                              UT::TopologyType topology_type, QObject *parent = nullptr);
     ~AutonomousSystem() override;
 
-    void startRoutingProtocol(); /// UT::RoutingProtocolType protocol As input
+    void startRoutingProtocol();
     void stopRoutingProtocol();
 
     void assignIPAddresses();
@@ -32,9 +33,11 @@ public Q_SLOTS:
     void stopSimulation();
 
 private:
-    int m_offset;
     int                             m_id;
     int                             m_routerCount;
+    int                             m_pcCount;
+    int                             m_routerOffset;
+    int                             m_pcOffset;
     bool                            m_isSimulationActive;
     UT::TopologyType                m_topologyType;
     QVector<QSharedPointer<Router>> m_routers;
@@ -45,9 +48,8 @@ private:
     TopologyController*             m_topologyController;
     UT::IPVersion                   m_ipVersion;
 
-    // RoutingProtocol *m_routingProtocol;
-
     void initializeAS();
+    void initializePCs(UT::IPVersion ipVersion, int offset, int portCount = 1);
 };
 
 #endif    // AUTONOMOUSSYSTEM_H

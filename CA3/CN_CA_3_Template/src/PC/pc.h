@@ -19,12 +19,11 @@ public:
     //void send(IPv6_t dest_ip); // create packets and send them;
 
 public Q_SLOTS:
-    void receivePacket(const PacketPtr_t &packet) override; // should called in receive packet slot !!
+    void receivePacket(const PacketPtr_t &packet) override;
 
 private:
     IPv4_t          m_ipv4Address;
     IPv6_t          m_ipv6Address;
-    // UT::PortState   m_portState;
     PortPtr_t       m_port;
 };
 

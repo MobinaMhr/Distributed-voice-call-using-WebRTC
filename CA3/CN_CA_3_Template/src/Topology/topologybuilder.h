@@ -4,6 +4,7 @@
 #include "../PortBindingManager/PortBindingManager.h"
 #include "../MACAddress/macaddressgenerator.h"
 #include "../Router/router.h"
+#include "../PC/pc.h"
 #include <QObject>
 #include <QVector>
 #include <QMap>
@@ -12,9 +13,9 @@
 class TopologyBuilder : public QObject {
     Q_OBJECT
 
-public: // up = 0, right = 1 , down = 2 , left = 3 -> MAGIC NUMBER
+public:
     explicit TopologyBuilder(QObject *parent = nullptr);
-    ~TopologyBuilder() override; // TODO: get IPV as input
+    ~TopologyBuilder() override;
 
     void resetBindings();
 
@@ -26,6 +27,7 @@ public: // up = 0, right = 1 , down = 2 , left = 3 -> MAGIC NUMBER
     void moveToRingStarTopology();
 
     QVector<QSharedPointer<Router>> routers();
+    QVector<QSharedPointer<PC>> getPCs(int count, int offset, UT::IPVersion ipVersion, int portCount);
 
 private:
     int                             m_offset;
@@ -37,6 +39,7 @@ private:
     MacAddressGenerator*            m_macAddressGenerator;
 
     QSharedPointer<Router> createRouter(int id, int portCount, UT::IPVersion ipVersion);
+    QSharedPointer<PC> createPC(int id, int portCount, UT::IPVersion ipVersion);
     bool bindPorts(PortPtr_t port1, PortPtr_t port2);
     bool unbindPorts(PortPtr_t port1, PortPtr_t port2);
 };

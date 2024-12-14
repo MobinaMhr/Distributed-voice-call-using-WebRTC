@@ -2,10 +2,13 @@
 
 #include <QDebug>
 
-AutonomousSystem::AutonomousSystem(int node_count, UT::TopologyType topology_type, QObject *parent) :
+AutonomousSystem::AutonomousSystem(int routerCount, int pcCount, int routerOffset, int pcOffset,
+                                   UT::TopologyType topology_type, QObject *parent) :
     QObject(parent),
-    m_offset(0),
-    m_routerCount(node_count),
+    m_routerCount(routerCount),
+    m_pcCount(pcCount),
+    m_routerOffset(routerOffset),
+    m_pcOffset(pcOffset),
     m_isSimulationActive(false),
     m_topologyType(topology_type),
     m_topologyController(new TopologyController(this)),
@@ -22,8 +25,11 @@ AutonomousSystem::~AutonomousSystem() {
 
 void AutonomousSystem::initializeAS() {
     int portCount = 4;
-    m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_offset, portCount);
+    m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_routerOffset, portCount);
     m_routers = m_topologyController->getCurrentTopology();
+
+    m_topologyController->getPcs(m_pcCount, m_pcOffset, m_ipVersion, 1);
+
     assignIPAddresses();
 }
 

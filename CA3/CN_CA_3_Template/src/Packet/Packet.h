@@ -19,7 +19,6 @@ public:
                     const QByteArray &payload, const DataLinkHeader &dataLinkHeader,
                     const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header,
                     QObject *parent);
-    // IPHv4_t ipv4Header, IPHv6_t ipv6Header,
 
     void updatePath(const QString& ipAddress);
 

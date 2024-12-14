@@ -15,10 +15,7 @@ class Port : public QObject
 public:
     explicit Port(QObject *parent = nullptr);
     ~Port() override;
-    // Copy Constructor
     Port(const Port &other);
-
-    // Assignment Operator (optional, to complement the copy constructor)
     Port& operator=(const Port &other);
 
 public: // Getters
@@ -31,12 +28,12 @@ public: // Setters
     void setState(UT::PortState state);
 
 Q_SIGNALS:
-    void packetSent(const PacketPtr_t &data); // connected to receivePacket slot of bined port!!
-    void packetReceived(const PacketPtr_t &data); // connected to receivePacket slot coresponding node!!
+    void packetSent(const PacketPtr_t &data);
+    void packetReceived(const PacketPtr_t &data);
 
 public Q_SLOTS:
-    void sendPacket(const PacketPtr_t &data, int portNumber); // connected to coresponding node send signal!!
-    void receivePacket(const PacketPtr_t &data); // connected to the bined port packetSent signal!!
+    void sendPacket(const PacketPtr_t &data, int portNumber);
+    void receivePacket(const PacketPtr_t &data);
 
 private:
     uint8_t         m_number;

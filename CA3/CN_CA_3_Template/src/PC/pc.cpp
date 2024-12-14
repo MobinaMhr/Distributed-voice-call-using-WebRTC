@@ -35,7 +35,6 @@ void PC::receivePacket(const PacketPtr_t &packet) {
         packet->print();
     }
     // Process the packet based on specific PC logic
-    /// TODO
 }
 
 PortPtr_t PC::getIdlePort() {

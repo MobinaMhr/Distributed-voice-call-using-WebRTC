@@ -1,7 +1,5 @@
 #include "TopologyBuilder.h"
 
-/// The node number is ambiguous
-
 TopologyBuilder::TopologyBuilder(QObject *parent) :
     QObject(parent),
     m_macAddressGenerator(new MacAddressGenerator(this)) {}
@@ -20,6 +18,17 @@ void TopologyBuilder::resetBindings() {
     }
 }
 
+
+QSharedPointer<PC> TopologyBuilder::createPC(int id, int portCount, UT::IPVersion ipVersion) {
+    return QSharedPointer<PC>::create(
+      id,
+      m_macAddressGenerator->generateMacAddress(),
+      portCount,
+      ipVersion,
+      nullptr
+      );
+}
+
 QSharedPointer<Router> TopologyBuilder::createRouter(int id, int portCount, UT::IPVersion ipVersion) {
     return QSharedPointer<Router>::create(
       id,
@@ -28,6 +37,17 @@ QSharedPointer<Router> TopologyBuilder::createRouter(int id, int portCount, UT::
       ipVersion,
       nullptr
     );
+}
+
+QVector<QSharedPointer<PC>> TopologyBuilder::getPCs(int count, int offset, UT::IPVersion ipVersion, int portCount) {
+    QVector<QSharedPointer<PC>> m_pcs;
+
+    for (int id = 0; id < count; ++id) {
+        auto pc = createRouter(id + 1 + offset, portCount, ipVersion);
+        m_pcs[id] = pc;
+    }
+
+    return m_pcs;
 }
 
 void TopologyBuilder::initializeRouters(int routerCount, UT::IPVersion ipVersion, int offset, int portCount) {
