@@ -1,6 +1,8 @@
 #include "TopologyBuilder.h"
 
 /// The node number is ambiguous
+///
+/// /// pointer tor handle she
 
 TopologyBuilder::TopologyBuilder(QObject *parent) :
     QObject(parent),
@@ -17,32 +19,42 @@ void TopologyBuilder::unbindAllPorts() {
     }
 }
 
-QSharedPointer<Router> TopologyBuilder::createRouter(int id) {
+QSharedPointer<Router> TopologyBuilder::createRouter(int id, int portCount) {
     return QSharedPointer<Router>::create(
       id,
       m_macAddressGenerator->generateMacAddress(),
+      portCount,
       UT::IPVersion::IPv4,
       nullptr
     );
 }
 
-void TopologyBuilder::createMeshTopology(int rows, int columns) { // TODO : shoul add id Ofsset
-    m_nodes.resize(rows * columns);
+void TopologyBuilder::initializeRouters(int count, int offset) {
+    m_offset = offset;
+    m_routerCount = count;
+    m_nodes.resize(m_routerCount);
+
+    for (int id = 0; id < m_routerCount; ++id) {
+        auto router = createRouter(id + 1 + m_offset, 4); /// TODO - Hard code
+        m_nodes[id] = router;
+    }
+}
+
+void TopologyBuilder::moveToMeshTopology(int rows, int columns) {
+    unbindAllPorts();
 
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < columns; ++j) {
             int id = i * columns + j;
-            auto node = createRouter(id++);
-            m_nodes[id] = node;
-
             if (j > 0) bindPorts(m_nodes[id], m_nodes[id - 1]);
             if (i > 0) bindPorts(m_nodes[id], m_nodes[id - columns]);
         }
     }
 }
 
-void TopologyBuilder::createTorusTopology(int rows, int columns) {
-    createMeshTopology(rows, columns);
+void TopologyBuilder::moveToTorusTopology(int rows, int columns) {
+    unbindAllPorts();
+    moveToMeshTopology(rows, columns);
 
     for (int i = 0; i < rows; ++i) {
         bindPorts(m_nodes[i * columns], m_nodes[i * columns + columns - 1]);
@@ -53,31 +65,29 @@ void TopologyBuilder::createTorusTopology(int rows, int columns) {
     }
 }
 
-void TopologyBuilder::createStarTopology(int numNodes) {
-    auto centerNode = createRouter(1);
-    m_nodes.push_back(centerNode);
+void TopologyBuilder::moveToStarTopology() {
+    unbindAllPorts();
 
-    for (int i = 1; i <= numNodes; ++i) {
-        auto node = createRouter(i++);
-        m_nodes.push_back(node);
+    auto centerNode = m_nodes[0];
+    for (int i = 1; i <= m_routerCount; ++i) {
+        auto node = m_nodes[i];
         bindPorts(centerNode, node);
     }
 }
 
-void TopologyBuilder::createRingStarTopology(int numNodes) {
-    if (numNodes < 3) return;
+void TopologyBuilder::moveToRingStarTopology() {
+    if (m_routerCount < 3) return;
 
-    auto centerNode = createRouter(1);
-    m_nodes.push_back(centerNode);
+    unbindAllPorts();
+    auto centerNode = m_nodes.back();
 
-    for (int i = 1; i < numNodes; ++i) {
-        auto node = createRouter(i++);
-        m_nodes.push_back(node);
-        bindPorts(centerNode, node);
-
-        if (i % 2) bindPorts(m_nodes[i], m_nodes[i - 1]);
+    int i = 0;
+    for (i = 0; i < m_routerCount - 1; ++i) {
+        auto node = m_nodes[i];
+        if (i % 2 == 0) bindPorts(centerNode, node);
+        if (i > 0)      bindPorts(m_nodes[i], m_nodes[i - 1]);
     }
-    bindPorts(m_nodes[1], m_nodes[numNodes]);
+    bindPorts(m_nodes[i-1], m_nodes[0]);
 }
 
 void TopologyBuilder::bindPorts(QSharedPointer<Router> node1, QSharedPointer<Router> node2) {
@@ -101,7 +111,7 @@ void TopologyBuilder::unbindPorts(QSharedPointer<Router> node1, QSharedPointer<R
         return;
     }
 
-    PortPtr_t port1 = m_portBindingManager.createPort();
+    PortPtr_t port1 = m_portBindingManager.createPort(); /// TODO
     PortPtr_t port2 = m_portBindingManager.createPort();
 
     m_portBindingManager.unbind(port1, port2);

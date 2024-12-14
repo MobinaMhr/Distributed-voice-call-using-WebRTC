@@ -6,7 +6,6 @@
 #include <QTimer>
 #include <QVector>
 #include <QRandomGenerator>
-#include <set>
 #include "../DataGenerator/datagenerator.h"
 #include "../Globals/Globals.h"
 

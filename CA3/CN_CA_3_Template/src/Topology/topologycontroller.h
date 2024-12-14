@@ -12,7 +12,7 @@ public:
     ~TopologyController() override;
 
     void changeTopologyTo(UT::TopologyType topologyType);
-    void initializeTopology(UT::TopologyType topologyType, int numNodes = 0);
+    void initializeTopology(UT::TopologyType topologyType, int routerCount = 0);
     QVector<QSharedPointer<Router>> getCurrentTopology() const;
     void monitorTopology();
 

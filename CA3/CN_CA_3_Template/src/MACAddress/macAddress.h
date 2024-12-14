@@ -3,9 +3,6 @@
 
 #include <QObject>
 #include <QString>
-#include <stdexcept>
-#include <iomanip>
-#include <sstream>
 #include <QRegularExpression>
 
 

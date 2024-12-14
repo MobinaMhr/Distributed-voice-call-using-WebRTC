@@ -6,15 +6,16 @@
 const QString LOG_TITLE = "Router:: ";
 const int MAX_BUFFER_SIZE = 20;
 
-Router::Router(int id, const MacAddress &macAddress, UT::IPVersion ipv, QThread *parent)
-    : Node(id, macAddress, parent), m_routing_table(new RoutingTable), m_ipvVersion(ipv) {
-    m_portStates.fill(UT::PortState::Idle);
+Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipv, QThread *parent)
+    : Node(id, macAddress, portCount, parent),
+    m_routing_table(new RoutingTable),
+    m_portStates(portCount, UT::PortState::Idle),
+    m_ports(portCount),
+    m_ipvVersion(ipv) {
 
-    for (size_t i = 0; i < m_ports.size(); ++i) {
-        // Create and initialize each port
+    for (int i = 0; i < portCount; ++i) {
         m_ports[i] = QSharedPointer<Port>::create();
 
-        // Connect each port to the router
         connect(this, &Router::sendPacket, m_ports[i].data(), &Port::sendPacket, Qt::AutoConnection);
         connect(m_ports[i].data(), &Port::packetReceived, this, &Router::receivePacket, Qt::AutoConnection);
     }

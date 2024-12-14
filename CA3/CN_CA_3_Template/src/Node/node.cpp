@@ -1,6 +1,6 @@
 #include "Node.h"
 
-Node::Node(int id, const MacAddress &macAddress, QThread* parent)
+Node::Node(int id, const MacAddress &macAddress, int portCount, QThread* parent)
     : QThread(parent),
     m_id(id),
     m_macAddress(macAddress),
@@ -10,7 +10,7 @@ Node::Node(int id, const MacAddress &macAddress, QThread* parent)
 
 Node::~Node() {}
 
-// Node* Node::instance(int id, const MacAddress &macAddress, QThread* parent) {
+// Node* Node::instance(int id, const MacAddress &macAddress, int portCount, QThread* parent) {
 //     if (!m_self) {
 //         m_self = new Node(id, macAddress, parent);
 //     }

@@ -10,9 +10,7 @@
 #include "../IP/IP.h"
 #include "../Globals/Globals.h"
 #include "../MACAddress/macaddress.h"
-#include "../Packet/Packet.h"
 #include <QString>
-#include <vector>
 #include "../Port/Port.h"
 
 class Node : public QThread
@@ -20,9 +18,9 @@ class Node : public QThread
     Q_OBJECT
 
 public:
-    explicit Node(int id, const MacAddress &macAddress, QThread *parent = nullptr);
+    explicit Node(int id, const MacAddress &macAddress, int portCount, QThread *parent = nullptr);
     ~Node() override;
-    // static Node *instance(int id, const MacAddress &macAddress, QThread *parent = nullptr);
+    // static Node *instance(int id, const MacAddress &macAddress, int portCount, QThread *parent = nullptr);
     static void release();
 
     int id() const;

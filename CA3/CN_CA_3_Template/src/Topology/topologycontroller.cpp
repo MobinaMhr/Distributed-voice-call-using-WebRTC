@@ -3,20 +3,26 @@
 
 TopologyController::TopologyController(QObject *parent) :
     QObject(parent),
-    m_topologyBuilder(new TopologyBuilder()),
+    m_topologyBuilder(new TopologyBuilder(this)),
     m_isActive(false) {}
 
-TopologyController::~TopologyController() {}
+TopologyController::~TopologyController() {
+    /// Do the nessessary deletes
+    delete m_topologyBuilder;
+}
 
 void TopologyController::changeTopologyTo(UT::TopologyType topologyType) {
     /// TODO,,,
 }
 
-void TopologyController::initializeTopology(UT::TopologyType topologyType, int numNodes) {
+void TopologyController::initializeTopology(UT::TopologyType topologyType, int routerCount) {
     if (!m_topologyBuilder) m_topologyBuilder = new TopologyBuilder();
 
-    int rows = numNodes / 2;
-    int columns = numNodes / 2;
+    int rows = routerCount / 2;
+    int columns = routerCount / 2;
+
+
+    m_topologyBuilder->createRouters(routerCount);
 
     switch (topologyType) {
         case UT::TopologyType::Mesh:
@@ -26,7 +32,7 @@ void TopologyController::initializeTopology(UT::TopologyType topologyType, int n
             m_topologyBuilder->createTorusTopology(rows, columns);
             break;
         case UT::TopologyType::RingStar:
-            m_topologyBuilder->createRingStarTopology(numNodes);
+            m_topologyBuilder->createRingStarTopology(routerCount);
             break;
         case UT::TopologyType::None:
         default:

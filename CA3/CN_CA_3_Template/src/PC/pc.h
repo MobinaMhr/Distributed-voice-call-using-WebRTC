@@ -9,7 +9,7 @@ class PC : public Node {
     Q_OBJECT
 
 public:
-    explicit PC(int id, const MacAddress &macAddress, QThread *parent = nullptr);
+    explicit PC(int id, const MacAddress &macAddress, int portCount, QThread *parent = nullptr);
     ~PC() override;
 
     QString ipv4Address() const override;
