@@ -24,7 +24,7 @@ SOURCES += \
     $$PWD/Topology/topologybuilder.cpp \
     $$PWD/Topology/topologycontroller.cpp \
     # # $$PWD/DHCPServer/DHCPServer.cpp \
-    # $$PWD/AutonomousSystem/autonomoussystem.cpp \
+    $$PWD/AutonomousSystem/autonomoussystem.cpp \
     # # $$PWD/MACAddress/testmacaddress.cpp \
     # # $$PWD/MACAddress/testmacaddressgenerator.cpp \
     $$PWD/main.cpp
@@ -49,6 +49,6 @@ HEADERS += \
     $$PWD/Topology/topologybuilder.h \
     $$PWD/Topology/topologycontroller.h \
     # # $$PWD/DHCPServer/DHCPServer.h \
-    # $$PWD/AutonomousSystem/autonomoussystem.h
+    $$PWD/AutonomousSystem/autonomoussystem.h
     # # $$PWD/MACAddress/testmacaddress.h \
-    # # $$PWD/MACAddress/testmacaddressgenerator.h
+    # # $$PWD/MACAddress/testmacaddressgenerator.h \

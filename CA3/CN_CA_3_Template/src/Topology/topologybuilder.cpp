@@ -1,8 +1,6 @@
 #include "TopologyBuilder.h"
 
 /// The node number is ambiguous
-///
-/// /// pointer tor handle she
 
 TopologyBuilder::TopologyBuilder(QObject *parent) :
     QObject(parent),

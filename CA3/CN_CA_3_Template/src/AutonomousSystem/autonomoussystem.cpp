@@ -4,10 +4,12 @@
 
 AutonomousSystem::AutonomousSystem(int node_count, UT::TopologyType topology_type, QObject *parent) :
     QObject(parent),
-    m_node_count(node_count),
+    m_offset(0),
+    m_routerCount(node_count),
     m_isSimulationActive(false),
     m_topologyType(topology_type),
-    m_topologyController(new TopologyController(this))
+    m_topologyController(new TopologyController(this)),
+    m_ipVersion(UT::IPVersion::IPv4)
 {
     initializeAS();
 }
@@ -19,7 +21,8 @@ AutonomousSystem::~AutonomousSystem() {
 }
 
 void AutonomousSystem::initializeAS() {
-    m_topologyController->initializeTopology(m_topologyType, m_node_count);
+    int portCount = 4;
+    m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_offset, portCount);
     m_routers = m_topologyController->getCurrentTopology();
     assignIPAddresses();
 }
@@ -71,7 +74,8 @@ void AutonomousSystem::resetAS() {
 void AutonomousSystem::configAS(UT::TopologyType topology_type) {
     m_isSimulationActive = false;
     m_topologyType = topology_type;
-    m_topologyController->changeTopologyTo(m_topologyType);
+    m_topologyController->setTopologyType(m_topologyType);
+    m_topologyController->updateTopology();
 }
 
 void AutonomousSystem::startSimulation() {

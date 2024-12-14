@@ -6,9 +6,6 @@
 #include <QVector>
 #include <QSharedPointer>
 #include <QMap>
-// #include "../Router/router.h"
-// #include "../DHCP/dhcpserver.h"
-// #include "../Routing/RoutingProtocol.h"
 
 class AutonomousSystem : public QObject
 {
@@ -35,8 +32,9 @@ public Q_SLOTS:
     void stopSimulation();
 
 private:
+    int m_offset;
     int                             m_id;
-    int                             m_node_count;
+    int                             m_routerCount;
     bool                            m_isSimulationActive;
     UT::TopologyType                m_topologyType;
     QVector<QSharedPointer<Router>> m_routers;
@@ -45,6 +43,8 @@ private:
     QVector<QSharedPointer<Router>> m_brokenRouters;
     QSharedPointer<Router>          m_dhcpServer;
     TopologyController*             m_topologyController;
+    UT::IPVersion                   m_ipVersion;
+
     // RoutingProtocol *m_routingProtocol;
 
     void initializeAS();
