@@ -2,6 +2,29 @@
 
 using namespace UT;
 
+const std::map<PacketControlType, QString> packetControlTypeStrings = {
+ {PacketControlType::Request, "Request"},
+ {PacketControlType::Response, "Response"},
+ {PacketControlType::Acknowledge, "Acknowledge"},
+ {PacketControlType::Error, "Error"},
+ {PacketControlType::DHCPDiscovery, "DHCPDiscovery"},
+ {PacketControlType::DHCPOffer, "DHCPOffer"},
+ {PacketControlType::DHCPRequest, "DHCPRequest"},
+ {PacketControlType::DHCPAcknowledge, "DHCPAcknowledge"},
+ {PacketControlType::DHCPNak, "DHCPNak"},
+ {PacketControlType::RIP, "RIP"},
+ {PacketControlType::OSPF, "OSPF"},
+ };
+
+QString toString(PacketControlType type) {
+    auto it = packetControlTypeStrings.find(type);
+    if (it != packetControlTypeStrings.end()) {
+        return it->second;
+    }
+    return "Unknown";
+}
+
+
 Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber, quint32 waitCycles,
                quint32 totalCycles, QSharedPointer<AbstractIP> destIP, const QByteArray &payload,
                const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader,
@@ -95,7 +118,7 @@ void Packet::print()
     QString packetType = (m_packetType == UT::PacketType::Data) ? " Data" : " Control";
     qDebug() << "Packet Details:";
     qDebug() << "Packet Type:" << packetType;
-    qDebug() << "Control Type:" << UT::toString(m_controlType);
+    qDebug() << "Control Type:" << toString(m_controlType);
     qDebug() << "Sequence Number:" << m_sequenceNumber;
     qDebug() << "Waiting Cycles:" << m_waitingCycles;
     qDebug() << "Total Cycles:" << m_totalCycles;

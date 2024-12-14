@@ -24,8 +24,6 @@ public:
     QString ipv4Address() const override;
     QString ipv6Address() const override;
 
-    void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
-
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;  // should called in receive packet slot !!
 
@@ -37,6 +35,9 @@ private:
     std::deque<PacketPtr_t> m_buffer;
     IPv4_t m_ipv4Address;
     IPv6_t m_ipv6Address;
+
+    bool isBufferAtCapacity();
+    int findBufferPositionForPacket(UT::PacketType packetType);
 };
 
 #endif // ROUTER_H

@@ -26,38 +26,52 @@ void Router::addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedP
     m_routing_table->addRoute(destinationIp, nextHopIp, port);
 }
 
-void Router::receivePacket(const PacketPtr_t &packet) {
-    if (m_buffer.size() >= static_cast<std::size_t>(MAX_BUFFER_SIZE)) {
-        if (packet->packetType() == UT::PacketType::Data) {
-            qDebug() << LOG_TITLE << "Packet Dropped: Buffer Full. Sequence:" << packet->sequenceNumber();
-            return;
-        }
-        if (packet->packetType() == UT::PacketType::Control) {
-            m_buffer.pop_back();
-            qDebug() << LOG_TITLE << "Buffer Full: Removed Oldest Packet.";
-        }
-    }
-
-    bufferPacket(packet);
+bool Router::isBufferAtCapacity() {
+    return m_buffer.size() >= MAX_BUFFER_SIZE;
 }
 
-void Router::bufferPacket(const PacketPtr_t &packet) {
-    if (packet->packetType() == UT::PacketType::Data) {
-        m_buffer.push_back(std::move(packet));
-        qDebug() << LOG_TITLE << "Data Packet Added. Buffer Size:" << m_buffer.size();
-    }
-    else if (packet->packetType() == UT::PacketType::Control) {
+int Router::findBufferPositionForPacket(UT::PacketType packetType) {
+    if (packetType == UT::PacketType::Data) {
+        if (!isBufferAtCapacity()) {
+            return static_cast<int>(m_buffer.size());
+        }
+    } else if (packetType == UT::PacketType::Control) {
         auto it = std::find_if(m_buffer.rbegin(), m_buffer.rend(), [](const PacketPtr_t &pkt) {
             return pkt->packetType() == UT::PacketType::Control;
         });
 
         if (it != m_buffer.rend()) {
-            m_buffer.insert(it.base(), std::move(packet));
-        } else {
-            m_buffer.push_front(std::move(packet));
+            if (isBufferAtCapacity()) m_buffer.pop_back();
+            return static_cast<int>(it.base() - m_buffer.begin());
+        } else if (!isBufferAtCapacity()) {
+            return -1;
         }
-        qDebug() << LOG_TITLE << "Control Packet Added. Buffer Size:" << m_buffer.size();
     }
+
+    return -1;
+}
+
+void Router::receivePacket(const PacketPtr_t &packet) {
+    bufferPacket(packet);
+}
+
+void Router::bufferPacket(const PacketPtr_t &packet) {
+    int position = findBufferPositionForPacket(packet->packetType());
+
+    if (position == -1) {
+        qDebug() << LOG_TITLE << "Packet Dropped: Buffer Full. Sequence:" << packet->sequenceNumber();
+        return;
+    }
+
+    if (position == static_cast<int>(m_buffer.size())) {
+        m_buffer.push_back(std::move(packet));
+    } else {
+        m_buffer.insert(m_buffer.begin() + position, std::move(packet));
+    }
+
+    qDebug() << LOG_TITLE << (packet->packetType() == UT::PacketType::Data ?
+                                "Data Packet Added." : "Control Packet Added.")
+             << "Buffer Size:" << m_buffer.size();
 }
 
 void Router::routePackets() {
@@ -104,19 +118,6 @@ void Router::routePackets() {
     }
 }
 
-void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress) {
-    if (portIndex < 0 || portIndex >= static_cast<int>(m_ports.size())) {
-        qDebug() << LOG_TITLE << "Invalid port index:" << portIndex;
-        return;
-    }
-
-    // PortPtr_t configedPort = PortPtr_t::create();
-    // configedPort->setIpAddress(ipAddress.toString());
-    // m_ports[portIndex] = configedPort;
-
-    qDebug() << LOG_TITLE << "Configured port" << portIndex << "with IP" << ipAddress.toString() << "and MAC" << macAddress.toString();
-}
-
 QString Router::ipv6Address() const
 {
     return m_ipv6Address.toString();
@@ -125,21 +126,3 @@ QString Router::ipv6Address() const
 QString Router::ipv4Address() const {
     return m_ipv4Address.toString();
 }
-
-// switch (packet.ipVersion()) {
-//     case UT::IPVersion::IPv4:
-//         routePacket(packet.ipv4Header());
-//         break;
-
-//     case UT::IPVersion::IPv6:
-//         routePacket(packet.ipv6Header());
-//         break;
-
-//     default:
-//         qDebug() << LOG_TITLE << "Invalid IP Header: Dropping Packet.";
-//         break;
-// }
-
-
-
-    // const auto *ipHeader = dynamic_cast<const IPHv4_t *>(&header);
