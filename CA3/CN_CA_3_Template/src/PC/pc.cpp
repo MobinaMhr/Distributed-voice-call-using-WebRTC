@@ -1,7 +1,8 @@
 #include "PC.h"
 
-PC::PC(int id, const MacAddress &macAddress, int portCount, QThread *parent)
-    : Node(id, macAddress, portCount, parent) {
+PC::PC(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipv, QThread *parent)
+    : Node(id, macAddress, portCount, parent),
+    m_ipvVersion(ipv) {
     m_port = QSharedPointer<Port>::create();
     connect(this, &PC::sendPacket, m_port.data(), &Port::sendPacket, Qt::AutoConnection);
     connect(m_port.data(), &Port::packetReceived, this, &PC::receivePacket, Qt::AutoConnection);

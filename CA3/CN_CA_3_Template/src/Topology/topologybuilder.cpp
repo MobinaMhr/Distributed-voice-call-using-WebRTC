@@ -26,7 +26,7 @@ QSharedPointer<PC> TopologyBuilder::createPC(int id, int portCount, UT::IPVersio
       portCount,
       ipVersion,
       nullptr
-      );
+    );
 }
 
 QSharedPointer<Router> TopologyBuilder::createRouter(int id, int portCount, UT::IPVersion ipVersion) {
@@ -43,7 +43,7 @@ QVector<QSharedPointer<PC>> TopologyBuilder::getPCs(int count, int offset, UT::I
     QVector<QSharedPointer<PC>> m_pcs;
 
     for (int id = 0; id < count; ++id) {
-        auto pc = createRouter(id + 1 + offset, portCount, ipVersion);
+        auto pc = createPC(id + offset, portCount, ipVersion);
         m_pcs[id] = pc;
     }
 
