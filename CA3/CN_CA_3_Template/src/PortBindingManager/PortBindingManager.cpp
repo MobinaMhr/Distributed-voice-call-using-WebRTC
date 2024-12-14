@@ -23,14 +23,13 @@ void PortBindingManager::bind(const PortPtr_t &port1, const PortPtr_t &port2)
         bindings[port2] = QList<PortPtr_t>();
     }
 
-    if (!bindings[port1].contains(port2))
-    {
+    if (!bindings[port1].contains(port2)){ //TODO : handle possible errors in next phase !!
         bindings[port1].append(port2);
         bindings[port2].append(port1);
-        Q_EMIT bindingChanged(port1->ipAddress(), port1->number(), port2->ipAddress(), port2->number(), true);
     }
-    // connect(port1.get(), &Port::packetSent, port2.get(), &Port::receivePacket);
-    // connect(port2.get(), &Port::packetSent, port1.get(), &Port::receivePacket);
+    Q_EMIT bindingChanged(port1->ipAddress(), port1->number(), port2->ipAddress(), port2->number(), true);
+    connect(port1.get(), &Port::packetSent, port2.get(), &Port::receivePacket, Qt::AutoConnection);
+    connect(port2.get(), &Port::packetSent, port1.get(), &Port::receivePacket, Qt::AutoConnection);
 }
 
 bool PortBindingManager::unbind(const PortPtr_t &port1, const PortPtr_t &port2)
@@ -39,6 +38,8 @@ bool PortBindingManager::unbind(const PortPtr_t &port1, const PortPtr_t &port2)
     {
         bindings[port1].removeOne(port2);
         bindings[port2].removeOne(port1);
+        disconnect(port1.get(), &Port::packetSent, port2.get(), &Port::receivePacket);
+        disconnect(port2.get(), &Port::packetSent, port1.get(), &Port::receivePacket);
         Q_EMIT bindingChanged(port1->ipAddress(), port1->number(), port2->ipAddress(), port2->number(), false);
         return true;
     }
@@ -52,6 +53,8 @@ bool PortBindingManager::unbind(const PortPtr_t &port1)
         for (auto port2 : bindings[port1]) {
             bindings[port1].removeOne(port2);
             bindings[port2].removeOne(port1);
+            disconnect(port1.get(), &Port::packetSent, port2.get(), &Port::receivePacket);
+            disconnect(port2.get(), &Port::packetSent, port1.get(), &Port::receivePacket);
             Q_EMIT bindingChanged(port1->ipAddress(), port1->number(), port2->ipAddress(), port2->number(), false);
         }
         return true;

@@ -5,7 +5,7 @@ PC::PC(int id, const MacAddress &macAddress, QThread *parent)
     m_port = QSharedPointer<Port>::create();
     connect(this, &PC::sendPacket, m_port.data(), &Port::sendPacket, Qt::AutoConnection);
     connect(m_port.data(), &Port::packetReceived, this, &PC::receivePacket, Qt::AutoConnection);
-} //،TODO create pc port !!
+}
 
 PC::~PC() {}
 

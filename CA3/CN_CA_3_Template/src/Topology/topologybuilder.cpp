@@ -26,7 +26,7 @@ QSharedPointer<Router> TopologyBuilder::createRouter(int id) {
     );
 }
 
-void TopologyBuilder::createMeshTopology(int rows, int columns) {
+void TopologyBuilder::createMeshTopology(int rows, int columns) { // TODO : shoul add id Ofsset
     m_nodes.resize(rows * columns);
 
     for (int i = 0; i < rows; ++i) {
@@ -86,7 +86,7 @@ void TopologyBuilder::bindPorts(QSharedPointer<Router> node1, QSharedPointer<Rou
         return;
     }
 
-    PortPtr_t port1 = m_portBindingManager.createPort();
+    PortPtr_t port1 = m_portBindingManager.createPort(); // DO NOT CREATE Ports HEARE AND GET THEM FROM ROUTERS
     PortPtr_t port2 = m_portBindingManager.createPort();
 
     m_portBindingManager.bind(port1, port2);

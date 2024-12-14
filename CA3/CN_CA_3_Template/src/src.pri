@@ -49,6 +49,6 @@ HEADERS += \
     $$PWD/Topology/topologybuilder.h \
     $$PWD/Topology/topologycontroller.h \
     # $$PWD/DHCPServer/DHCPServer.h \
-    $$PWD/AutonomousSystem/autonomoussystem.h \
+    $$PWD/AutonomousSystem/autonomoussystem.h
     # $$PWD/MACAddress/testmacaddress.h \
     # $$PWD/MACAddress/testmacaddressgenerator.h

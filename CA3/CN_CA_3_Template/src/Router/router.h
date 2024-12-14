@@ -27,7 +27,7 @@ public:
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;  // should called in receive packet slot !!
 
-private:
+private:// TODO : change routers count hardcode approach to config based approach !!
     RoutingTable*                       m_routing_table;
     std::array<UT::PortState, 4>        m_portStates;
     std::array<PortPtr_t, 4>            m_ports;

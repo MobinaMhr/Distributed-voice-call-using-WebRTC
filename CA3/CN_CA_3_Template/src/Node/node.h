@@ -48,6 +48,7 @@ private:
     MacAddress      m_macAddress;
     QString         m_name;
     UT::RoutingMode m_routingMode;
+    // is alive ;
 };
 
 

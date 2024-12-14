@@ -12,13 +12,13 @@
 class TopologyBuilder : public QObject {
     Q_OBJECT
 
-public:
+public:// up = 0, right = 1 , down = 2 , left = 3 -> MAGICNUMBER
     explicit TopologyBuilder(QObject *parent = nullptr);
-    ~TopologyBuilder() override;
+    ~TopologyBuilder() override; // TODO: get IPV as input
 
     void unbindAllPorts();
 
-    void createMeshTopology(int rows, int columns);
+    void createMeshTopology(int rows, int columns); // TODO : should return a struct of nodes and port binding;
     void createTorusTopology(int rows, int columns);
     void createStarTopology(int numNodes);
     void createRingStarTopology(int numNodes);
