@@ -16,9 +16,7 @@ Port::Port(const Port &other)
     : QObject(other.parent()),
     m_number(other.m_number),
     m_numberOfPacketsSent(other.m_numberOfPacketsSent),
-    m_ipVersion(other.m_ipVersion) //,
-    // m_ipv4Address(other.m_ipv4Address),
-    // m_ipv6Address(other.m_ipv6Address)
+    m_ipVersion(other.m_ipVersion)
 {}
 
 Port& Port::operator=(const Port &other)
@@ -27,8 +25,6 @@ Port& Port::operator=(const Port &other)
         m_number = other.m_number;
         m_numberOfPacketsSent = other.m_numberOfPacketsSent;
         m_ipVersion = other.m_ipVersion;
-        // m_ipv4Address = other.m_ipv4Address;
-        // m_ipv6Address = other.m_ipv6Address;
         QObject::setParent(other.parent());
     }
     return *this;

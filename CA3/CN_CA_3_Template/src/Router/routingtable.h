@@ -28,10 +28,6 @@ Q_SIGNALS:
 
 private:
     QMap<IpPtr_t, QPair<IpPtr_t, QSharedPointer<Port>>> m_routingTable;
-    // Mask
-    // Subnet Mask
-    // Next-hop Gateway
-    // Metric
 };
 
 #endif    // ROUTINGTABLE_H

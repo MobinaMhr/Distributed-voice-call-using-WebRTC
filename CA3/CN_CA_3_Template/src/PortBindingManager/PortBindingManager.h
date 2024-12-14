@@ -11,7 +11,7 @@ class PortBindingManager : public QObject
 {
     Q_OBJECT
 
-public: // Handle single or multiple ports to one port binding logic;
+public:
     explicit PortBindingManager(QObject *parent = nullptr);
     ~PortBindingManager() override = default;
 
