@@ -5,7 +5,7 @@ Node::Node(int id, const MacAddress &macAddress, QThread* parent)
 
 Node::~Node() {}
 
-// Node* Node::instance(int id, const MacAddress &macAddress, QThread *parent) {
+// Node* Node::instance(int id, const MacAddress &macAddress, QThread* parent) {
 //     if (!m_self) {
 //         m_self = new Node(id, macAddress, parent);
 //     }

@@ -4,6 +4,12 @@ PortBindingManager::PortBindingManager(QObject *parent) :
     QObject {parent}
 {}
 
+PortPtr_t PortBindingManager::createPort() {
+    // port1->setIpAddress("192.168.0." + QString::number(node1->id()));
+    // port2->setIpAddress("192.168.0." + QString::number(node2->id()));
+    return QSharedPointer<Port>::create(new Port(nullptr));
+}
+
 void PortBindingManager::bind(const PortPtr_t &port1, const PortPtr_t &port2)
 {
     // Bind the ports: simulate full-duplex communication.
@@ -34,6 +40,20 @@ bool PortBindingManager::unbind(const PortPtr_t &port1, const PortPtr_t &port2)
         bindings[port1].removeOne(port2);
         bindings[port2].removeOne(port1);
         Q_EMIT bindingChanged(port1->ipAddress(), port1->number(), port2->ipAddress(), port2->number(), false);
+        return true;
+    }
+    return false;
+}
+
+bool PortBindingManager::unbind(const PortPtr_t &port1)
+{
+    if (bindings.contains(port1))
+    {
+        for (auto port2 : bindings[port1]) {
+            bindings[port1].removeOne(port2);
+            bindings[port2].removeOne(port1);
+            Q_EMIT bindingChanged(port1->ipAddress(), port1->number(), port2->ipAddress(), port2->number(), false);
+        }
         return true;
     }
     return false;
