@@ -21,7 +21,7 @@ public:
     QString ipv4Address() const override;
     QString ipv6Address() const override;
     PortPtr_t getIdlePort() override;
-
+    std::vector<PortPtr_t> getPorts();
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;  // should called in receive packet slot !!
 

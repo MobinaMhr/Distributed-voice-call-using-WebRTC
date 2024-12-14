@@ -135,3 +135,7 @@ PortPtr_t Router::getIdlePort() {
     }
     return nullptr;
 }
+
+std::vector<PortPtr_t> Router::getPorts() {
+    return m_ports;
+}
