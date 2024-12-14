@@ -25,8 +25,8 @@ public:
 
     int id() const;
     QString name() const;
-    virtual QString ipv4Address() const = 0;
-    virtual QString ipv6Address() const = 0;
+    QString ipv4Address() const;
+    QString ipv6Address() const;
     QString macAddress() const;
 
     UT::NodeState state();
@@ -35,6 +35,10 @@ public:
     virtual PortPtr_t getIdlePort() = 0;
 
 protected:
+    UT::IPVersion   m_ipVersion;
+    IPv4_t          m_ipv4Address;
+    IPv6_t          m_ipv6Address;
+
     void run() override;
 
 public Q_SLOTS:
@@ -52,7 +56,6 @@ private:
     QString         m_name;
     UT::RoutingMode m_routingMode;
     UT::NodeState   m_state;
-    UT::IPVersion   m_ipVersion;
 };
 
 

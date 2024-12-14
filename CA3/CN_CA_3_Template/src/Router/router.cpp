@@ -10,7 +10,7 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
     m_ports(portCount) {
 
     for (int i = 0; i < portCount; ++i) {
-        m_ports[i] = QSharedPointer<Port>::create();
+        m_ports[i] = QSharedPointer<Port>::create(i);
 
         connect(this, &Router::sendPacket, m_ports[i].data(), &Port::sendPacket, Qt::AutoConnection);
         connect(m_ports[i].data(), &Port::packetReceived, this, &Router::receivePacket, Qt::AutoConnection);
@@ -116,15 +116,6 @@ void Router::routePackets() {
             break;
         }
     }
-}
-
-QString Router::ipv6Address() const
-{
-    return m_ipv6Address.toString();
-}
-
-QString Router::ipv4Address() const {
-    return m_ipv4Address.toString();
 }
 
 PortPtr_t Router::getIdlePort() {

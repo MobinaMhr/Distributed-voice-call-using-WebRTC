@@ -13,15 +13,15 @@ class Port : public QObject
     Q_OBJECT
 
 public:
-    explicit Port(QObject *parent = nullptr);
+    explicit Port(uint8_t number, QObject *parent = nullptr);
     ~Port() override;
     Port(const Port &other);
     Port& operator=(const Port &other);
 
 public: // Getters
-    QString ipAddress();
     uint8_t number();
     UT::PortState state();
+    QString ipAddress();
 
 public: // Setters
     void setIpAddress(QString ipAddress);
@@ -38,8 +38,13 @@ public Q_SLOTS:
 private:
     uint8_t         m_number;
     uint64_t        m_numberOfPacketsSent;
-    QString         m_ipAddress; // TODO: should change to 2 different ips 1 ipv4 and 1 ipv6 and should be of type IP
+    UT::IPVersion   m_ipVersion;
+    IPv4_t          m_ipv4Address;
+    IPv6_t          m_ipv6Address;
     UT::PortState   m_state;
+
+    QString ipv6Address() const;
+    QString ipv4Address() const;
 };
 
 typedef QSharedPointer<Port> PortPtr_t;

@@ -4,10 +4,6 @@ PortBindingManager::PortBindingManager(QObject *parent) :
     QObject {parent}
 {}
 
-PortPtr_t PortBindingManager::createPort() {
-    return QSharedPointer<Port>::create(new Port(nullptr));
-}
-
 void PortBindingManager::bind(const PortPtr_t &port1, const PortPtr_t &port2)
 {
     // Bind the ports: simulate full-duplex communication.

@@ -62,16 +62,15 @@ class IP<UT::IPVersion::IPv4> : public AbstractIP
     // https://doc.qt.io/qt-6/moc.html
     // Q_OBJECT
 
-public:    // constructors
+public:
     explicit IP(QObject *parent = nullptr);
     explicit IP(const QString &ipString, const QString &subnetMask = "", QObject *parent = nullptr);
     explicit IP(uint32_t ipValue, const QString &subnetMask = "", QObject *parent = nullptr);//TODO: may change to uint32_t
     ~IP() override;
 
-    // Delete copy constructor and assignment operator to prevent copying
-    IP(const IP&) = delete;
-    IP& operator=(const IP&) = delete;
-public:    // methods
+    IP(const IP&);
+    IP& operator=(const IP&);
+public:
     QString toString() const;
     uint32_t toValue() const;
 
@@ -87,14 +86,14 @@ public:    // methods
     IPv4Ptr_t toIPv4() const override;
     IPv6Ptr_t toIPv6() const override;
 
-public:    // operators
+public:
     bool
     operator==(const IP<UT::IPVersion::IPv4> &other) const
     {
         return toValue() == other.toValue();
     }
 
-private:    // methods
+private:
 
 
 private:
@@ -119,15 +118,14 @@ class IP<UT::IPVersion::IPv6> : public AbstractIP
     // https://doc.qt.io/qt-6/moc.html
     // Q_OBJECT
 
-public:    // constructors
+public:
     explicit IP(QObject *parent = nullptr);
     explicit IP(const QString &ipString, int prefixLength = 128, QObject *parent = nullptr);
     explicit IP(const QByteArray &ipValue, int prefixLength = 128, QObject *parent = nullptr);
     ~IP() override;
 
-    // Delete copy constructor and assignment operator to prevent copying
-    IP(const IP&) = delete;
-    IP& operator=(const IP&) = delete;
+    IP(const IP&);
+    IP& operator=(const IP&);
 public:    // methods
     QString toString() const;
     QByteArray toValue() const;
@@ -144,7 +142,7 @@ public:    // methods
     IPv4Ptr_t toIPv4() const override;
     IPv6Ptr_t toIPv6() const override;
 
-public:    // operators
+public:
     bool
     operator==(const IP<UT::IPVersion::IPv6> &other) const
     {

@@ -1,17 +1,24 @@
 #include "Port.h"
 
-Port::Port(QObject *parent) : // uint8_t number,
+Port::Port(uint8_t number, QObject *parent) :
     QObject(parent),
-    m_number(0),  ///////////////////////// TODO
+    m_number(number),
     m_numberOfPacketsSent(0),
     m_state(UT::PortState::Idle)
 {}
+
+
+UT::IPVersion   m_ipVersion;
+IPv4_t          m_ipv4Address;
+IPv6_t          m_ipv6Address;
 
 Port::Port(const Port &other)
     : QObject(other.parent()),
     m_number(other.m_number),
     m_numberOfPacketsSent(other.m_numberOfPacketsSent),
-    m_ipAddress(other.m_ipAddress)
+    m_ipVersion(other.m_ipVersion) //,
+    // m_ipv4Address(other.m_ipv4Address),
+    // m_ipv6Address(other.m_ipv6Address)
 {}
 
 Port& Port::operator=(const Port &other)
@@ -19,7 +26,9 @@ Port& Port::operator=(const Port &other)
     if (this != &other) {
         m_number = other.m_number;
         m_numberOfPacketsSent = other.m_numberOfPacketsSent;
-        m_ipAddress = other.m_ipAddress;
+        m_ipVersion = other.m_ipVersion;
+        // m_ipv4Address = other.m_ipv4Address;
+        // m_ipv6Address = other.m_ipv6Address;
         QObject::setParent(other.parent());
     }
     return *this;
@@ -41,18 +50,26 @@ void Port::receivePacket(const PacketPtr_t &data)
     Q_EMIT packetReceived(data);
 }
 
-QString Port::ipAddress()
-{
-    return m_ipAddress;
-}
-
 uint8_t Port::number()
 {
     return m_number;
 }
 
-void Port::setIpAddress(QString ipAddress) {
-    m_ipAddress = ipAddress;
+QString Port::ipAddress()
+{
+    return (m_ipVersion == UT::IPVersion::IPv4) ?
+             ipv4Address() :
+             ipv6Address();
+}
+
+
+QString Port::ipv6Address() const
+{
+    return m_ipv6Address.toString();
+}
+
+QString Port::ipv4Address() const {
+    return m_ipv4Address.toString();
 }
 
 UT::PortState Port::state() {

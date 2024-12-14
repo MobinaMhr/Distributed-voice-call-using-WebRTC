@@ -2,21 +2,12 @@
 
 PC::PC(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVersion, QThread *parent)
     : Node(id, macAddress, portCount, ipVersion, parent) {
-    m_port = QSharedPointer<Port>::create();
+    m_port = QSharedPointer<Port>::create(0);
     connect(this, &PC::sendPacket, m_port.data(), &Port::sendPacket, Qt::AutoConnection);
     connect(m_port.data(), &Port::packetReceived, this, &PC::receivePacket, Qt::AutoConnection);
 }
 
 PC::~PC() {}
-
-QString PC::ipv6Address() const
-{
-    return m_ipv6Address.toString();
-}
-
-QString PC::ipv4Address() const {
-    return m_ipv4Address.toString();
-}
 
 void PC::receivePacket(const PacketPtr_t &packet) {
     bool isMine = false;

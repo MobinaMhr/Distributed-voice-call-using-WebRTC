@@ -18,8 +18,8 @@ public:
     void bufferPacket(const PacketPtr_t &packet);
     void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<AbstractIP> &nextHopIp, QSharedPointer<Port> &port);
     void routePackets();
-    QString ipv4Address() const override;
-    QString ipv6Address() const override;
+    // QString ipv4Address() const override;
+    // QString ipv6Address() const override;
     PortPtr_t getIdlePort() override;
     std::vector<PortPtr_t> getPorts();
 
@@ -30,8 +30,6 @@ private:
     RoutingTable*                       m_routing_table;
     std::vector<PortPtr_t>              m_ports;
     std::deque<PacketPtr_t>             m_buffer;
-    IPv4_t                              m_ipv4Address;
-    IPv6_t                              m_ipv6Address;
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);

@@ -48,3 +48,12 @@ UT::NodeState Node::state() {
 void Node::setState(UT::NodeState state) {
     m_state = state;
 }
+
+QString Node::ipv6Address() const
+{
+    return m_ipv6Address.toString();
+}
+
+QString Node::ipv4Address() const {
+    return m_ipv4Address.toString();
+}
