@@ -12,16 +12,16 @@
 class TopologyBuilder : public QObject {
     Q_OBJECT
 
-public:// up = 0, right = 1 , down = 2 , left = 3 -> MAGIC NUMBER
+public: // up = 0, right = 1 , down = 2 , left = 3 -> MAGIC NUMBER
     explicit TopologyBuilder(QObject *parent = nullptr);
     ~TopologyBuilder() override; // TODO: get IPV as input
 
     void resetBindings();
 
     void initializeRouters(int routerCount, UT::IPVersion ipVersion, int offset = 0, int portCount = 4);
-    void moveToMeshTopology_(int rows, int columns);
-    void moveToMeshTopology(int rows, int columns);
-    void moveToTorusTopology(int rows, int columns);
+    void moveToMeshTopology_();
+    void moveToMeshTopology();
+    void moveToTorusTopology();
     void moveToStarTopology();
     void moveToRingStarTopology();
 
@@ -30,6 +30,8 @@ public:// up = 0, right = 1 , down = 2 , left = 3 -> MAGIC NUMBER
 private:
     int                             m_offset;
     int                             m_routerCount;
+    int                             m_rows;
+    int                             m_columns;
     QVector<QSharedPointer<Router>> m_routers;
     PortBindingManager              m_portBindingManager;
     MacAddressGenerator*            m_macAddressGenerator;

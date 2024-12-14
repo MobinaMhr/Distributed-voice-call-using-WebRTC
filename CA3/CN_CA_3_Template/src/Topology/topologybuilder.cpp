@@ -36,6 +36,8 @@ void TopologyBuilder::initializeRouters(int routerCount, UT::IPVersion ipVersion
     m_offset = offset;
     m_routerCount = routerCount;
     m_routers.resize(m_routerCount);
+    m_rows = routerCount / 2;
+    m_columns = routerCount / 2;
 
     for (int id = 0; id < m_routerCount; ++id) {
         auto router = createRouter(id + 1 + m_offset, portCount, ipVersion);
@@ -43,42 +45,42 @@ void TopologyBuilder::initializeRouters(int routerCount, UT::IPVersion ipVersion
     }
 }
 
-void TopologyBuilder::moveToMeshTopology(int rows, int columns) {
+void TopologyBuilder::moveToMeshTopology() {
     resetBindings();
 
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < columns; ++j) {
-            int id = i * columns + j;
+    for (int i = 0; i < m_rows; ++i) {
+        for (int j = 0; j < m_columns; ++j) {
+            int id = i * m_columns + j;
             if (j > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - 1]->getIdlePort());
-            if (i > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - columns]->getIdlePort());
+            if (i > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - m_columns]->getIdlePort());
         }
     }
 }
 
-void TopologyBuilder::moveToMeshTopology_(int rows, int columns) {
+void TopologyBuilder::moveToMeshTopology_() {
     resetBindings();
 
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < columns; ++j) {
-            int id = i * columns + j;
+    for (int i = 0; i < m_rows; ++i) {
+        for (int j = 0; j < m_columns; ++j) {
+            int id = i * m_columns + j;
             ///                         0 left      2 right
             if (j > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - 1]->getIdlePort());
             ///                         1 up        3 down
-            if (i > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - columns]->getIdlePort());
+            if (i > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - m_columns]->getIdlePort());
         }
     }
 }
 
-void TopologyBuilder::moveToTorusTopology(int rows, int columns) {
+void TopologyBuilder::moveToTorusTopology() {
     resetBindings();
-    moveToMeshTopology(rows, columns);
+    moveToMeshTopology();
 
-    for (int i = 0; i < rows; ++i) {
-        bindPorts(m_routers[i * columns]->getIdlePort(), m_routers[i * columns + columns - 1]->getIdlePort());
+    for (int i = 0; i < m_rows; ++i) {
+        bindPorts(m_routers[i * m_columns]->getIdlePort(), m_routers[i * m_columns + m_columns - 1]->getIdlePort());
     }
 
-    for (int j = 0; j < columns; ++j) {
-        bindPorts(m_routers[j]->getIdlePort(), m_routers[(rows - 1) * columns + j]->getIdlePort());
+    for (int j = 0; j < m_columns; ++j) {
+        bindPorts(m_routers[j]->getIdlePort(), m_routers[(m_rows - 1) * m_columns + j]->getIdlePort());
     }
 }
 

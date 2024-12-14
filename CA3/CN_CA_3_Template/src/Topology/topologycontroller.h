@@ -11,8 +11,9 @@ public:
     explicit TopologyController(QObject *parent = nullptr);
     ~TopologyController() override;
 
-    void changeTopologyTo(UT::TopologyType topologyType);
-    void initializeTopology(UT::TopologyType topologyType, int routerCount = 0);
+    void setTopologyType(UT::TopologyType topologyType);
+    void updateTopology();
+    void initializeTopology(UT::TopologyType topologyType, int routerCount, UT::IPVersion ipVersion, int offset, int portCount);
     QVector<QSharedPointer<Router>> getCurrentTopology() const;
     void monitorTopology();
 
