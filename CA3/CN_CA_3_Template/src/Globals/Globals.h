@@ -78,7 +78,8 @@ enum class TopologyType
 {
     Mesh,
     RingStar,
-    Torus
+    Torus,
+    None
 };
 
 struct PacketDetails
