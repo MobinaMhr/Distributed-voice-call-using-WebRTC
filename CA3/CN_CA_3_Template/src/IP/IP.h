@@ -98,9 +98,9 @@ private:    // methods
 
 
 private:
-    uint32_t m_ipValue;
-    uint32_t m_subnetMask;
-    IPv4Ptr_t m_gateway;
+    uint32_t    m_ipValue;
+    uint32_t    m_subnetMask;
+    IPv4Ptr_t   m_gateway;
 };
 
 /**
@@ -154,9 +154,9 @@ public:    // operators
 private:    // methods
 
 private:
-    QByteArray m_ipValue;
-    int m_prefixLength;
-    IPv6Ptr_t m_gateway;
+    QByteArray  m_ipValue;
+    int         m_prefixLength;
+    IPv6Ptr_t   m_gateway;
 };
 
 #endif    // IP_H

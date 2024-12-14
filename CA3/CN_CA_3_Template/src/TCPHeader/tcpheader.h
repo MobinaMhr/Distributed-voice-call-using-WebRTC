@@ -36,15 +36,15 @@ public:
     void print();
 
 private:
-    uint16_t m_sourcePort;
-    uint16_t m_destPort;
-    uint32_t m_sequenceNumber;
-    uint32_t m_acknowledgmentNumber;
-    uint8_t m_dataOffset;
-    uint8_t m_flags;
-    uint16_t m_windowSize;
-    uint16_t m_checksum;
-    uint16_t m_urgentPointer;
+    uint16_t    m_sourcePort;
+    uint16_t    m_destPort;
+    uint32_t    m_sequenceNumber;
+    uint32_t    m_acknowledgmentNumber;
+    uint8_t     m_dataOffset;
+    uint8_t     m_flags;
+    uint16_t    m_windowSize;
+    uint16_t    m_checksum;
+    uint16_t    m_urgentPointer;
 
 };
 

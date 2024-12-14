@@ -27,9 +27,9 @@ public:
 
 private:
     QVector<QSharedPointer<Router>> m_nodes;
-    QVector<PortPtr_t> m_ports;
-    PortBindingManager m_portBindingManager;
-    MacAddressGenerator* m_macAddressGenerator;
+    QVector<PortPtr_t>              m_ports;
+    PortBindingManager              m_portBindingManager;
+    MacAddressGenerator*            m_macAddressGenerator;
 
     QSharedPointer<Router> createRouter(int id);
     void bindPorts(QSharedPointer<Router> node1, QSharedPointer<Router> node2);

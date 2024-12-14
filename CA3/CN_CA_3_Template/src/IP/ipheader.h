@@ -79,16 +79,16 @@ public:    // Getters and Setters
     void print() override;
 
 private:
-    uint8_t  m_versionHeaderLength;
-    uint8_t  m_typeOfService;
-    uint16_t m_totalLength;
-    uint16_t m_identification;
-    uint16_t m_flagsFragmentOffset;
-    uint8_t  m_ttl;
-    uint8_t  m_protocol;
-    uint16_t m_headerChecksum;
-    IPv4Ptr_t m_sourceIp;
-    IPv4Ptr_t m_destIp;
+    uint8_t     m_versionHeaderLength;
+    uint8_t     m_typeOfService;
+    uint16_t    m_totalLength;
+    uint16_t    m_identification;
+    uint16_t    m_flagsFragmentOffset;
+    uint8_t     m_ttl;
+    uint8_t     m_protocol;
+    uint16_t    m_headerChecksum;
+    IPv4Ptr_t   m_sourceIp;
+    IPv4Ptr_t   m_destIp;
 
 
 };
@@ -132,12 +132,12 @@ public:    // Getters and Setters
     void print() override;
 
 private:  // members
-    uint32_t m_versionTrafficClassFlowLabel;
-    uint16_t m_payloadLength;
-    uint8_t  m_nextHeader;
-    uint8_t  m_hopLimit;
-    IPv6Ptr_t m_sourceIp;
-    IPv6Ptr_t m_destIp;
+    uint32_t    m_versionTrafficClassFlowLabel;
+    uint16_t    m_payloadLength;
+    uint8_t     m_nextHeader;
+    uint8_t     m_hopLimit;
+    IPv6Ptr_t   m_sourceIp;
+    IPv6Ptr_t   m_destIp;
 };
 
 #endif    // IPHEADER_H

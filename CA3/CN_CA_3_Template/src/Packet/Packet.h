@@ -57,20 +57,19 @@ public:
     void print();
 
 private:
-    UT::PacketType m_packetType;
-    UT::PacketControlType m_controlType;
-    QSharedPointer<AbstractIP> m_destinationIP;
-    UT::IPVersion m_ipVersion;
-    IPHv4_t m_ipv4Header;
-    IPHv6_t m_ipv6Header;
-    // IP and BGP header
-    TCPHeader m_tcpHeader;
-    DataLinkHeader m_dataLinkHeader;
-    QByteArray m_payload;
-    quint32 m_sequenceNumber;
-    quint32 m_waitingCycles;
-    quint32 m_totalCycles;
-    QStringList m_path;
+    UT::PacketType              m_packetType;
+    UT::PacketControlType       m_controlType;
+    QSharedPointer<AbstractIP>  m_destinationIP;
+    UT::IPVersion               m_ipVersion;
+    IPHv4_t                     m_ipv4Header;
+    IPHv6_t                     m_ipv6Header;
+    TCPHeader                   m_tcpHeader;
+    DataLinkHeader              m_dataLinkHeader;
+    QByteArray                  m_payload;
+    quint32                     m_sequenceNumber;
+    quint32                     m_waitingCycles;
+    quint32                     m_totalCycles;
+    QStringList                 m_path;
 };
 
 #endif // PACKET_H

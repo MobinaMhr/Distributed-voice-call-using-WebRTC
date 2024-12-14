@@ -32,9 +32,9 @@ private:
     std::array<UT::PortState, 4>        m_portStates;
     std::array<PortPtr_t, 4>            m_ports;
     UT::IPVersion                       m_ipvVersion;
-    std::deque<PacketPtr_t> m_buffer;
-    IPv4_t m_ipv4Address;
-    IPv6_t m_ipv6Address;
+    std::deque<PacketPtr_t>             m_buffer;
+    IPv4_t                              m_ipv4Address;
+    IPv6_t                              m_ipv6Address;
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);

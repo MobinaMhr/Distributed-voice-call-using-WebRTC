@@ -37,13 +37,13 @@ Q_SIGNALS:
 
 private:
     inline static EventsCoordinator *m_self = nullptr;
-    DataGenerator *m_dataGenerator;
+    DataGenerator*  m_dataGenerator;
     QTimer* m_timer = nullptr;
-    QVector<int> m_distribution;
-    int m_currentCycle = 0;
-    int m_cycleCount;
-    int m_pcCount;
-    int m_cycleLength;
+    QVector<int>    m_distribution;
+    int             m_currentCycle = 0;
+    int             m_cycleCount;
+    int             m_pcCount;
+    int             m_cycleLength;
 };
 
 #endif    // EVENTSCOORDINATOR_H
