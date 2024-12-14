@@ -8,7 +8,7 @@ class TopologyController : public QObject {
     Q_OBJECT
 
 public:
-    explicit TopologyController(QObject *parent = nullptr);
+    explicit TopologyController(int routerBufferSize, QObject *parent = nullptr);
     ~TopologyController() override;
 
     void setTopologyType(UT::TopologyType topologyType);

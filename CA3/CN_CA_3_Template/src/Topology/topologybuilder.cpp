@@ -1,7 +1,8 @@
 #include "TopologyBuilder.h"
 
-TopologyBuilder::TopologyBuilder(QObject *parent) :
+TopologyBuilder::TopologyBuilder(int routerBufferSize, QObject *parent) :
     QObject(parent),
+    m_routerBufferSize(routerBufferSize),
     m_macAddressGenerator(new MacAddressGenerator(this)) {}
 
 TopologyBuilder::~TopologyBuilder() {
@@ -35,6 +36,7 @@ QSharedPointer<Router> TopologyBuilder::createRouter(int id, int portCount, UT::
       m_macAddressGenerator->generateMacAddress(),
       portCount,
       ipVersion,
+      m_routerBufferSize,
       nullptr
     );
 }

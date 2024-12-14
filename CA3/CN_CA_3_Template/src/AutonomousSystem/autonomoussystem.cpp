@@ -11,9 +11,10 @@ AutonomousSystem::AutonomousSystem(int routerCount, int pcCount, int routerOffse
     m_pcOffset(pcOffset),
     m_isSimulationActive(false),
     m_topologyType(topology_type),
-    m_topologyController(new TopologyController(this)),
     m_ipVersion(UT::IPVersion::IPv4)
 {
+    int routerBufferSize = 6;
+    m_topologyController = new TopologyController(routerBufferSize, this);
     initializeAS();
 }
 

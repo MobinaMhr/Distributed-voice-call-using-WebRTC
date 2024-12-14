@@ -1,9 +1,9 @@
 #include "TopologyController.h"
 #include <QDebug>
 
-TopologyController::TopologyController(QObject *parent) :
+TopologyController::TopologyController(int routerBufferSize, QObject *parent) :
     QObject(parent),
-    m_topologyBuilder(new TopologyBuilder(this)),
+    m_topologyBuilder(new TopologyBuilder(routerBufferSize, this)),
     m_isActive(false) {}
 
 TopologyController::~TopologyController() {
@@ -33,8 +33,6 @@ void TopologyController::setTopologyType(UT::TopologyType topologyType) {
 }
 
 void TopologyController::initializeTopology(UT::TopologyType topologyType, int routerCount, UT::IPVersion ipVersion, int offset, int portCount) {
-    if (!m_topologyBuilder) m_topologyBuilder = new TopologyBuilder();
-
     m_topologyBuilder->initializeRouters(routerCount, ipVersion, offset, portCount);
     setTopologyType(topologyType);
     updateTopology();

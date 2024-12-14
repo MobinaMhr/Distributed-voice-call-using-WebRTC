@@ -14,7 +14,7 @@ class TopologyBuilder : public QObject {
     Q_OBJECT
 
 public:
-    explicit TopologyBuilder(QObject *parent = nullptr);
+    explicit TopologyBuilder(int routerBufferSize, QObject *parent = nullptr);
     ~TopologyBuilder() override;
 
     void resetBindings();
@@ -34,6 +34,7 @@ private:
     int                             m_routerCount;
     int                             m_rows;
     int                             m_columns;
+    int                             m_routerBufferSize;
     QVector<QSharedPointer<Router>> m_routers;
     PortBindingManager              m_portBindingManager;
     MacAddressGenerator*            m_macAddressGenerator;
