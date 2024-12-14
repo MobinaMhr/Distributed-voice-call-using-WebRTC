@@ -20,13 +20,13 @@ public:
     void routePackets();
     QString ipv4Address() const override;
     QString ipv6Address() const override;
+    PortPtr_t getIdlePort() override;
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;  // should called in receive packet slot !!
 
 private:
     RoutingTable*                       m_routing_table;
-    std::vector<UT::PortState>          m_portStates;
     std::vector<PortPtr_t>              m_ports;
     UT::IPVersion                       m_ipvVersion;
     std::deque<PacketPtr_t>             m_buffer;

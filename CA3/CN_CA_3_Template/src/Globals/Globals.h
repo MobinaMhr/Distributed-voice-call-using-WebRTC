@@ -27,8 +27,9 @@ enum class RoutingMode
 
 enum class PortState
 {
-    Busy,
-    Idle
+    Reserved,
+    Idle,
+    Sending
 };
 
 enum class PacketType

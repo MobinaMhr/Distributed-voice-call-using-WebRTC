@@ -24,9 +24,11 @@ public:
 public: // Getters
     QString ipAddress();
     uint8_t number();
+    UT::PortState state();
 
 public: // Setters
     void setIpAddress(QString ipAddress);
+    void setState(UT::PortState state);
 
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data); // connected to receivePacket slot of bined port!!
@@ -37,9 +39,10 @@ public Q_SLOTS:
     void receivePacket(const PacketPtr_t &data); // connected to the bined port packetSent signal!!
 
 private:
-    uint8_t     m_number;
-    uint64_t    m_numberOfPacketsSent;
-    QString     m_ipAddress; // TODO: should change to 2 different ips 1 ipv4 and 1 ipv6 and should be of type IP
+    uint8_t         m_number;
+    uint64_t        m_numberOfPacketsSent;
+    QString         m_ipAddress; // TODO: should change to 2 different ips 1 ipv4 and 1 ipv6 and should be of type IP
+    UT::PortState   m_state;
 };
 
 typedef QSharedPointer<Port> PortPtr_t;

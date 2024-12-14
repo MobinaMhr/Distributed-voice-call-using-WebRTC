@@ -32,6 +32,8 @@ public:
     UT::NodeState state();
     void setState(UT::NodeState state);
 
+    virtual PortPtr_t getIdlePort() = 0;
+
 protected:
     void run() override;
 

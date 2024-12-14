@@ -1,15 +1,12 @@
 #include "Router.h"
 #include "qdebug.h"
 
-#include <memory> // for dynamic_cast
-
 const QString LOG_TITLE = "Router:: ";
 const int MAX_BUFFER_SIZE = 20;
 
 Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipv, QThread *parent)
     : Node(id, macAddress, portCount, parent),
     m_routing_table(new RoutingTable),
-    m_portStates(portCount, UT::PortState::Idle),
     m_ports(portCount),
     m_ipvVersion(ipv) {
 
@@ -95,25 +92,28 @@ void Router::routePackets() {
         QSharedPointer<Port> hostPort = m_routing_table->getPort(packetPtr->destinationIP());
         int portIndex = hostPort->number();
 
-        if (m_portStates[portIndex] == UT::PortState::Idle) {
-            m_portStates[portIndex] = UT::PortState::Busy;
+        if (m_ports[portIndex]->state() == UT::PortState::Reserved) {
+            m_ports[portIndex]->setState(UT::PortState::Sending);
             qDebug() << "Routing packet to port" << portIndex;
 
             Q_EMIT sendPacket(packetPtr, hostPort->number());
             it = m_buffer.erase(it);
+        } else if (m_ports[portIndex]->state() == UT::PortState::Sending) {
+            qDebug() << "Port" << portIndex << "is already sending. Keeping packet in buffer.";
+            ++it;
         } else {
-            qDebug() << "Port" << portIndex << "is busy. Keeping packet in buffer.";
+            qDebug() << "Port" << portIndex << "is not bined and is idle.";
             ++it;
         }
 
-
         bool allPortsBusy = std::all_of(
-          m_portStates.begin(),
-          m_portStates.end(),
-          [](const UT::PortState& state) { return state == UT::PortState::Busy; });
+          m_ports.begin(),
+          m_ports.end(),
+          [](PortPtr_t port) { return (port->state() == UT::PortState::Sending) ||
+                                      (port->state() == UT::PortState::Idle); });
 
         if (allPortsBusy) {
-            qDebug() << "All ports are busy. Stopping packet routing.";
+            qDebug() << "All ports are Busy. Stopping packet routing.";
             break;
         }
     }
@@ -126,4 +126,12 @@ QString Router::ipv6Address() const
 
 QString Router::ipv4Address() const {
     return m_ipv4Address.toString();
+}
+
+PortPtr_t Router::getIdlePort() {
+    for (auto port : m_ports) {
+        if (port->state() == UT::PortState::Idle)
+            return port;
+    }
+    return nullptr;
 }

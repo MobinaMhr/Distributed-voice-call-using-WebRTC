@@ -37,3 +37,8 @@ void PC::receivePacket(const PacketPtr_t &packet) {
     // Process the packet based on specific PC logic
     /// TODO
 }
+
+PortPtr_t PC::getIdlePort() {
+    if (m_port->state() == UT::PortState::Idle) return m_port;
+    else return nullptr;
+}

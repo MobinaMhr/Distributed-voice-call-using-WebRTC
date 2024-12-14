@@ -1,7 +1,10 @@
 #include "Port.h"
 
 Port::Port(QObject *parent) : // uint8_t number,
-    QObject(parent), m_number(0), m_numberOfPacketsSent(0)
+    QObject(parent),
+    m_number(0),  ///////////////////////// TODO
+    m_numberOfPacketsSent(0),
+    m_state(UT::PortState::Idle)
 {}
 
 // Copy Constructor
@@ -58,4 +61,12 @@ uint8_t Port::number()
 
 void Port::setIpAddress(QString ipAddress) {
     m_ipAddress = ipAddress;
+}
+
+UT::PortState Port::state() {
+    return m_state;
+}
+
+void Port::setState(UT::PortState state) {
+    m_state = state;
 }
