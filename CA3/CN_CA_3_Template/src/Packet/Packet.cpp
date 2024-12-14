@@ -26,7 +26,7 @@ QString toString(PacketControlType type) {
 
 
 Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber, quint32 waitCycles,
-               quint32 totalCycles, QSharedPointer<AbstractIP> destIP, const QByteArray &payload,
+               quint32 totalCycles, IpPtr_t destIP, const QByteArray &payload,
                const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader,
                IPHv4_t ipv4Header, IPHv6_t ipv6Header, QObject *parent)
     : QObject(parent), m_packetType(packetType), m_controlType(controlType),
@@ -71,7 +71,7 @@ quint32 Packet::waitingCycles() const {
 quint32 Packet::totalCycles() const {
     return m_totalCycles;
 }
-QSharedPointer<AbstractIP> Packet::destinationIP() const {
+IpPtr_t Packet::destinationIP() const {
     return m_destinationIP;
 }
 QByteArray Packet::payload() const {

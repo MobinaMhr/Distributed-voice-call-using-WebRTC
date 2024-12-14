@@ -16,18 +16,18 @@ public:
     ~RoutingTable() = default;
 
 public:
-    void addRoute(const QSharedPointer<AbstractIP> &destIp, const QSharedPointer<AbstractIP> &nextHopIp, const QSharedPointer<Port> &port);
-    void removeRoute(const QSharedPointer<AbstractIP> &destIp);
-    QSharedPointer<Port> getPort(const QSharedPointer<AbstractIP> &destIp) const;
-    bool routeExists(const QSharedPointer<AbstractIP> &destIp) const;
-    QList<QPair<QSharedPointer<AbstractIP>, QSharedPointer<Port>>> getAllRoutes() const;
+    void addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port);
+    void removeRoute(const IpPtr_t &destIp);
+    QSharedPointer<Port> getPort(const IpPtr_t &destIp) const;
+    bool routeExists(const IpPtr_t &destIp) const;
+    QList<QPair<IpPtr_t, QSharedPointer<Port>>> getAllRoutes() const;
 
     void printRoutingTable() const;
 
 Q_SIGNALS:
 
 private:
-    QMap<QSharedPointer<AbstractIP>, QPair<QSharedPointer<AbstractIP>, QSharedPointer<Port>>> m_routingTable;
+    QMap<IpPtr_t, QPair<IpPtr_t, QSharedPointer<Port>>> m_routingTable;
     // Mask
     // Subnet Mask
     // Next-hop Gateway

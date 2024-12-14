@@ -19,7 +19,7 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
 
 Router::~Router() {}
 
-void Router::addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<AbstractIP> &nextHopIp, QSharedPointer<Port> &port) {
+void Router::addRoutingEntry(IpPtr_t &destinationIp, IpPtr_t &nextHopIp, QSharedPointer<Port> &port) {
     m_routing_table->addRoute(destinationIp, nextHopIp, port);
 }
 

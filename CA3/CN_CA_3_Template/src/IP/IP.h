@@ -158,3 +158,6 @@ private:
 };
 
 #endif    // IP_H
+
+
+typedef QSharedPointer<AbstractIP> IpPtr_t;
