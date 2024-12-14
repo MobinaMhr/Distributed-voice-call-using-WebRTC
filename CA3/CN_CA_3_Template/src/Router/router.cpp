@@ -4,11 +4,10 @@
 const QString LOG_TITLE = "Router:: ";
 const int MAX_BUFFER_SIZE = 20;
 
-Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipv, QThread *parent)
-    : Node(id, macAddress, portCount, parent),
+Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVersion, QThread *parent)
+    : Node(id, macAddress, portCount, ipVersion, parent),
     m_routing_table(new RoutingTable),
-    m_ports(portCount),
-    m_ipvVersion(ipv) {
+    m_ports(portCount) {
 
     for (int i = 0; i < portCount; ++i) {
         m_ports[i] = QSharedPointer<Port>::create();

@@ -12,7 +12,7 @@ class Router : public Node {
     Q_OBJECT
 
 public:
-    explicit Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipv, QThread *parent = nullptr);
+    explicit Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVersion, QThread *parent = nullptr);
     ~Router() override;
 
     void bufferPacket(const PacketPtr_t &packet);
@@ -29,7 +29,6 @@ public Q_SLOTS:
 private:
     RoutingTable*                       m_routing_table;
     std::vector<PortPtr_t>              m_ports;
-    UT::IPVersion                       m_ipvVersion;
     std::deque<PacketPtr_t>             m_buffer;
     IPv4_t                              m_ipv4Address;
     IPv6_t                              m_ipv6Address;

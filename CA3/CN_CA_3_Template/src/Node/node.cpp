@@ -1,10 +1,11 @@
 #include "Node.h"
 
-Node::Node(int id, const MacAddress &macAddress, int portCount, QThread* parent)
+Node::Node(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVersion, QThread* parent)
     : QThread(parent),
     m_id(id),
     m_macAddress(macAddress),
-    m_name("Node_" + QString::number(id)) {
+    m_name("Node_" + QString::number(id)),
+    m_ipVersion(ipVersion) {
     m_state = UT::NodeState::Alive;
 }
 

@@ -18,7 +18,7 @@ class Node : public QThread
     Q_OBJECT
 
 public:
-    explicit Node(int id, const MacAddress &macAddress, int portCount, QThread *parent = nullptr);
+    explicit Node(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVersion, QThread *parent = nullptr);
     ~Node() override;
     // static Node *instance(int id, const MacAddress &macAddress, int portCount, QThread *parent = nullptr);
     static void release();
@@ -52,6 +52,7 @@ private:
     QString         m_name;
     UT::RoutingMode m_routingMode;
     UT::NodeState   m_state;
+    UT::IPVersion   m_ipVersion;
 };
 
 
