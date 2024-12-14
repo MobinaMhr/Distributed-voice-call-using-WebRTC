@@ -16,12 +16,14 @@ public:
     explicit TopologyBuilder(QObject *parent = nullptr);
     ~TopologyBuilder() override;
 
+    void unbindAllPorts();
+
     void createMeshTopology(int rows, int columns);
     void createTorusTopology(int rows, int columns);
     void createStarTopology(int numNodes);
     void createRingStarTopology(int numNodes);
 
-    QVector<QSharedPointer<Router>> nodes() const;
+    QVector<QSharedPointer<Router>> nodes();
 
 private:
     QVector<QSharedPointer<Router>> m_nodes;
@@ -31,6 +33,7 @@ private:
 
     QSharedPointer<Router> createRouter(int id);
     void bindPorts(QSharedPointer<Router> node1, QSharedPointer<Router> node2);
+    void unbindPorts(QSharedPointer<Router> node1, QSharedPointer<Router> node2);
 };
 
 #endif // TOPOLOGYBUILDER_H

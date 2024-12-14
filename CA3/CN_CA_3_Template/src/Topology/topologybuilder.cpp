@@ -8,14 +8,22 @@ TopologyBuilder::TopologyBuilder(QObject *parent) :
 
 TopologyBuilder::~TopologyBuilder() {
     delete m_macAddressGenerator;
+    unbindAllPorts();
+}
 
+void TopologyBuilder::unbindAllPorts() {
     for (auto port : m_ports) {
         m_portBindingManager.unbind(port);
     }
 }
 
 QSharedPointer<Router> TopologyBuilder::createRouter(int id) {
-    return QSharedPointer<Router>::create(new Router(id, m_macAddressGenerator->generateMacAddress(), nullptr));
+    return QSharedPointer<Router>::create(
+      id,
+      m_macAddressGenerator->generateMacAddress(),
+      UT::IPVersion::IPv4,
+      nullptr
+    );
 }
 
 void TopologyBuilder::createMeshTopology(int rows, int columns) {
@@ -72,10 +80,6 @@ void TopologyBuilder::createRingStarTopology(int numNodes) {
     bindPorts(m_nodes[1], m_nodes[numNodes]);
 }
 
-QVector<QSharedPointer<Router>> TopologyBuilder::nodes() const {
-    return m_nodes;
-}
-
 void TopologyBuilder::bindPorts(QSharedPointer<Router> node1, QSharedPointer<Router> node2) {
     if (!node1 || !node2) {
         qDebug() << "Invalid nodes passed to bindPorts.";
@@ -89,4 +93,23 @@ void TopologyBuilder::bindPorts(QSharedPointer<Router> node1, QSharedPointer<Rou
 
     m_ports.push_back(port1);
     m_ports.push_back(port2);
+}
+
+void TopologyBuilder::unbindPorts(QSharedPointer<Router> node1, QSharedPointer<Router> node2) {
+    if (!node1 || !node2) {
+        qDebug() << "Invalid nodes passed to unbindPorts.";
+        return;
+    }
+
+    PortPtr_t port1 = m_portBindingManager.createPort();
+    PortPtr_t port2 = m_portBindingManager.createPort();
+
+    m_portBindingManager.unbind(port1, port2);
+
+    m_ports.removeAll(port1);
+    m_ports.removeAll(port2);
+}
+
+QVector<QSharedPointer<Router>> TopologyBuilder::nodes() {
+    return m_nodes;
 }
