@@ -2,6 +2,7 @@
 #define TCPHEADER_H
 
 #include <QObject>
+#include <QDebug>
 
 class TCPHeader : public QObject {
     Q_OBJECT
@@ -31,6 +32,8 @@ public:
     void setWindowSize(uint16_t windowSize);
     void setChecksum(uint16_t checksum);
     void setUrgentPointer(uint16_t urgentPointer);
+
+    void print();
 
 private:
     uint16_t m_sourcePort;

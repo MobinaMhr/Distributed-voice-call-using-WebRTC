@@ -10,28 +10,33 @@
 #include <deque>
 #include <memory>
 
+
 class Router : public Node {
     Q_OBJECT
 
 public:
-    explicit Router(int id, const MacAddress &macAddress, QThread *parent = nullptr);
+    explicit Router(int id, const MacAddress &macAddress, UT::IPVersion ipv, QThread *parent = nullptr);
     ~Router() override;
 
-    void receivePacket(const Packet &packet) override;  // should called in receive packet slot !!
-    void sendPacket(const Packet &packet) override;     // should emit send signal!!
-
-    void bufferPacket(const Packet &packet);
+    void bufferPacket(const PacketPtr_t &packet);
     void addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedPointer<AbstractIP> &nextHopIp, QSharedPointer<Port> &port);
     void routePackets();
+    QString ipv4Address() const override;
+    QString ipv6Address() const override;
 
     void configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress);
+
+public Q_SLOTS:
+    void receivePacket(const PacketPtr_t &packet) override;  // should called in receive packet slot !!
 
 private:
     RoutingTable*                       m_routing_table;
     std::array<UT::PortState, 4>        m_portStates;
     std::array<PortPtr_t, 4>            m_ports;
     UT::IPVersion                       m_ipvVersion;
-    std::deque<std::unique_ptr<Packet>> m_buffer;
+    std::deque<PacketPtr_t> m_buffer;
+    IPv4_t m_ipv4Address;
+    IPv6_t m_ipv6Address;
 };
 
 #endif // ROUTER_H

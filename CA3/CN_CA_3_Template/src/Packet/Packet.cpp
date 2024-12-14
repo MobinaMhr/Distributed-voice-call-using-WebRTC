@@ -89,3 +89,26 @@ void Packet::setDataLinkHeader(const DataLinkHeader& dataLinkHeader) {
 void Packet::setTcpHeader(const TCPHeader& tcpHeader) {
     m_tcpHeader = tcpHeader;
 }
+
+void Packet::print()
+{
+    QString packetType = (m_packetType == UT::PacketType::Data) ? " Data" : " Control";
+    qDebug() << "Packet Details:";
+    qDebug() << "Packet Type:" << packetType;
+    qDebug() << "Control Type:" << UT::toString(m_controlType);
+    qDebug() << "Sequence Number:" << m_sequenceNumber;
+    qDebug() << "Waiting Cycles:" << m_waitingCycles;
+    qDebug() << "Total Cycles:" << m_totalCycles;
+    qDebug() << "Payload Size:" << m_payload.size() << "bytes";
+    qDebug() << "Path:" << m_path.join(" -> ");
+    qDebug() << "IP Version:" << (m_ipVersion == UT::IPVersion::IPv4 ? "IPv4" : "IPv6");
+    if (m_ipVersion == UT::IPVersion::IPv4){
+        qDebug() << "IPv4 Header:";
+        m_ipv4Header.print();
+    }
+    else{
+        qDebug() << "IPv6 Header:";
+        m_ipv6Header.print();
+    }
+    m_tcpHeader.print();
+}

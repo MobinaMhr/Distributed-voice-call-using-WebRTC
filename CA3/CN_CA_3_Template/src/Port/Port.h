@@ -4,6 +4,8 @@
 #include "../Packet/Packet.h"
 #include <QObject>
 
+const int BROADCAST_ON_ALL_PORTS = -1;
+
 typedef QSharedPointer<Packet> PacketPtr_t;
 
 class Port : public QObject
@@ -31,7 +33,7 @@ Q_SIGNALS:
     void packetReceived(const PacketPtr_t &data); // connected to receivePacket slot coresponding node!!
 
 public Q_SLOTS:
-    void sendPacket(const PacketPtr_t &data); // connected to coresponding node send signal!!
+    void sendPacket(const PacketPtr_t &data, int portNumber); // connected to coresponding node send signal!!
     void receivePacket(const PacketPtr_t &data); // connected to the bined port packetSent signal!!
 
 private:

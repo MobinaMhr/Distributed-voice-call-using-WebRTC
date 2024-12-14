@@ -17,7 +17,8 @@ class AbstractIPHeader : public QObject
 
 public:
     explicit AbstractIPHeader(QObject *parent = nullptr);
-     UT::IPVersion ipVersion() const;
+    UT::IPVersion ipVersion() const;
+    virtual void print() = 0;
 
 protected: // Getters and Setters
     UT::IPVersion m_ipVersion;
@@ -75,6 +76,8 @@ public:    // Getters and Setters
     QString destIp() const;
     void setDestIp(IPv4Ptr_t newDestIp);
 
+    void print() override;
+
 private:
     uint8_t  m_versionHeaderLength;
     uint8_t  m_typeOfService;
@@ -125,6 +128,8 @@ public:    // Getters and Setters
 
     QString destIp() const;
     void setDestIp(IPv6Ptr_t newDestIp);
+
+    void print() override;
 
 private:  // members
     uint32_t m_versionTrafficClassFlowLabel;

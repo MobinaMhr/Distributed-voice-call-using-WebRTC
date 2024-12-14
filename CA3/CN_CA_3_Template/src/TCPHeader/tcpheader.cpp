@@ -138,3 +138,20 @@ void TCPHeader::setUrgentPointer(uint16_t urgentPointer)
 {
     this->m_urgentPointer = urgentPointer;
 }
+
+void TCPHeader::print()
+{
+    qDebug() << "TCP Header:";
+    qDebug() << "  Source Port:" << m_sourcePort;
+    qDebug() << "  Destination Port:" << m_destPort;
+    qDebug() << "  Sequence Number:" << m_sequenceNumber;
+    qDebug() << "  Acknowledgment Number:" << m_acknowledgmentNumber;
+    qDebug() << "  Data Offset:" << m_dataOffset;
+    qDebug() << "  Flags:" << m_flags << "("
+             << "SYN:" << ((m_flags & 0x02) != 0)
+             << "ACK:" << ((m_flags & 0x10) != 0)
+             << "FIN:" << ((m_flags & 0x01) != 0) << ")";
+    qDebug() << "  Window Size:" << m_windowSize;
+    qDebug() << "  Checksum:" << m_checksum;
+    qDebug() << "  Urgent Pointer:" << m_urgentPointer;
+}

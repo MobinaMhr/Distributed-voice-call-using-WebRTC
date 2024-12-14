@@ -54,6 +54,8 @@ public:
     void setDataLinkHeader(const DataLinkHeader &dataLinkHeader);
     void setTcpHeader(const TCPHeader &tcpHeader);
 
+    void print();
+
 private:
     UT::PacketType m_packetType;
     UT::PacketControlType m_controlType;

@@ -165,3 +165,28 @@ QString IPHeader<UT::IPVersion::IPv6>::destIp() const {
 void IPHeader<UT::IPVersion::IPv6>::setDestIp(IPv6Ptr_t newDestIp) {
     m_destIp = newDestIp;
 }
+
+void IPHeader<UT::IPVersion::IPv6>::print()
+{
+    qDebug() << "VersionTrafficClassFlow : " << m_versionTrafficClassFlowLabel;
+    qDebug() << "Payload length : " << m_payloadLength;
+    qDebug() << "NextHeader : " << m_nextHeader ;
+    qDebug() << "HopLimit : " << m_hopLimit ;
+    qDebug() << "Source IP : " << m_sourceIp->toString() ;
+    qDebug() << "Destenation IP : " << m_destIp->toString() ;
+
+}
+
+void IPHeader<UT::IPVersion::IPv4>::print()
+{
+    qDebug() << "VersionHeaderLength : " << m_versionHeaderLength;
+    qDebug() << "TypeOfService : " << m_typeOfService;
+    qDebug() << "TotalLength : " << m_totalLength;
+    qDebug() << "Identification : " << m_identification;
+    qDebug() << "FlagsFragmentOffset : " << m_flagsFragmentOffset;
+    qDebug() << "Ttl : " << m_ttl;
+    qDebug() << "Protocol : " << m_protocol;
+    qDebug() << "HeaderChecksum : " << m_headerChecksum;
+    qDebug() << "Source IP : " << m_sourceIp->toString() ;
+    qDebug() << "Destenation IP : " << m_destIp->toString() ;
+}

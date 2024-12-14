@@ -31,10 +31,13 @@ Port& Port::operator=(const Port &other)
 
 Port::~Port() {}
 
-void Port::sendPacket(const PacketPtr_t &data)
+void Port::sendPacket(const PacketPtr_t &data, int portNumber)
 {
-    ++m_numberOfPacketsSent;
-    Q_EMIT packetSent(data);
+    if (portNumber == m_number || portNumber == BROADCAST_ON_ALL_PORTS){
+        ++m_numberOfPacketsSent;
+        Q_EMIT packetSent(data);
+
+    }
 }
 
 void Port::receivePacket(const PacketPtr_t &data)

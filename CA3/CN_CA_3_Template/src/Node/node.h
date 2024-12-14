@@ -13,6 +13,7 @@
 #include "../Packet/Packet.h"
 #include <QString>
 #include <vector>
+#include "../Port/Port.h"
 
 class Node : public QThread
 {
@@ -24,22 +25,22 @@ public:
     // static Node *instance(int id, const MacAddress &macAddress, QThread *parent = nullptr);
     static void release();
 
-    virtual void receivePacket(const Packet &packet) = 0; // should called in receive packet slot !!
-    virtual void sendPacket(const Packet &packet) = 0;
     int id() const;
     QString name() const;
-    virtual QString ipAddress() const = 0;
+    virtual QString ipv4Address() const = 0;
+    virtual QString ipv6Address() const = 0;
     QString macAddress() const;
 
 protected:
     void run() override;
 
 public Q_SLOTS:
+    virtual void receivePacket(const PacketPtr_t &packet) = 0; // should called in receive packet slot !!
 
 private Q_SLOTS:
 
 Q_SIGNALS:
-
+    void sendPacket(const PacketPtr_t &packet, int portNum) ;
 private:
     inline static Node *m_self = nullptr;
 

@@ -6,10 +6,18 @@
 const QString LOG_TITLE = "Router:: ";
 const int MAX_BUFFER_SIZE = 20;
 
-Router::Router(int id, const MacAddress &macAddress, QThread *parent)
-    : Node(id, macAddress, parent), m_routing_table(new RoutingTable) {
-
+Router::Router(int id, const MacAddress &macAddress, UT::IPVersion ipv, QThread *parent)
+    : Node(id, macAddress, parent), m_routing_table(new RoutingTable), m_ipvVersion(ipv) {
     m_portStates.fill(UT::PortState::Idle);
+
+    for (size_t i = 0; i < m_ports.size(); ++i) {
+        // Create and initialize each port
+        m_ports[i] = QSharedPointer<Port>::create();
+
+        // Connect each port to the router
+        connect(this, &Router::sendPacket, m_ports[i].data(), &Port::sendPacket, Qt::AutoConnection);
+        connect(m_ports[i].data(), &Port::packetReceived, this, &Router::receivePacket, Qt::AutoConnection);
+    }
 }
 
 Router::~Router() {}
@@ -18,13 +26,13 @@ void Router::addRoutingEntry(QSharedPointer<AbstractIP> &destinationIp, QSharedP
     m_routing_table->addRoute(destinationIp, nextHopIp, port);
 }
 
-void Router::receivePacket(const Packet &packet) {
+void Router::receivePacket(const PacketPtr_t &packet) {
     if (m_buffer.size() >= static_cast<std::size_t>(MAX_BUFFER_SIZE)) {
-        if (packet.packetType() == UT::PacketType::Data) {
-            qDebug() << LOG_TITLE << "Packet Dropped: Buffer Full. Sequence:" << packet.sequenceNumber();
+        if (packet->packetType() == UT::PacketType::Data) {
+            qDebug() << LOG_TITLE << "Packet Dropped: Buffer Full. Sequence:" << packet->sequenceNumber();
             return;
         }
-        if (packet.packetType() == UT::PacketType::Control) {
+        if (packet->packetType() == UT::PacketType::Control) {
             m_buffer.pop_back();
             qDebug() << LOG_TITLE << "Buffer Full: Removed Oldest Packet.";
         }
@@ -33,26 +41,20 @@ void Router::receivePacket(const Packet &packet) {
     bufferPacket(packet);
 }
 
-void Router::bufferPacket(const Packet &packet) {
-    auto newPacket = std::make_unique<Packet>(
-      packet.packetType(),      packet.controlType(),       packet.sequenceNumber(),
-      packet.waitingCycles(),   packet.totalCycles(),       packet.destinationIP(),
-      packet.payload(),         packet.dataLinkHeader(),    packet.tcpHeader(),
-      packet.ipv4Header(),      packet.ipv6Header(),        nullptr);
-
-    if (packet.packetType() == UT::PacketType::Data) {
-        m_buffer.push_back(std::move(newPacket));
+void Router::bufferPacket(const PacketPtr_t &packet) {
+    if (packet->packetType() == UT::PacketType::Data) {
+        m_buffer.push_back(std::move(packet));
         qDebug() << LOG_TITLE << "Data Packet Added. Buffer Size:" << m_buffer.size();
     }
-    else if (packet.packetType() == UT::PacketType::Control) {
-        auto it = std::find_if(m_buffer.rbegin(), m_buffer.rend(), [](const std::unique_ptr<Packet> &pkt) {
+    else if (packet->packetType() == UT::PacketType::Control) {
+        auto it = std::find_if(m_buffer.rbegin(), m_buffer.rend(), [](const PacketPtr_t &pkt) {
             return pkt->packetType() == UT::PacketType::Control;
         });
 
         if (it != m_buffer.rend()) {
-            m_buffer.insert(it.base(), std::move(newPacket));
+            m_buffer.insert(it.base(), std::move(packet));
         } else {
-            m_buffer.push_front(std::move(newPacket));
+            m_buffer.push_front(std::move(packet));
         }
         qDebug() << LOG_TITLE << "Control Packet Added. Buffer Size:" << m_buffer.size();
     }
@@ -82,8 +84,7 @@ void Router::routePackets() {
             m_portStates[portIndex] = UT::PortState::Busy;
             qDebug() << "Routing packet to port" << portIndex;
 
-            // // Simulate packet processing
-            // hostPort->sendPacket(*packetPtr);
+            Q_EMIT sendPacket(packetPtr, hostPort->number());
             it = m_buffer.erase(it);
         } else {
             qDebug() << "Port" << portIndex << "is busy. Keeping packet in buffer.";
@@ -103,15 +104,6 @@ void Router::routePackets() {
     }
 }
 
-void Router::sendPacket(const Packet &packet) {
-    if (packet.ipVersion() == UT::IPVersion::IPv4) {
-        //
-    }
-    else if (packet.ipVersion() == UT::IPVersion::IPv6) {
-        //
-    }
-}
-
 void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddress &macAddress) {
     if (portIndex < 0 || portIndex >= static_cast<int>(m_ports.size())) {
         qDebug() << LOG_TITLE << "Invalid port index:" << portIndex;
@@ -123,6 +115,15 @@ void Router::configurePort(int portIndex, const IPv4_t &ipAddress, const MacAddr
     // m_ports[portIndex] = configedPort;
 
     qDebug() << LOG_TITLE << "Configured port" << portIndex << "with IP" << ipAddress.toString() << "and MAC" << macAddress.toString();
+}
+
+QString Router::ipv6Address() const
+{
+    return m_ipv6Address.toString();
+}
+
+QString Router::ipv4Address() const {
+    return m_ipv4Address.toString();
 }
 
 // switch (packet.ipVersion()) {

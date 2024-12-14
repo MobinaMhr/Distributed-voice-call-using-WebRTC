@@ -46,6 +46,28 @@ enum class PacketControlType
     OSPF,
 };
 
+const std::map<PacketControlType, QString> packetControlTypeStrings = {
+ {PacketControlType::Request, "Request"},
+ {PacketControlType::Response, "Response"},
+ {PacketControlType::Acknowledge, "Acknowledge"},
+ {PacketControlType::Error, "Error"},
+ {PacketControlType::DHCPDiscovery, "DHCPDiscovery"},
+ {PacketControlType::DHCPOffer, "DHCPOffer"},
+ {PacketControlType::DHCPRequest, "DHCPRequest"},
+ {PacketControlType::DHCPAcknowledge, "DHCPAcknowledge"},
+ {PacketControlType::DHCPNak, "DHCPNak"},
+ {PacketControlType::RIP, "RIP"},
+ {PacketControlType::OSPF, "OSPF"},
+ };
+
+QString toString(PacketControlType type) {
+    auto it = packetControlTypeStrings.find(type);
+    if (it != packetControlTypeStrings.end()) {
+        return it->second;
+    }
+    return "Unknown";
+}
+
 enum class DistributionType
 {
     Poisson,
