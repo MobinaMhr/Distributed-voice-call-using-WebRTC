@@ -3,9 +3,11 @@
 TopologyBuilder::TopologyBuilder(int routerBufferSize, QObject *parent) :
     QObject(parent),
     m_routerBufferSize(routerBufferSize),
+    m_portBindingManager(new PortBindingManager(this)),
     m_macAddressGenerator(new MacAddressGenerator(this)) {}
 
 TopologyBuilder::~TopologyBuilder() {
+    delete m_portBindingManager;
     delete m_macAddressGenerator;
     resetBindings(); ///Could be deleted
 }
@@ -14,7 +16,7 @@ void TopologyBuilder::resetBindings() {
     for (auto &router : m_routers) {
         auto ports = router->getPorts();
         for (auto &port : ports) {
-            m_portBindingManager.unbind(port);
+            m_portBindingManager->unbind(port);
         }
     }
 }
@@ -66,18 +68,6 @@ void TopologyBuilder::initializeRouters(int routerCount, UT::IPVersion ipVersion
 }
 
 void TopologyBuilder::moveToMeshTopology() {
-    resetBindings();
-
-    for (int i = 0; i < m_rows; ++i) {
-        for (int j = 0; j < m_columns; ++j) {
-            int id = i * m_columns + j;
-            if (j > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - 1]->getIdlePort());
-            if (i > 0) bindPorts(m_routers[id]->getIdlePort(), m_routers[id - m_columns]->getIdlePort());
-        }
-    }
-}
-
-void TopologyBuilder::moveToMeshTopology_() {
     resetBindings();
 
     for (int i = 0; i < m_rows; ++i) {
@@ -139,7 +129,7 @@ bool TopologyBuilder::bindPorts(PortPtr_t port1, PortPtr_t port2) {
         return false;
     }
 
-    m_portBindingManager.bind(port1, port2);
+    m_portBindingManager->bind(port1, port2);
     return true;
 }
 
@@ -153,7 +143,7 @@ bool TopologyBuilder::unbindPorts(PortPtr_t port1, PortPtr_t port2) {
         return false;
     }
 
-    m_portBindingManager.bind(port1, port2);
+    m_portBindingManager->bind(port1, port2);
     return true;
 }
 
