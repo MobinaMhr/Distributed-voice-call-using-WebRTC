@@ -1,5 +1,7 @@
 # AutonomousSystem
 
+The Internet is a network of networks*, and autonomous systems are the big networks that make up the Internet. More specifically, an autonomous system (AS) is a large network or group of networks that has a unified routing policy. Every computer or device that connects to the Internet is connected to an AS.
+
 The `AutonomousSystem` class is designed to manage an autonomous system (AS) in a network simulation or application. It provides functionalities for initializing the AS, starting and stopping routing protocols, assigning IP addresses, monitoring the network, and starting and stopping simulations. The class interacts with the TopologyController to create and configure network nodes and topologies.
 
 ```cpp
