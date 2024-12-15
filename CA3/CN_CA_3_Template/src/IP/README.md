@@ -2,6 +2,32 @@
 
 The `IP` class template is designed to handle both IPv4 and IPv6 addresses in a network simulation or application. It provides functionalities for converting between string representations and numerical values, managing subnet masks and prefix lengths, and performing subnet calculations. The class supports both IP versions through template specialization.
 
+```cpp
+typedef IP<UT::IPVersion::IPv4> IPv4_t;
+typedef IP<UT::IPVersion::IPv6> IPv6_t;
+typedef QSharedPointer<IPv4_t>  IPv4Ptr_t;
+typedef QSharedPointer<IPv6_t>  IPv6Ptr_t;
+```
+
+Some type defs are defined for clean coding.
+
+```cpp
+const QString DEFAULT_SUBNET_MASK = "255.255.255.255";
+const uint32_t DEFAULT_IP_VALUE = std::numeric_limits<uint32_t>::max();
+const uint32_t DEFAULT_SUBNET_MASK_VALUE = std::numeric_limits<uint32_t>::max();
+const int DEFAULT_IPV6_PREFIX_LENGTH = 64;
+const int IPV6_Length_IN_BYTES = 16;
+const int IPV6_Length_IN_BITS = 128;
+const char IPV6_DEFAULT_FILL_VALUE = 0xFF;
+const char IPV6_DELIM = ':';
+const std::string IPV6_VALUE_ERROR = "Invalid IPv6 format";
+const std::string SUBNET_MASK_FORMAT_ERROR = "Invalid subnet mask format";
+const std::string EMPTY_GATEWAY_ERROR = "Gateway is not set";
+const std::string INVALID_PREFIX_LENGTH_ERROR = "invalid prefix length";
+```
+
+First of all, some const values are defined in this class. 
+
 ### Utility functions
 
 ```cpp
