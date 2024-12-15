@@ -220,4 +220,153 @@ This methor returns QShared Ponters of all built routers in the topology/
 
 # TopologyController
 
+The `TopologyController` class is designed to manage and control the network topology in a simulation or network application. It provides functionalities for initializing, updating, and monitoring the network topology, as well as starting and stopping simulations. The class interacts with the TopologyBuilder to create and configure network nodes and topologies.
 
+
+Its constructor gets some values from AS class. It saves them in its private attributes and passes some of them to the `TopologyBuilder` class.
+
+```cpp
+TopologyController::TopologyController(int routerBufferSize, QObject *parent) :
+    QObject(parent),
+    m_topologyBuilder(new TopologyBuilder(routerBufferSize, this)),
+    m_isActive(false) {}
+```
+
+The desctructor deletes created pointers:
+
+```cpp
+TopologyController::~TopologyController() {
+    delete m_topologyBuilder;
+}
+```
+
+The `updateTopology()` method updates the topology in topology builder based on `m_activeTopologyType`.
+
+```cpp
+void TopologyController::updateTopology() {
+    switch (m_activeTopologyType) {
+        case UT::TopologyType::Mesh:
+            m_topologyBuilder->moveToMeshTopology();
+            break;
+        case UT::TopologyType::Torus:
+            m_topologyBuilder->moveToTorusTopology();
+            break;
+        case UT::TopologyType::RingStar:
+            m_topologyBuilder->moveToRingStarTopology();
+            break;
+        case UT::TopologyType::None:
+        default:
+            qWarning() << "Invalid topology type!";
+            return;
+    }
+}
+```
+
+The `setTopologyType()` acts as a simple setter for `m_activeTopologyType`.
+
+```cpp
+void TopologyController::setTopologyType(UT::TopologyType topologyType) {
+    m_activeTopologyType = topologyType;
+}
+```
+
+The `initializeTopology()` method creates all routers and topology bindings by topology builder, then emits `topologyChanges` signal.
+
+```cpp
+void TopologyController::initializeTopology(UT::TopologyType topologyType, int routerCount, UT::IPVersion ipVersion, int offset, int portCount) {
+    m_topologyBuilder->initializeRouters(routerCount, ipVersion, offset, portCount);
+    setTopologyType(topologyType);
+    updateTopology();
+    m_currentTopology = m_topologyBuilder->routers();
+
+    Q_EMIT topologyChanged(m_activeTopologyType);
+}
+```
+
+The `getCurrentTopology()` method returns last created topology.
+
+```cpp
+QVector<QSharedPointer<Router>> TopologyController::getCurrentTopology() const {
+    return m_currentTopology;
+}
+```
+
+The `monitorTopology()` method will be used for debuging.
+It will show details about topology.
+
+```cpp
+void TopologyController::monitorTopology() {
+    if (!m_topologyBuilder || !m_isActive) return;
+
+    qDebug() << "Monitoring topology...";
+    for (const auto &node : m_topologyBuilder->routers()) {
+        qDebug() << "Node" << node->id() << "is running.";
+    }
+}
+```
+
+The `startSimulation()` method starts the simulation. In future phases, it could be changed.
+
+```cpp
+void TopologyController::startSimulation() {
+    Q_EMIT simulationStarted();
+}
+```
+
+The `stopSimulation()` method stops the simulation. It calls the `resetTopology()` method. In future phases, it could be changed.
+
+```cpp
+void TopologyController::stopSimulation() {
+    resetTopology();
+    Q_EMIT simulationStopped();
+}
+```
+
+The `resetTopology()` method clears the topology and then, sets the topology type to none.
+
+```cpp
+void TopologyController::resetTopology() {
+    // m_currentTopology.clear();
+    m_topologyBuilder->resetBindings();
+    m_activeTopologyType = UT::TopologyType::None;
+}
+```
+
+The `activateNodes()` method activates all nodes in the topology.
+These nodes could be Routers or PCs.
+
+```cpp
+void TopologyController::activateNodes() {
+    if (!m_topologyBuilder) return;
+
+    m_isActive = true;
+    qDebug() << "Nodes activated.";
+    for (const auto &node : m_topologyBuilder->routers()) {
+        node->start();
+    }
+}
+```
+
+The `deactivateNodes()` method deactives all nodes in the topology.
+
+```cpp
+void TopologyController::deactivateNodes() {
+    if (!m_topologyBuilder) return;
+
+    m_isActive = false;
+    qDebug() << "Nodes deactivated.";
+    for (const auto &node : m_topologyBuilder->routers()) {
+        node->quit();
+        node->wait();
+    }
+}
+```
+
+The `getPcs()` public method used by AS will return PC nodes in the topology. 
+
+```cpp
+QVector<QSharedPointer<PC>> TopologyController::getPcs(int count, int offset, UT::IPVersion ipVersion, int portCount) {
+    m_personalComputers = m_topologyBuilder->getPCs(count, offset, ipVersion, portCount);
+    return m_personalComputers;
+}
+```
