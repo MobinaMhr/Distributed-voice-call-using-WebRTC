@@ -365,3 +365,245 @@ The `toIPv6()` returns a QShared pointer of its instance.
 The `toIPv4()` returns a QShared pointer of a IPv6 instance with converted values.
 
 # IPHeader
+
+The `IPHeader` class template is designed to represent the **header** of an IP packet for both **IPv4** and **IPv6** versions. It inherits from the **AbstractIPHeader** class and provides functionalities for managing various fields in the IP header, such as version, type of service, total length, source and destination IP addresses, and more. The class also includes methods for printing the header information.
+
+Some typedefs are coded for clean coding:
+
+```cpp
+typedef IPHeader<UT::IPVersion::IPv4> IPHv4_t;
+typedef IPHeader<UT::IPVersion::IPv6> IPHv6_t;
+```
+
+### AbstractIPHeader
+
+```cpp
+AbstractIPHeader::AbstractIPHeader(QObject *parent) :
+    QObject {parent}
+{}
+```
+
+The constructor initializes the AbstractIPHeader with an optional parent object.
+
+The `AbstractIPHeader` parent class has protected attribute:
+```cpp
+    UT::IPVersion m_ipVersion;
+```
+
+And a getter as:
+
+```cpp
+UT::IPVersion AbstractIPHeader::ipVersion() const{
+    return m_ipVersion;
+}
+```
+
+
+### IPv4 Header Version
+
+```cpp
+IPHeader<UT::IPVersion::IPv4>::IPHeader(QObject *parent)
+    : AbstractIPHeader(parent),
+    m_versionHeaderLength(0),
+    m_typeOfService(0),
+    m_totalLength(0),
+    m_identification(0),
+    m_flagsFragmentOffset(0),
+    m_ttl(0),
+    m_protocol(0),
+    m_headerChecksum(0),
+    m_sourceIp(nullptr),
+    m_destIp(nullptr)
+{}
+```
+
+It sets some attributes for IPv4 Header class. These are mostly read from the config file.
+
+It has some getters and setters as:
+
+```cpp
+// Getters and Setters for IPv4 Header
+uint8_t IPHeader<UT::IPVersion::IPv4>::versionHeaderLength() const {
+    return m_versionHeaderLength;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setVersionHeaderLength(uint8_t newVersionHeaderLength) {
+    m_versionHeaderLength = newVersionHeaderLength;
+}
+
+uint8_t IPHeader<UT::IPVersion::IPv4>::typeOfService() const {
+    return m_typeOfService;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setTypeOfService(uint8_t newTypeOfService) {
+    m_typeOfService = newTypeOfService;
+}
+
+uint16_t IPHeader<UT::IPVersion::IPv4>::totalLength() const {
+    return m_totalLength;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setTotalLength(uint16_t newTotalLength) {
+    m_totalLength = newTotalLength;
+}
+
+uint16_t IPHeader<UT::IPVersion::IPv4>::identification() const {
+    return m_identification;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setIdentification(uint16_t newIdentification) {
+    m_identification = newIdentification;
+}
+
+uint16_t IPHeader<UT::IPVersion::IPv4>::flagsFragmentOffset() const {
+    return m_flagsFragmentOffset;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setFlagsFragmentOffset(uint16_t newFlagsFragmentOffset) {
+    m_flagsFragmentOffset = newFlagsFragmentOffset;
+}
+
+uint8_t IPHeader<UT::IPVersion::IPv4>::ttl() const {
+    return m_ttl;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setTtl(uint8_t newTtl) {
+    m_ttl = newTtl;
+}
+
+uint8_t IPHeader<UT::IPVersion::IPv4>::protocol() const {
+    return m_protocol;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setProtocol(uint8_t newProtocol) {
+    m_protocol = newProtocol;
+}
+
+uint16_t IPHeader<UT::IPVersion::IPv4>::headerChecksum() const {
+    return m_headerChecksum;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setHeaderChecksum(uint16_t newHeaderChecksum) {
+    m_headerChecksum = newHeaderChecksum;
+}
+
+QString IPHeader<UT::IPVersion::IPv4>::sourceIp() const {
+    return m_sourceIp->toString();
+    // return QString::fromStdString(m_sourceIp->toString());
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setSourceIp(IPv4Ptr_t newSourceIp) {
+    m_sourceIp = newSourceIp;
+}
+
+QString IPHeader<UT::IPVersion::IPv4>::destIp() const {
+    return m_destIp->toString();
+    // return QString::fromStdString(m_sourceIp->toString());
+    // return m_destIp;
+}
+
+void IPHeader<UT::IPVersion::IPv4>::setDestIp(IPv4Ptr_t newDestIp) {
+    m_destIp = newDestIp;
+}
+```
+
+It has some print methods for debug functionality:
+
+```cpp
+void IPHeader<UT::IPVersion::IPv4>::print()
+{
+    qDebug() << "VersionHeaderLength : " << m_versionHeaderLength;
+    qDebug() << "TypeOfService : " << m_typeOfService;
+    qDebug() << "TotalLength : " << m_totalLength;
+    qDebug() << "Identification : " << m_identification;
+    qDebug() << "FlagsFragmentOffset : " << m_flagsFragmentOffset;
+    qDebug() << "Ttl : " << m_ttl;
+    qDebug() << "Protocol : " << m_protocol;
+    qDebug() << "HeaderChecksum : " << m_headerChecksum;
+    qDebug() << "Source IP : " << m_sourceIp->toString() ;
+    qDebug() << "Destenation IP : " << m_destIp->toString() ;
+}
+```
+
+### IPv6 Header Version
+
+```cpp
+IPHeader<UT::IPVersion::IPv6>::IPHeader(QObject *parent)
+    : AbstractIPHeader(parent),
+    m_versionTrafficClassFlowLabel(0),
+    m_payloadLength(0),
+    m_nextHeader(0),
+    m_hopLimit(0),
+    m_sourceIp(nullptr),
+    m_destIp(nullptr)
+{}
+```
+
+It sets some attributes for IPv4 Header class. These are mostly read from the config file.
+
+It has some getters and setters as:
+
+```cpp
+uint32_t IPHeader<UT::IPVersion::IPv6>::versionTrafficClassFlowLabel() const {
+    return m_versionTrafficClassFlowLabel;
+}
+
+void IPHeader<UT::IPVersion::IPv6>::setVersionTrafficClassFlowLabel(uint32_t newVersionTrafficClassFlowLabel) {
+    m_versionTrafficClassFlowLabel = newVersionTrafficClassFlowLabel;
+}
+
+uint16_t IPHeader<UT::IPVersion::IPv6>::payloadLength() const {
+    return m_payloadLength;
+}
+
+void IPHeader<UT::IPVersion::IPv6>::setPayloadLength(uint16_t newPayloadLength) {
+    m_payloadLength = newPayloadLength;
+}
+
+uint8_t IPHeader<UT::IPVersion::IPv6>::nextHeader() const {
+    return m_nextHeader;
+}
+
+void IPHeader<UT::IPVersion::IPv6>::setNextHeader(uint8_t newNextHeader) {
+    m_nextHeader = newNextHeader;
+}
+
+uint8_t IPHeader<UT::IPVersion::IPv6>::hopLimit() const {
+    return m_hopLimit;
+}
+
+void IPHeader<UT::IPVersion::IPv6>::setHopLimit(uint8_t newHopLimit) {
+    m_hopLimit = newHopLimit;
+}
+
+QString IPHeader<UT::IPVersion::IPv6>::sourceIp() const {
+    return m_sourceIp->toString();
+}
+
+void IPHeader<UT::IPVersion::IPv6>::setSourceIp(IPv6Ptr_t newSourceIp) {
+    m_sourceIp = newSourceIp;
+}
+
+QString IPHeader<UT::IPVersion::IPv6>::destIp() const {
+    return m_destIp->toString();
+}
+
+void IPHeader<UT::IPVersion::IPv6>::setDestIp(IPv6Ptr_t newDestIp) {
+    m_destIp = newDestIp;
+}
+```
+
+It has some print methods for debug functionality:
+
+```cpp
+void IPHeader<UT::IPVersion::IPv6>::print()
+{
+    qDebug() << "VersionTrafficClassFlow : " << m_versionTrafficClassFlowLabel;
+    qDebug() << "Payload length : " << m_payloadLength;
+    qDebug() << "NextHeader : " << m_nextHeader ;
+    qDebug() << "HopLimit : " << m_hopLimit ;
+    qDebug() << "Source IP : " << m_sourceIp->toString() ;
+    qDebug() << "Destenation IP : " << m_destIp->toString() ;
+
+}
+```
