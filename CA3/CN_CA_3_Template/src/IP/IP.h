@@ -37,7 +37,7 @@ class AbstractIP : public QObject
 
 public:
     explicit AbstractIP(QObject *parent = nullptr);
-    bool operator<(const AbstractIP& other) const;
+    // bool operator<(const AbstractIP& other) const;
 
     virtual IPv4Ptr_t toIPv4() const = 0;
     virtual IPv6Ptr_t toIPv6() const = 0;

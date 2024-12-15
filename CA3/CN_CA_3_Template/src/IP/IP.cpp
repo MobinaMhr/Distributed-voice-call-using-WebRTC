@@ -38,11 +38,11 @@ AbstractIP::AbstractIP(QObject *parent) :
     QObject {parent}
 {}
 
-bool AbstractIP::operator<(const AbstractIP& other) const {
-    IPv4Ptr_t myIPV4 = this->toIPv4();
-    IPv4Ptr_t theirIPV4 = other.toIPv4();
-    return myIPV4->toValue() < theirIPV4->toValue();
-}
+// bool AbstractIP::operator<(const AbstractIP& other) const {
+//     IPv4Ptr_t myIPV4 = this->toIPv4();
+//     IPv4Ptr_t theirIPV4 = other.toIPv4();
+//     return myIPV4->toValue() < theirIPV4->toValue();
+// }
 
 /**
  * ===========================================
