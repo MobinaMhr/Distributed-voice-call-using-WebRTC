@@ -59,11 +59,13 @@ void TopologyController::startSimulation() {
 }
 
 void TopologyController::stopSimulation() {
+    resetTopology();
     Q_EMIT simulationStopped();
 }
 
 void TopologyController::resetTopology() {
-    m_currentTopology.clear();
+    // m_currentTopology.clear();
+    m_topologyBuilder->resetBindings();
     m_activeTopologyType = UT::TopologyType::None;
 }
 
