@@ -23,11 +23,14 @@ SOURCES += \
     $$PWD/EventsCoordinator/EventsCoordinator.cpp \
     $$PWD/Topology/topologybuilder.cpp \
     $$PWD/Topology/topologycontroller.cpp \
-    # # # $$PWD/DHCPServer/DHCPServer.cpp \
+    $$PWD/DHCP/dhcp.cpp \
     $$PWD/AutonomousSystem/autonomoussystem.cpp \
+    $$PWD/Protocol/rip.cpp \
+    $$PWD/Protocol/dijkstra.cpp \
+    $$PWD/Protocol/ospf.cpp \
     # # # $$PWD/MACAddress/testmacaddress.cpp \
     # # # $$PWD/MACAddress/testmacaddressgenerator.cpp \
-    $$PWD/main.cpp
+    $$PWD/main.cpp \
 
 HEADERS += \
     $$PWD/Globals/Globals.h \
@@ -48,7 +51,10 @@ HEADERS += \
     $$PWD/EventsCoordinator/EventsCoordinator.h \
     $$PWD/Topology/topologybuilder.h \
     $$PWD/Topology/topologycontroller.h \
-    # # # $$PWD/DHCPServer/DHCPServer.h \
-    $$PWD/AutonomousSystem/autonomoussystem.h
+    $$PWD/DHCP/dhcp.h \
+    $$PWD/AutonomousSystem/autonomoussystem.h \
+    $$PWD/Protocol/rip.h \
+    $$PWD/Protocol/dijkstra.h \
+    $$PWD/Protocol/ospf.h \
     # # # $$PWD/MACAddress/testmacaddress.h \
     # # # $$PWD/MACAddress/testmacaddressgenerator.h \
