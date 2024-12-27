@@ -16,7 +16,7 @@ public:
     ~RoutingTable() = default;
 
 public:
-    void addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port);
+    void addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const QString &protocol);
     void removeRoute(const IpPtr_t &destIp);
     QSharedPointer<Port> getPort(const IpPtr_t &destIp) const;
     bool routeExists(const IpPtr_t &destIp) const;
@@ -27,7 +27,13 @@ public:
 Q_SIGNALS:
 
 private:
-    QMap<IpPtr_t, QPair<IpPtr_t, QSharedPointer<Port>>> m_routingTable;
+    struct RouteEntry {
+        IpPtr_t nextHopIp;
+        QSharedPointer<Port> port;
+        QString protocol;
+    };
+
+    QMap<IpPtr_t, RouteEntry> m_routingTable;
 };
 
 #endif    // ROUTINGTABLE_H

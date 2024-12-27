@@ -93,7 +93,6 @@ uint32_t IP<UT::IPVersion::IPv4>::toValue() const{
     return m_ipValue;
 }
 
-
 QString IP<UT::IPVersion::IPv4>::getSubnetMask() const
 {
     return valueToSubnetMask(m_subnetMask);
@@ -168,7 +167,6 @@ IP<UT::IPVersion::IPv6>::IP(QObject *parent) :
     m_prefixLength(DEFAULT_IPV6_PREFIX_LENGTH){}
 
 IP<UT::IPVersion::IPv6>::~IP() {};
-//
 
 IP<UT::IPVersion::IPv6>::IP(const QString &ipString, int prefixLength, QObject *parent) :
     AbstractIP(parent), m_ipValue(IPV6_Length_IN_BYTES, IPV6_DEFAULT_FILL_VALUE),
@@ -194,8 +192,6 @@ QString IP<UT::IPVersion::IPv6>::toString() const{
     }
     return result;
 }
-
-
 
 QByteArray IP<UT::IPVersion::IPv6>::toValue() const
 {

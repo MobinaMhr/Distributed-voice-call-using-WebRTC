@@ -3,6 +3,7 @@
 
 #include "../Node/node.h"
 #include "../Port/Port.h"
+#include "../DHCP/dhcp.h"
 #include "routingtable.h"
 #include <QString>
 #include <deque>
@@ -22,14 +23,19 @@ public:
     PortPtr_t getIdlePort() override;
     std::vector<PortPtr_t> getPorts();
 
+    std::vector<QSharedPointer<Node>> neighbors();
+
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;
-
-private:
+public:
     RoutingTable*                       m_routing_table;
+private:
     std::vector<PortPtr_t>              m_ports;
     std::deque<PacketPtr_t>             m_buffer;
     int                                 m_bufferSize;
+
+    std::vector<QSharedPointer<Node>>   m_neighbors;
+    DHCP*                               m_dhcp;
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);

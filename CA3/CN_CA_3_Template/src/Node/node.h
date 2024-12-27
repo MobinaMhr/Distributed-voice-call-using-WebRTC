@@ -23,14 +23,22 @@ public:
     // static Node *instance(int id, const MacAddress &macAddress, int portCount, QThread *parent = nullptr);
     static void release();
 
+    // Getters
     int id() const;
     QString name() const;
+    UT::IPVersion ipVersion() const;
     QString ipv4Address() const;
     QString ipv6Address() const;
-    QString macAddress() const;
-
+    MacAddress macAddress() const;
     UT::NodeState state();
+
+    // Setters
     void setState(UT::NodeState state);
+    void setIPVersion(UT::IPVersion ipVersion);
+
+    void setIpV4Address(const IPv4_t& ipv4Address);
+    void setIpV6Address(const IPv6_t& ipv6Address);
+
 
     virtual PortPtr_t getIdlePort() = 0;
 

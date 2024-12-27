@@ -41,6 +41,8 @@ public:
 
     virtual IPv4Ptr_t toIPv4() const = 0;
     virtual IPv6Ptr_t toIPv6() const = 0;
+
+    virtual QString toString() const = 0;
 Q_SIGNALS:
 
 protected:
@@ -63,15 +65,15 @@ class IP<UT::IPVersion::IPv4> : public AbstractIP
     // Q_OBJECT
 
 public:
+    // IP(const IP<UT::IPVersion::IPv4> &other);
     explicit IP(QObject *parent = nullptr);
     explicit IP(const QString &ipString, const QString &subnetMask = "", QObject *parent = nullptr);
     explicit IP(uint32_t ipValue, const QString &subnetMask = "", QObject *parent = nullptr);//TODO: may change to uint32_t
     ~IP() override;
-
     IP(const IP&);
-    IP& operator=(const IP&);
+
 public:
-    QString toString() const;
+    QString toString() const override;
     uint32_t toValue() const;
 
     QString getSubnetMask() const;
@@ -87,12 +89,17 @@ public:
     IPv6Ptr_t toIPv6() const override;
 
 public:
-    bool
-    operator==(const IP<UT::IPVersion::IPv4> &other) const
-    {
+    bool operator==(const IP<UT::IPVersion::IPv4> &other) const {
         return toValue() == other.toValue();
     }
-
+    IP<UT::IPVersion::IPv4> &operator=(const IP &other) {
+        if (this != &other) {
+            m_ipValue = other.m_ipValue;
+            m_subnetMask = other.m_subnetMask;
+            m_gateway = other.m_gateway;
+        }
+        return *this;
+    }
 private:
 
 
@@ -119,15 +126,15 @@ class IP<UT::IPVersion::IPv6> : public AbstractIP
     // Q_OBJECT
 
 public:
+    // IP(const IP<UT::IPVersion::IPv6> &other);
     explicit IP(QObject *parent = nullptr);
     explicit IP(const QString &ipString, int prefixLength = 128, QObject *parent = nullptr);
     explicit IP(const QByteArray &ipValue, int prefixLength = 128, QObject *parent = nullptr);
     ~IP() override;
-
     IP(const IP&);
-    IP& operator=(const IP&);
+
 public:    // methods
-    QString toString() const;
+    QString toString() const override;
     QByteArray toValue() const;
 
     int getPrefixLength() const;
@@ -143,13 +150,17 @@ public:    // methods
     IPv6Ptr_t toIPv6() const override;
 
 public:
-    bool
-    operator==(const IP<UT::IPVersion::IPv6> &other) const
-    {
+    bool operator==(const IP<UT::IPVersion::IPv6> &other) const {
         return toValue() == other.toValue();
     }
-
-private:    // methods
+    IP<UT::IPVersion::IPv6> &operator=(const IP &other) {
+        if (this != &other) {
+            m_ipValue = other.m_ipValue;
+            m_prefixLength = other.m_prefixLength;
+            m_gateway = other.m_gateway;
+        }
+        return *this;
+    }
 
 private:
     QByteArray  m_ipValue;

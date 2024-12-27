@@ -8,7 +8,8 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
     : Node(id, macAddress, portCount, ipVersion, parent),
     m_routing_table(new RoutingTable),
     m_ports(portCount),
-    m_bufferSize(bufferSize) {
+    m_bufferSize(bufferSize),
+    m_dhcp(nullptr){
 
     for (int i = 0; i < portCount; ++i) {
         m_ports[i] = QSharedPointer<Port>::create(i);
@@ -21,7 +22,7 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
 Router::~Router() {}
 
 void Router::addRoutingEntry(IpPtr_t &destinationIp, IpPtr_t &nextHopIp, QSharedPointer<Port> &port) {
-    m_routing_table->addRoute(destinationIp, nextHopIp, port);
+    m_routing_table->addRoute(destinationIp, nextHopIp, port, "TODO::");
 }
 
 bool Router::isBufferAtCapacity() {
@@ -129,4 +130,8 @@ PortPtr_t Router::getIdlePort() {
 
 std::vector<PortPtr_t> Router::getPorts() {
     return m_ports;
+}
+
+std::vector<QSharedPointer<Node>> Router::neighbors() {
+    return m_neighbors;
 }
