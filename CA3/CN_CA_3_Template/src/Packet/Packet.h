@@ -58,7 +58,7 @@ public:
 private:
     UT::PacketType              m_packetType;
     UT::PacketControlType       m_controlType;
-    IpPtr_t  m_destinationIP;
+    IpPtr_t                     m_destinationIP;
     UT::IPVersion               m_ipVersion;
     IPHv4_t                     m_ipv4Header;
     IPHv6_t                     m_ipv6Header;
