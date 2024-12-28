@@ -38,8 +38,7 @@ public:
     void setState(UT::NodeState state);
     void setIPVersion(UT::IPVersion ipVersion);
 
-    void setIpV4Address(const IPv4_t& ipv4Address);
-    void setIpV6Address(const IPv6_t& ipv6Address);
+    void sendDiscovery();
 
     void getPacket(const PacketPtr_t &packet) {
         if (!packet) {
@@ -67,9 +66,10 @@ public:
 
 protected:
     UT::IPVersion   m_ipVersion;
-    IPv4_t          m_ipv4Address;
-    IPv6_t          m_ipv6Address;
+    IPv4Ptr_t       m_ipv4Address;
+    IPv6Ptr_t       m_ipv6Address;
 
+    void setIP(QString sugestedIP, QString mask);
     void run() override;
     bool isPacketMine(const PacketPtr_t &packet) {
         bool isMine = false;
@@ -79,10 +79,10 @@ protected:
         /// Add MultiCast
 
         if (packetIpVersion == UT::IPVersion::IPv4) {
-            if (m_ipv4Address.toString() == packet->ipv4Header().destIp())
+            if (m_ipv4Address->toString() == packet->ipv4Header().destIp())
                 isMine = true;
         } else if (packetIpVersion == UT::IPVersion::IPv6) {
-            if (m_ipv6Address.toString() == packet->ipv6Header().destIp())
+            if (m_ipv6Address->toString() == packet->ipv6Header().destIp())
                 isMine = true;
         }
         return isMine;
@@ -90,7 +90,7 @@ protected:
 
 public Q_SLOTS:
     virtual void receivePacket(const PacketPtr_t &packet) = 0;
-    void sendDiscovery();
+    virtual void getIP();
 
 private Q_SLOTS:
 

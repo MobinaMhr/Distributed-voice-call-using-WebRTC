@@ -34,6 +34,7 @@ public:
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;
+    virtual void getIP() override;
 public:
     RoutingTable*                       m_routing_table;
 private:
@@ -50,6 +51,7 @@ private:
     void handleDhcpDiscovery(PacketPtr_t packet);
     void handleDhcpOffer(PacketPtr_t packet);
     void handleDhcpReq(PacketPtr_t packet);
+    void handleDhcpAck(PacketPtr_t packet);
 };
 
 #endif // ROUTER_H

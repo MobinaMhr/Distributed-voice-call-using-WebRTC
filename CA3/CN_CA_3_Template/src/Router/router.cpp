@@ -121,6 +121,15 @@ void Router::handleDhcpReq(PacketPtr_t packet)
         Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
 }
 
+void Router::handleDhcpAck(PacketPtr_t packet)
+{
+    QString payload = packet->readStringFromPayload();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(payload.toUtf8());
+    QString ip = jsonDoc.object().value("ip").toString();
+    QString mask = jsonDoc.object().value("mask").toString();
+    setIP(ip, mask);
+}
+
 void Router::receivePacket(const PacketPtr_t &packet) {
     if (!packet) {
         qDebug() << name() << ": Received a null packet.";
@@ -145,6 +154,15 @@ void Router::receivePacket(const PacketPtr_t &packet) {
         default:
             break;
     }
+}
+
+void Router::getIP()
+{
+    if (m_dhcp != nullptr){
+        QString sugestedIp = m_dhcp->assignIPToNode(m_id);
+        setIP(sugestedIp, DEFAULT_MASK);
+    }else
+        sendDiscovery();
 }
 
 QString Router::createDhcpAckBody(PacketPtr_t packet)
@@ -264,6 +282,10 @@ void Router::processControlPacket(const PacketPtr_t &packet) {
 
         case UT::PacketControlType::DHCPRequest:
             handleDhcpReq(packet);
+            break;
+
+        case UT::PacketControlType::DHCPAcknowledge:
+            handleDhcpAck(packet);
             break;
 
         default:

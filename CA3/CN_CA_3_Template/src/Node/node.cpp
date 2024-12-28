@@ -46,6 +46,13 @@ void Node::sendDiscovery()
     //send dhcp discover packet
 }
 
+void Node::setIP(QString sugestedIP, QString mask)
+{
+    m_ipv4Address = IPv4Ptr_t(new IPv4_t(sugestedIP, mask));
+    if (m_ipVersion == UT::IPVersion::IPv6)
+        m_ipv6Address = m_ipv4Address->toIPv6();
+}
+
 int Node::id() const {
     return m_id;
 }
@@ -74,23 +81,13 @@ void Node::setIPVersion(UT::IPVersion ipVersion) {
     m_ipVersion = ipVersion;
 }
 
-void Node::setIpV4Address(const IPv4_t& ipv4Address) {
-    m_ipv4Address = ipv4Address;
-    qDebug() << "IPv4 address set to:" << ipv4Address.toString();
-}
-
-void Node::setIpV6Address(const IPv6_t& ipv6Address) {
-    m_ipv6Address = ipv6Address;
-    qDebug() << "IPv6 address set to:" << ipv6Address.toString();
-}
-
 QString Node::ipv6Address() const
 {
-    return m_ipv6Address.toString();
+    return m_ipv6Address->toString();
 }
 
 QString Node::ipv4Address() const {
-    return m_ipv4Address.toString();
+    return m_ipv4Address->toString();
 }
 
 
