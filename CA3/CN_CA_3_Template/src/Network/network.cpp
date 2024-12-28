@@ -129,15 +129,15 @@ void Network::initializeNetwork() {
         int dhcpServer = asConfig["dhcp_server"].toInt();
         asInstance->setDHCPServer(dhcpServer);
 
-        // QJsonArray userGateways = asConfig["user_gateways"].toArray();
-        // asInstance->setUserGateways(userGateways);
-        // QJsonArray brokenRouters = asConfig["broken_routers"].toArray();
-        // asInstance->setBrokenRouters(brokenRouters);
-        // QJsonArray gateways = asConfig["gateways"].toArray();
-        // asInstance->setGateways(gateways);
-        // QJsonValue connectToAS = asConfig["connect_to_as"];
-        /// TODO::::::::::::::::::::::::::
+        QJsonArray userGateways = asConfig["user_gateways"].toArray();
+        asInstance->setUserGateways(userGateways);
+        QJsonArray brokenRouters = asConfig["broken_routers"].toArray();
+        asInstance->setBrokenRouters(brokenRouters);
+        QJsonArray gateways = asConfig["gateways"].toArray();
+        asInstance->setGateways(gateways);
+        QJsonValue connectToAS = asConfig["connect_to_as"];
 
+        /// TODO::::::::::::::::::::::::::
 
         m_autonomousSystems.append(asInstance);
         m_totalRouters += nodeCount;
