@@ -76,18 +76,6 @@ void AutonomousSystem::setGateways(const QJsonArray &gateways) {
     }
 }
 
-// void AutonomousSystem::setUserGateways(QJsonArray userGateways) {
-//     m_userGateways = userGateways;
-// }
-
-// void AutonomousSystem::setBrokenRouters(QJsonArray brokenRouters) {
-//     m_brokenRouters = brokenRouters;
-// }
-
-// void AutonomousSystem::setGateways(QJsonArray gateways) {
-//     m_as_gateways = gateways;
-// }
-
 void AutonomousSystem::initializeAS() {
     int portCount = 4;
     m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_routerOffset, portCount);

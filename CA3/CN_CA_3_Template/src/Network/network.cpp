@@ -233,26 +233,25 @@ void Network::monitorRoutingCompletion() {
             m_routingCompletionCount++;
             if (m_routingCompletionCount == m_totalRouters) {
                 qDebug() << "All routing protocols have completed.";
+                return;
             }
         });
     }
 }
 
-// void Network::startPhaseThree() {
-//     qDebug() << "Starting Phase Three: Execution.";
-//     // m_eventCoordinator->startExecution(m_config["simulation_duration"].toString());
-// }
+void Network::startPhaseThree() {
+    qDebug() << "Starting Phase Three: Execution.";
+    m_config["simulation_duration"].toString();
+}
 
-// void Network::startPhaseFour() {
-//     qDebug() << "Starting Phase Four: Analysis.";
-//     // analyzeResults();
-// }
+void Network::startPhaseFour() {
+    qDebug() << "Starting Phase Four: Analysis.";
+    analyzeResults();
+}
 
-// void Network::analyzeResults() {
-//     // Example analysis: packet-loss, hop-count-avg, etc.
-//     qDebug() << "Analyzing simulation results...";
-//     // Perform analysis and display results.
-// }
+void Network::analyzeResults() {
+    qDebug() << "Analyzing simulation results...";
+}
 
 // void Network::resetNetwork() {
 //     qDebug() << "Resetting network...";
