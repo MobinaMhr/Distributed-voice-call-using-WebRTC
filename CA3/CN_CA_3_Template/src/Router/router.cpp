@@ -62,16 +62,36 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
         TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
         IPHv4_t *iphv4 = new IPHv4_t();
         IPHv6_t *iphv6 = new IPHv6_t();
-        Packet *discovery = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPOffer,
+        Packet *offer = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPOffer,
                                                1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
                                                DHCP_TTL);
-        discovery->storeStringInPayload(sugestedIp);
-        PacketPtr_t discoveryPt = PacketPtr_t(discovery);
-        sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
+        offer->storeStringInPayload(sugestedIp);
+        PacketPtr_t offerPt = PacketPtr_t(offer);
+        sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
         // generate offer packet
     }
     else
         sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+}
+
+void Router::handleDhcpOffer(PacketPtr_t packet)
+{
+    if (m_ipv4Address.toValue() == DEFAULT_IP_VALUE){
+        QString sugestedIp = packet->readStringFromPayload();
+        IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+        QByteArray payload ;
+        DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress,
+                                                packet->dataLinkHeader().destination());
+        TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+        IPHv4_t *iphv4 = new IPHv4_t();
+        IPHv6_t *iphv6 = new IPHv6_t();
+        Packet *ack = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPAcknowledge,
+                                               1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
+                                               DHCP_TTL);
+        ack->storeStringInPayload(sugestedIp);
+        PacketPtr_t ackPt = PacketPtr_t(ack);
+        sendPacket(ackPt, BROADCAST_ON_ALL_PORTS);
+    }
 }
 
 void Router::receivePacket(const PacketPtr_t &packet) {
@@ -192,6 +212,10 @@ void Router::processControlPacket(const PacketPtr_t &packet) {
     switch (packet->controlType()) {
         case UT::PacketControlType::DHCPDiscovery:
             handleDhcpDiscovery(packet);
+            break;
+
+        case UT::PacketControlType::DHCPOffer:
+
             break;
 
         default:
