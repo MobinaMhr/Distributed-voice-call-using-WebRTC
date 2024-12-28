@@ -108,11 +108,7 @@ void Network::isConfigLoaded() {
 
 std::pair<int, int> Network::calculateOffsets() {
     int routerOffset = m_autonomousSystems.isEmpty() ? 0 : m_autonomousSystems.back()->routerCount();
-    qDebug() << "routerOffset: " << routerOffset;
-
     int pcOffset = m_autonomousSystems.isEmpty() ? 23 : 23 + m_autonomousSystems.back()->pcCount();
-    qDebug() << "pcOffset: " << pcOffset;
-
     return std::make_pair(routerOffset, pcOffset);
 }
 
@@ -143,8 +139,9 @@ void Network::initializeNetwork() {
 
         auto offsets = calculateOffsets();
         int routerOffset = offsets.first;
+        qDebug() << "routerOffset: " << routerOffset;
         int pcOffset = offsets.second;
-
+        qDebug() << "pcOffset: " << pcOffset;
 
         QSharedPointer<AutonomousSystem> asInstance;
         asInstance = QSharedPointer<AutonomousSystem>::create(nodeCount, 0, routerOffset, pcOffset, type);
