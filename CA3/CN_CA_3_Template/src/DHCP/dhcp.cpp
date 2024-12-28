@@ -33,24 +33,12 @@ IpPtr_t DHCP::getSuitableIPAddress(const QSharedPointer<Node>& node)
     return ipAddress;
 }
 
-void DHCP::assignIPToNode(const QSharedPointer<Node>& node)
+QString DHCP::assignIPToNode(const int &id)
 {
-    IpPtr_t ipAddress = getSuitableIPAddress(node);
-    writeToFile(QString::number(node->id()), ipAddress->toString(), node->macAddress().toString(), node->ipVersion());
-
-    if (node->ipVersion() == UT::IPVersion::IPv4) {
-        auto ipv4Address = ipAddress.dynamicCast<IPv4_t>();
-        if (ipv4Address) {
-            node->setIpV4Address(*ipv4Address);  // Pass by reference
-        }
-    } else if (node->ipVersion() == UT::IPVersion::IPv6) {
-        auto ipv6Address = ipAddress.dynamicCast<IPv6_t>();
-        if (ipv6Address) {
-            node->setIpV6Address(*ipv6Address);  // Pass by reference
-        }
-    }
-
-    qDebug() << "Assigned IP" << ipAddress->toString() << "to Node ID:" << node->id();
+    QString ipTemplate = (id < 10) ? "198.168.%100.%1" : "198.168.%100.%2";
+    QString formattedIp = ipTemplate.arg(m_asNumber).arg(id);
+    qDebug() << "Assigned IP" << formattedIp << "to Node ID:" << id ;
+    return formattedIp;
 }
 
 IpPtr_t DHCP::generateIPv4()

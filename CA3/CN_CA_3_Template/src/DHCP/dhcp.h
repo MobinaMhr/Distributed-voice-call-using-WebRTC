@@ -17,7 +17,7 @@ class DHCP : public QObject
 public:
     explicit DHCP(int asNumber, QObject *parent = nullptr);
     ~DHCP() override;
-    void assignIPToNode(const QSharedPointer<Node>& node);
+    QString assignIPToNode(const int &id);
 
 private:
     int m_asNumber;

@@ -30,7 +30,6 @@ public:
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;
-    void getIp();
 public:
     RoutingTable*                       m_routing_table;
 private:
@@ -44,6 +43,7 @@ private:
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);
+    void handleDhcpDiscovery(PacketPtr_t);
 };
 
 #endif // ROUTER_H

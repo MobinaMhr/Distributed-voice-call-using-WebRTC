@@ -40,6 +40,7 @@ void Node::sendDiscovery()
     Packet *discovery = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPDiscovery,
                                              1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
                                              DHCP_TTL);
+    discovery->storeIntInPayload(m_id);
     PacketPtr_t discoveryPt = PacketPtr_t(discovery);
     sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
     //send dhcp discover packet

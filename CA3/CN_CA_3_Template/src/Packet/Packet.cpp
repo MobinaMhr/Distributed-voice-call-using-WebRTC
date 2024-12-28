@@ -52,6 +52,44 @@ void Packet::increaseTotalCycles() {
     m_totalCycles = m_totalCycles + 1;
 }
 
+void Packet::decreasePacketTtl()
+{
+    this->m_ttl--;
+}
+
+bool Packet::shouldDrop()
+{
+    return this->m_ttl == 0;
+}
+
+void Packet::storeIntInPayload(int value)
+{
+    QDataStream stream(&m_payload, QIODevice::WriteOnly);
+    stream << value;
+}
+
+int Packet::readIntFromPayload() const
+{
+    QDataStream stream(m_payload);
+    int value;
+    stream >> value;
+    return value;
+}
+
+void Packet::storeStringInPayload(const QString &value)
+{
+    QDataStream stream(&m_payload, QIODevice::WriteOnly);
+    stream << value;
+}
+
+QString Packet::readStringFromPayload() const
+{
+    QDataStream stream(m_payload);
+    QString value;
+    stream >> value;
+    return value;
+}
+
 // Getters
 UT::PacketType Packet::packetType() const {
     return m_packetType;

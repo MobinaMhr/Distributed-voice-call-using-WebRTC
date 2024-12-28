@@ -5,6 +5,7 @@
 #include <QString>
 #include <QStringList>
 #include <QByteArray>
+#include <QDataStream>
 #include "../Globals/globals.h"
 #include "../IP/ipheader.h"
 #include "../TCPHeader/tcpheader.h"
@@ -27,6 +28,12 @@ public:
 
     void increaseWaitingCycles();
     void increaseTotalCycles();
+    void decreasePacketTtl();
+    bool shouldDrop();
+    void storeIntInPayload(int value);
+    int readIntFromPayload() const;
+    void storeStringInPayload(const QString &value);
+    QString readStringFromPayload() const;
 
     // Getters
     UT::PacketType packetType() const;
