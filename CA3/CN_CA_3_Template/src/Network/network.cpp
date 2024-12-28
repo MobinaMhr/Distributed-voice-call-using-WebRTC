@@ -116,13 +116,30 @@ void Network::initializeNetwork() {
         qDebug() << "topologyType: " << topologyType;
         int nodeCount = asConfig["node_count"].toInt();
         qDebug() << "nodeCount: " << nodeCount;
+
         int routerOffset = id * 100; // Example offset calculation
         qDebug() << "routerOffset: " << routerOffset;
         int pcOffset = id * 1000;
         qDebug() << "pcOffset: " << pcOffset;
         UT::TopologyType type = (topologyType == "Mesh") ? UT::TopologyType::Mesh : UT::TopologyType::Torus;
 
-        m_autonomousSystems.append(QSharedPointer<AutonomousSystem>::create(nodeCount, 0, routerOffset, pcOffset, type));
+        QSharedPointer<AutonomousSystem> asInstance;
+        asInstance = QSharedPointer<AutonomousSystem>::create(nodeCount, 0, routerOffset, pcOffset, type);
+
+        int dhcpServer = asConfig["dhcp_server"].toInt();
+        asInstance->setDHCPServer(dhcpServer);
+
+        // QJsonArray userGateways = asConfig["user_gateways"].toArray();
+        // asInstance->setUserGateways(userGateways);
+        // QJsonArray brokenRouters = asConfig["broken_routers"].toArray();
+        // asInstance->setBrokenRouters(brokenRouters);
+        // QJsonArray gateways = asConfig["gateways"].toArray();
+        // asInstance->setGateways(gateways);
+        // QJsonValue connectToAS = asConfig["connect_to_as"];
+        /// TODO::::::::::::::::::::::::::
+
+
+        m_autonomousSystems.append(asInstance);
         m_totalRouters += nodeCount;
         // Configure gateways and inter-AS connections here...
     }

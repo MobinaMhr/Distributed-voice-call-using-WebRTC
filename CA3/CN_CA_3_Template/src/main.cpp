@@ -24,8 +24,7 @@ int main(int argc, char* argv[]) {
     QString configFilePath = "./../../assets/config.json";
     Network network(configFilePath);
 
-    // Verify if the configuration file was read successfully.
-    // network.isConfigLoaded();
+    network.isConfigLoaded();
 
     qDebug() << "----------------------------------";
 

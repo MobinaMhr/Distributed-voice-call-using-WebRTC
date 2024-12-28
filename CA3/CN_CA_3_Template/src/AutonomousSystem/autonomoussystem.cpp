@@ -1,4 +1,5 @@
 #include "autonomoussystem.h"
+#include "qjsonarray.h"
 
 #include <QDebug>
 
@@ -20,9 +21,65 @@ AutonomousSystem::AutonomousSystem(int routerCount, int pcCount, int routerOffse
 
 AutonomousSystem::~AutonomousSystem() {
     // delete m_dhcpServer;
+    /// Note that this is QSharedPointer, will it interrupt the programm?????
     delete m_topologyController;
     // delete m_routingProtocol;
 }
+
+QSharedPointer<Router> AutonomousSystem::findRouterById(const int routerId) {
+    for (const auto &router : m_routers) {
+        if (router->id() == routerId) {
+            return router;
+        }
+    }
+    qWarning() << "Router ID" << routerId << "not found in Autonomous System. Unable to set DHCP server.";
+    return nullptr;
+}
+
+void AutonomousSystem::setDHCPServer(int routerId) {
+    auto router = findRouterById(routerId);
+    if (router == nullptr) {
+        qWarning() << "Router ID" << routerId << "not found in Autonomous System. Unable to set DHCP server.";
+        return;
+    }
+    m_dhcpServer = router;
+}
+
+void AutonomousSystem::setUserGateways(const QJsonArray &userGateways) {
+    m_userGateways.clear();
+    for (const QJsonValue &value : userGateways) {
+        auto router = findRouterById(0);
+        m_userGateways.append(router);
+    }
+}
+
+void AutonomousSystem::setBrokenRouters(const QJsonArray &brokenRouters) {
+    m_brokenRouters.clear();
+    for (const QJsonValue &value : brokenRouters) {
+        auto router = findRouterById(0);
+        m_brokenRouters.append(router);
+    }
+}
+
+void AutonomousSystem::setGateways(const QJsonArray &gateways) {
+    m_as_gateways.clear();
+    for (const QJsonValue &value : gateways) {
+        auto router = findRouterById(0);
+        m_as_gateways.append(router);
+    }
+}
+
+// void AutonomousSystem::setUserGateways(QJsonArray userGateways) {
+//     m_userGateways = userGateways;
+// }
+
+// void AutonomousSystem::setBrokenRouters(QJsonArray brokenRouters) {
+//     m_brokenRouters = brokenRouters;
+// }
+
+// void AutonomousSystem::setGateways(QJsonArray gateways) {
+//     m_as_gateways = gateways;
+// }
 
 void AutonomousSystem::initializeAS() {
     int portCount = 4;

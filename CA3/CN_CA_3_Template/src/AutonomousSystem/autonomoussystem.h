@@ -19,6 +19,12 @@ public:
     void startRoutingProtocol();
     void stopRoutingProtocol();
 
+    void setDHCPServer(int routerId);
+    void setUserGateways(const QJsonArray &userGateways);
+    void setBrokenRouters(const QJsonArray &brokenRouters);
+    void setGateways(const QJsonArray &gateways);
+
+
     void assignIPAddresses();
     void monitorNetwork();
     void resetAS();
@@ -52,6 +58,7 @@ private:
 
     void initializeAS();
     void initializePCs(UT::IPVersion ipVersion, int offset, int portCount = 1);
+    QSharedPointer<Router> findRouterById(const int routerId);
 };
 
 #endif    // AUTONOMOUSSYSTEM_H
