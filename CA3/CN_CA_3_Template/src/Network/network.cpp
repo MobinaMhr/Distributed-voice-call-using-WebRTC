@@ -11,7 +11,7 @@ Network::Network(const QString &configFilePath, QObject *parent)
     m_totalRouters(0) {
     QString configFilePath_ = "./../../assets/config.json";
     loadConfig(configFilePath_);
-    initializeNetwork();
+    // initializeNetwork();
 }
 
 Network::~Network() {
@@ -36,23 +36,75 @@ void Network::loadConfig(const QString &filePath) {
 
 void Network::isConfigLoaded() {
     bool isLoaded = !m_config.isEmpty();
-
     qDebug() << "isLoaded: " << isLoaded;
 
-    // QJsonArray asArray = m_config["Autonomous_systems"].toArray();
-    // for (const auto &asValue : asArray) {
-    //     QJsonObject asConfig = asValue.toObject();
-    //     int id = asConfig["id"].toInt();
-    //     qDebug() << "id: " << id;
-    //     QString topologyType = asConfig["topology_type"].toString();
-    //     qDebug() << "topologyType: " << topologyType;
-    //     int nodeCount = asConfig["node_count"].toInt();
-    //     qDebug() << "nodeCount: " << nodeCount;
-    //     int routerOffset = id * 100; // Example offset calculation
-    //     qDebug() << "routerOffset: " << routerOffset;
-    //     int pcOffset = id * 1000;
-    //     qDebug() << "pcOffset: " << pcOffset;
-    // }
+    if (!isLoaded) {
+        qWarning() << "Configuration is empty.";
+        return;
+    }
+
+    // Extract basic simulation parameters
+    qDebug() << "Simulation Duration:" << m_config["simulation_duration"].toString();
+    qDebug() << "Cycle Duration:" << m_config["cycle_duration"].toString();
+    qDebug() << "TTL:" << m_config["TTL"].toInt();
+    qDebug() << "Packets Per Simulation:" << m_config["packets_per_simulation"].toInt();
+    qDebug() << "Statistical Distribution:" << m_config["statistical_distribution"].toString();
+    qDebug() << "Router Buffer Size:" << m_config["router_buffer_size"].toInt();
+    qDebug() << "Router Port Count:" << m_config["router_port_count"].toInt();
+    qDebug() << "Routing Protocol:" << m_config["routing_protocol"].toString();
+    qDebug() << "Routing Table Update Interval:" << m_config["routing_table_update_interval"].toString();
+    qDebug() << "Routing Per Port:" << m_config["routing_per_port"].toBool();
+    qDebug() << "Routing Table Size:" << m_config["routing_table_size"].toInt();
+    qDebug() << "Routing Packets Per Port Cycle:" << m_config["routing_packets_per_port_cycle"].toInt();
+
+    // Process Autonomous Systems
+    QJsonArray asArray = m_config["Autonomous_systems"].toArray();
+    for (const auto &asValue : asArray) {
+        QJsonObject asConfig = asValue.toObject();
+        int id = asConfig["id"].toInt();
+        QString topologyType = asConfig["topology_type"].toString();
+        int nodeCount = asConfig["node_count"].toInt();
+        QJsonArray asGateways = asConfig["as_gateways"].toArray();
+        QJsonArray userGateways = asConfig["user_gateways"].toArray();
+        int dhcpServer = asConfig["dhcp_server"].toInt();
+        QJsonArray brokenRouters = asConfig["broken_routers"].toArray();
+        QJsonArray gateways = asConfig["gateways"].toArray();
+        QJsonValue connectToAS = asConfig["connect_to_as"];
+
+        qDebug() << "\n--- Autonomous System ID:" << id << "---";
+        qDebug() << "Topology Type:" << topologyType;
+        qDebug() << "Node Count:" << nodeCount;
+        qDebug() << "AS Gateways:" << asGateways;
+        qDebug() << "User Gateways:" << userGateways;
+        qDebug() << "DHCP Server ID:" << dhcpServer;
+        qDebug() << "Broken Routers:" << brokenRouters;
+
+        qDebug() << "--- Gateways ---";
+        for (const auto &gateway : gateways) {
+            QJsonObject gatewayObj = gateway.toObject();
+            int gatewayNode = gatewayObj["node"].toInt();
+            QJsonArray users = gatewayObj["users"].toArray();
+            qDebug() << "Gateway Node:" << gatewayNode << "Users:" << users;
+        }
+
+        if (!connectToAS.isNull()) {
+            qDebug() << "--- Connect to AS ---";
+            QJsonArray connections = connectToAS.toArray();
+            for (const auto &connection : connections) {
+                QJsonObject connectionObj = connection.toObject();
+                int connectedASId = connectionObj["id"].toInt();
+                QJsonArray gatewayPairs = connectionObj["gateway_pairs"].toArray();
+
+                qDebug() << "Connect to AS ID:" << connectedASId;
+                for (const auto &pair : gatewayPairs) {
+                    QJsonObject pairObj = pair.toObject();
+                    int gateway = pairObj["gateway"].toInt();
+                    int connectTo = pairObj["connect_to"].toInt();
+                    qDebug() << "Gateway:" << gateway << "Connect To:" << connectTo;
+                }
+            }
+        }
+    }
 }
 
 
