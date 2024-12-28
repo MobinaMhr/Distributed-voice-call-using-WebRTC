@@ -96,3 +96,7 @@ void AutonomousSystem::stopSimulation() {
     m_topologyController->deactivateNodes();
     qDebug() << "Simulation stopped.";
 }
+
+QVector<QSharedPointer<Router>> AutonomousSystem::routers() {
+    return m_routers;
+}

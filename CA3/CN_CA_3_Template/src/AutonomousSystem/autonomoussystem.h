@@ -24,6 +24,8 @@ public:
     void resetAS();
     void configAS(UT::TopologyType topology_type);
 
+    QVector<QSharedPointer<Router>> routers();
+
 Q_SIGNALS:
     void routingProtocolStarted();
     void routingProtocolStopped();

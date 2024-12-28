@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QDebug>
+#include "./Network/network.h"
 // #include "./MACAddress/testmacaddress.h"
 // #include "./MACAddress/testmacaddressgenerator.h"
 
@@ -17,14 +18,17 @@
 //     qDebug() << "----------------------------------";
 // }
 
-int
-main(int argv, char* argc[])
-{
-    QCoreApplication app(argv, argc);
+int main(int argc, char* argv[]) {
+    QCoreApplication app(argc, argv);
 
-    // testMACAddress();
+    QString configFilePath = "config.json";  // Provide the actual config file path.
+    Network network(configFilePath);
+
+    // Verify if the configuration file was read successfully.
+    network.isConfigLoaded();
+
     qDebug() << "----------------------------------";
-    // testMacAddressGenerator();
 
     return app.exec();
 }
+
