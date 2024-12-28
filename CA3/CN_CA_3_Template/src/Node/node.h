@@ -13,6 +13,8 @@
 #include <QString>
 #include "../Port/Port.h"
 
+const qint32 DHCP_TTL = 80;
+
 class Node : public QThread
 {
     Q_OBJECT
@@ -88,12 +90,13 @@ protected:
 
 public Q_SLOTS:
     virtual void receivePacket(const PacketPtr_t &packet) = 0;
+    void sendDiscovery();
 
 private Q_SLOTS:
 
 Q_SIGNALS:
     void sendPacket(const PacketPtr_t &packet, int portNum) ;
-private:
+protected:
     inline static Node *m_self = nullptr;
 
     int             m_id;

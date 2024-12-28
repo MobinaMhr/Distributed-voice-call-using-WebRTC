@@ -29,6 +29,22 @@ void Node::run() {
     exec();
 }
 
+void Node::sendDiscovery()
+{
+    IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+    QByteArray payload ;
+    DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress, this->m_macAddress);
+    TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+    IPHv4_t *iphv4 = new IPHv4_t();
+    IPHv6_t *iphv6 = new IPHv6_t();
+    Packet *discovery = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPDiscovery,
+                                             1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
+                                             DHCP_TTL);
+    PacketPtr_t discoveryPt = PacketPtr_t(discovery);
+    sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
+    //send dhcp discover packet
+}
+
 int Node::id() const {
     return m_id;
 }
@@ -75,3 +91,5 @@ QString Node::ipv6Address() const
 QString Node::ipv4Address() const {
     return m_ipv4Address.toString();
 }
+
+

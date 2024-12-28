@@ -22,6 +22,7 @@ public:
     // QString ipv6Address() const override;
     PortPtr_t getIdlePort() override;
     std::vector<PortPtr_t> getPorts();
+    void setDhcp(int asNumber);
 
     std::vector<QSharedPointer<Node>> neighbors();
     void processControlPacket(const PacketPtr_t &packet) override;
@@ -29,6 +30,7 @@ public:
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;
+    void getIp();
 public:
     RoutingTable*                       m_routing_table;
 private:
@@ -38,6 +40,7 @@ private:
 
     std::vector<QSharedPointer<Node>>   m_neighbors;
     DHCP*                               m_dhcp;
+
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);

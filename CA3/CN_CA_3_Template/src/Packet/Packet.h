@@ -18,7 +18,7 @@ public:
                     quint32 waitCycles, quint32 totalCycles, IpPtr_t destIP,
                     const QByteArray &payload, const DataLinkHeader &dataLinkHeader,
                     const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header,
-                    QObject *parent);
+                    qint32 ttl, QObject *parent = nullptr);
 
     void updatePath(const QString& ipAddress);
 
@@ -69,6 +69,7 @@ private:
     quint32                     m_waitingCycles;
     quint32                     m_totalCycles;
     QStringList                 m_path;
+    qint32                      m_ttl;
 };
 
 #endif // PACKET_H
