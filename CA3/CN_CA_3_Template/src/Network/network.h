@@ -19,7 +19,7 @@ public:
     ~Network() override;
 
     void initializeNetwork();
-    // void startPhaseOne();
+    void startPhaseOne(const QString &configFilePath);
     // void startPhaseTwo();
     // void startPhaseThree();
     // void startPhaseFour();

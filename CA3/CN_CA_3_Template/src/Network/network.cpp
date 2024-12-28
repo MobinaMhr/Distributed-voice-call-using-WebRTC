@@ -8,10 +8,7 @@ Network::Network(const QString &configFilePath, QObject *parent)
     : QObject(parent),
     m_eventCoordinator(EventsCoordinator::instance(1.0, 10, 100, 5, 1000)),
     m_routingCompletionCount(0),
-    m_totalRouters(0) {
-    loadConfig(configFilePath);
-    initializeNetwork();
-}
+    m_totalRouters(0) {}
 
 Network::~Network() {
     delete m_eventCoordinator;
@@ -215,12 +212,11 @@ void Network::connectAS() {
     }
 }
 
-// void Network::startPhaseOne() {
-//     qDebug() << "Starting Phase One: Network Construction.";
-//     // for (const auto &as : m_autonomousSystems) {
-//     //     as->initializeAS();
-//     // }
-// }
+void Network::startPhaseOne(const QString &configFilePath) {
+    qDebug() << "Starting Phase One: Network Construction.";
+    loadConfig(configFilePath);
+    initializeNetwork();
+}
 
 // void Network::startPhaseTwo() {
 //     qDebug() << "Starting Phase Two: Identification.";

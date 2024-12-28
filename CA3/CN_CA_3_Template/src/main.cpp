@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
 
     QString configFilePath = "./../../assets/config.json";
     Network network(configFilePath);
+    network.startPhaseOne(configFilePath);
 
     qDebug() << "----------------------------------";
 
