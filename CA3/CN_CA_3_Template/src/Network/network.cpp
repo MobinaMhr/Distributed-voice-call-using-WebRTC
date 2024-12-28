@@ -218,26 +218,25 @@ void Network::startPhaseOne(const QString &configFilePath) {
     initializeNetwork();
 }
 
-// void Network::startPhaseTwo() {
-//     qDebug() << "Starting Phase Two: Identification.";
-//     // for (const auto &as : m_autonomousSystems) {
-//     //     as->startRoutingProtocol();
-//     // }
+void Network::startPhaseTwo() {
+    qDebug() << "Starting Phase Two: Identification.";
+    for (const auto &as : m_autonomousSystems) {
+        as->startRoutingProtocol();
+    }
 
-//     // monitorRoutingCompletion();
-// }
+    monitorRoutingCompletion();
+}
 
-// void Network::monitorRoutingCompletion() {
-//     for (const auto &as : m_autonomousSystems) {
-//         connect(as.data(), &AutonomousSystem::routingProtocolStopped, this, [this]() {
-//             m_routingCompletionCount++;
-//             if (m_routingCompletionCount == m_totalRouters) {
-//                 qDebug() << "All routing protocols have completed.";
-//                 // Proceed to the next phase or mark as completed.
-//             }
-//         });
-//     }
-// }
+void Network::monitorRoutingCompletion() {
+    for (const auto &as : m_autonomousSystems) {
+        connect(as.data(), &AutonomousSystem::routingProtocolStopped, this, [this]() {
+            m_routingCompletionCount++;
+            if (m_routingCompletionCount == m_totalRouters) {
+                qDebug() << "All routing protocols have completed.";
+            }
+        });
+    }
+}
 
 // void Network::startPhaseThree() {
 //     qDebug() << "Starting Phase Three: Execution.";

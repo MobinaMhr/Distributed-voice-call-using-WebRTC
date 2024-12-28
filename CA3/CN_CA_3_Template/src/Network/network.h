@@ -20,7 +20,7 @@ public:
 
     void initializeNetwork();
     void startPhaseOne(const QString &configFilePath);
-    // void startPhaseTwo();
+    void startPhaseTwo();
     // void startPhaseThree();
     // void startPhaseFour();
 
@@ -40,7 +40,7 @@ private:
     void loadConfig(const QString &filePath);
     void connectAS();
     std::pair<int, int> calculateOffsets();
-    // void monitorRoutingCompletion();
+    void monitorRoutingCompletion();
 
     int m_routingCompletionCount;
     int m_totalRouters;
