@@ -19,8 +19,8 @@ Network::~Network() {
 
 void Network::loadConfig(const QString &filePath) {
     QFile configFile(filePath);
-    qDebug() << "Current working directory:" << QDir::currentPath();
-    qDebug() << "Attempting to open configuration file at:" << QFileInfo(configFile).absoluteFilePath();
+    // qDebug() << "Current working directory:" << QDir::currentPath();
+    // qDebug() << "Attempting to open configuration file at:" << QFileInfo(configFile).absoluteFilePath();
 
     if (!configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Failed to open configuration file.";
