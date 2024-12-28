@@ -106,22 +106,45 @@ void Network::isConfigLoaded() {
     }
 }
 
+std::pair<int, int> Network::calculateOffsets() {
+    int routerOffset = m_autonomousSystems.isEmpty() ? 0 : m_autonomousSystems.back()->routerCount();
+    qDebug() << "routerOffset: " << routerOffset;
+
+    int pcOffset = m_autonomousSystems.isEmpty() ? 23 : 23 + m_autonomousSystems.back()->pcCount();
+    qDebug() << "pcOffset: " << pcOffset;
+
+    return std::make_pair(routerOffset, pcOffset);
+}
+
 void Network::initializeNetwork() {
+    QString simulation_duration = m_config["simulation_duration"].toString();
+    QString cycle_duration = m_config["cycle_duration"].toString();
+    int ttl = m_config["TTL"].toInt();
+    int packets_per_simulation = m_config["packets_per_simulation"].toInt();
+    QString statistical_distribution = m_config["statistical_distribution"].toString();
+    int router_buffer_size = m_config["router_buffer_size"].toInt();
+    int router_port_count = m_config["router_port_count"].toInt();
+    QString routing_protocol = m_config["routing_protocol"].toString();
+    QString routing_table_update_interval = m_config["routing_table_update_interval"].toString();
+    bool routing_per_port = m_config["routing_per_port"].toBool();
+    int routing_table_size = m_config["routing_table_size"].toInt();
+    int routing_packets_per_port_cycle = m_config["routing_packets_per_port_cycle"].toInt();
+
     QJsonArray asArray = m_config["Autonomous_systems"].toArray();
     for (const auto &asValue : asArray) {
         QJsonObject asConfig = asValue.toObject();
         int id = asConfig["id"].toInt();
         qDebug() << "id: " << id;
         QString topologyType = asConfig["topology_type"].toString();
+        UT::TopologyType type = (topologyType == "Mesh") ? UT::TopologyType::Mesh : UT::TopologyType::Torus;
         qDebug() << "topologyType: " << topologyType;
         int nodeCount = asConfig["node_count"].toInt();
         qDebug() << "nodeCount: " << nodeCount;
 
-        int routerOffset = id * 100; // Example offset calculation
-        qDebug() << "routerOffset: " << routerOffset;
-        int pcOffset = id * 1000;
-        qDebug() << "pcOffset: " << pcOffset;
-        UT::TopologyType type = (topologyType == "Mesh") ? UT::TopologyType::Mesh : UT::TopologyType::Torus;
+        auto offsets = calculateOffsets();
+        int routerOffset = offsets.first;
+        int pcOffset = offsets.second;
+
 
         QSharedPointer<AutonomousSystem> asInstance;
         asInstance = QSharedPointer<AutonomousSystem>::create(nodeCount, 0, routerOffset, pcOffset, type);
@@ -135,9 +158,34 @@ void Network::initializeNetwork() {
         asInstance->setBrokenRouters(brokenRouters);
         QJsonArray gateways = asConfig["gateways"].toArray();
         asInstance->setGateways(gateways);
-        QJsonValue connectToAS = asConfig["connect_to_as"];
 
-        /// TODO::::::::::::::::::::::::::
+        /// TODO
+        QJsonArray asGateways = asConfig["as_gateways"].toArray();
+        QJsonValue connectToAS = asConfig["connect_to_as"];
+        for (const auto &gateway : gateways) {
+            QJsonObject gatewayObj = gateway.toObject();
+            int gatewayNode = gatewayObj["node"].toInt();
+            QJsonArray users = gatewayObj["users"].toArray();
+            qDebug() << "Gateway Node:" << gatewayNode << "Users:" << users;
+        }
+        if (!connectToAS.isNull()) {
+            qDebug() << "--- Connect to AS ---";
+            QJsonArray connections = connectToAS.toArray();
+            for (const auto &connection : connections) {
+                QJsonObject connectionObj = connection.toObject();
+                int connectedASId = connectionObj["id"].toInt();
+                QJsonArray gatewayPairs = connectionObj["gateway_pairs"].toArray();
+
+                qDebug() << "Connect to AS ID:" << connectedASId;
+                for (const auto &pair : gatewayPairs) {
+                    QJsonObject pairObj = pair.toObject();
+                    int gateway = pairObj["gateway"].toInt();
+                    int connectTo = pairObj["connect_to"].toInt();
+                    qDebug() << "Gateway:" << gateway << "Connect To:" << connectTo;
+                }
+            }
+        }
+        /// END TODO
 
         m_autonomousSystems.append(asInstance);
         m_totalRouters += nodeCount;

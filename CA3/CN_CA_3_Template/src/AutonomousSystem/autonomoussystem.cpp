@@ -19,6 +19,14 @@ AutonomousSystem::AutonomousSystem(int routerCount, int pcCount, int routerOffse
     initializeAS();
 }
 
+int AutonomousSystem::routerCount() {
+    return m_routerCount;
+}
+
+int AutonomousSystem::pcCount() {
+    return m_pcCount;
+}
+
 AutonomousSystem::~AutonomousSystem() {
     // delete m_dhcpServer;
     /// Note that this is QSharedPointer, will it interrupt the programm?????

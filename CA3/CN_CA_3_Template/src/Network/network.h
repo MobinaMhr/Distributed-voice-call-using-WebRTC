@@ -39,6 +39,7 @@ private:
 
     void loadConfig(const QString &filePath);
     void connectAS();
+    std::pair<int, int> calculateOffsets();
     // void monitorRoutingCompletion();
 
     int m_routingCompletionCount;

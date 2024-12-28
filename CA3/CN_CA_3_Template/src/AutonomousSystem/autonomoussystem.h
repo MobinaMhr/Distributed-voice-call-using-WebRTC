@@ -24,6 +24,8 @@ public:
     void setBrokenRouters(const QJsonArray &brokenRouters);
     void setGateways(const QJsonArray &gateways);
 
+    int routerCount();
+    int pcCount();
 
     void assignIPAddresses();
     void monitorNetwork();
