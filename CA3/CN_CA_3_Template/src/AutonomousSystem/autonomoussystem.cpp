@@ -28,9 +28,7 @@ void AutonomousSystem::initializeAS() {
     int portCount = 4;
     m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_routerOffset, portCount);
     m_routers = m_topologyController->getCurrentTopology();
-
     m_topologyController->getPcs(m_pcCount, m_pcOffset, m_ipVersion, 1);
-
     assignIPAddresses();
 }
 

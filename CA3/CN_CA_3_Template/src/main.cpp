@@ -21,11 +21,11 @@
 int main(int argc, char* argv[]) {
     QCoreApplication app(argc, argv);
 
-    QString configFilePath = "config.json";  // Provide the actual config file path.
+    QString configFilePath = "./../../assets/config.json";
     Network network(configFilePath);
 
     // Verify if the configuration file was read successfully.
-    network.isConfigLoaded();
+    // network.isConfigLoaded();
 
     qDebug() << "----------------------------------";
 

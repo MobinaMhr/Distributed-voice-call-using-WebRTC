@@ -1,4 +1,5 @@
 #include "TopologyBuilder.h"
+#include <cmath>
 
 TopologyBuilder::TopologyBuilder(int routerBufferSize, QObject *parent) :
     QObject(parent),
@@ -58,8 +59,8 @@ void TopologyBuilder::initializeRouters(int routerCount, UT::IPVersion ipVersion
     m_offset = offset;
     m_routerCount = routerCount;
     m_routers.resize(m_routerCount);
-    m_rows = routerCount / 2;
-    m_columns = routerCount / 2;
+    m_rows = std::sqrt(routerCount);
+    m_columns = std::sqrt(routerCount);
 
     for (int id = 0; id < m_routerCount; ++id) {
         auto router = createRouter(id + 1 + m_offset, portCount, ipVersion);
@@ -69,7 +70,6 @@ void TopologyBuilder::initializeRouters(int routerCount, UT::IPVersion ipVersion
 
 void TopologyBuilder::moveToMeshTopology() {
     resetBindings();
-
     for (int i = 0; i < m_rows; ++i) {
         for (int j = 0; j < m_columns; ++j) {
             int id = i * m_columns + j;

@@ -9,9 +9,8 @@ Network::Network(const QString &configFilePath, QObject *parent)
     m_eventCoordinator(EventsCoordinator::instance(1.0, 10, 100, 5, 1000)),
     m_routingCompletionCount(0),
     m_totalRouters(0) {
-    QString configFilePath_ = "./../../assets/config.json";
-    loadConfig(configFilePath_);
-    // initializeNetwork();
+    loadConfig(configFilePath);
+    initializeNetwork();
 }
 
 Network::~Network() {
@@ -107,21 +106,24 @@ void Network::isConfigLoaded() {
     }
 }
 
-
 void Network::initializeNetwork() {
     QJsonArray asArray = m_config["Autonomous_systems"].toArray();
     for (const auto &asValue : asArray) {
         QJsonObject asConfig = asValue.toObject();
         int id = asConfig["id"].toInt();
+        qDebug() << "id: " << id;
         QString topologyType = asConfig["topology_type"].toString();
+        qDebug() << "topologyType: " << topologyType;
         int nodeCount = asConfig["node_count"].toInt();
+        qDebug() << "nodeCount: " << nodeCount;
         int routerOffset = id * 100; // Example offset calculation
+        qDebug() << "routerOffset: " << routerOffset;
         int pcOffset = id * 1000;
+        qDebug() << "pcOffset: " << pcOffset;
         UT::TopologyType type = (topologyType == "Mesh") ? UT::TopologyType::Mesh : UT::TopologyType::Torus;
 
         m_autonomousSystems.append(QSharedPointer<AutonomousSystem>::create(nodeCount, 0, routerOffset, pcOffset, type));
         m_totalRouters += nodeCount;
-
         // Configure gateways and inter-AS connections here...
     }
 
