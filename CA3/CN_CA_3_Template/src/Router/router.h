@@ -43,7 +43,7 @@ private:
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);
-    void handleDhcpDiscovery(PacketPtr_t);
+    void handleDhcpDiscovery(PacketPtr_t packet);
 };
 
 #endif // ROUTER_H
