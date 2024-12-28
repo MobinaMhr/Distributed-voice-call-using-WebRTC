@@ -24,6 +24,8 @@ public:
     std::vector<PortPtr_t> getPorts();
 
     std::vector<QSharedPointer<Node>> neighbors();
+    void processControlPacket(const PacketPtr_t &packet) override;
+    void processDataPacket(const PacketPtr_t &packet) override;
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;

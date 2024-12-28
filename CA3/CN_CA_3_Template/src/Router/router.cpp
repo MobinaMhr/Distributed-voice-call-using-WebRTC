@@ -51,7 +51,28 @@ int Router::findBufferPositionForPacket(UT::PacketType packetType) {
 }
 
 void Router::receivePacket(const PacketPtr_t &packet) {
-    bufferPacket(packet);
+    if (!packet) {
+        qDebug() << name() << ": Received a null packet.";
+        return;
+    }
+
+    if (!isPacketMine(packet)) {
+        bufferPacket(packet);
+        return;
+    }
+
+    switch (packet->packetType()) {
+        case UT::PacketType::Control:
+            processControlPacket(packet);
+            break;
+
+        case UT::PacketType::Data:
+            processDataPacket(packet);
+            break;
+
+        default:
+            break;
+    }
 }
 
 void Router::bufferPacket(const PacketPtr_t &packet) {
@@ -135,3 +156,14 @@ std::vector<PortPtr_t> Router::getPorts() {
 std::vector<QSharedPointer<Node>> Router::neighbors() {
     return m_neighbors;
 }
+
+void Router::processControlPacket(const PacketPtr_t &packet) {
+    qDebug() << name() << ": Implement control packet handling logic.";
+    // Add specific logic for Control Packet processing (e.g., routing updates, acknowledgments).
+}
+
+void Router::processDataPacket(const PacketPtr_t &packet) {
+    qDebug() << name() << ": Implement data packet handling logic.";
+    // Add specific logic for Data Packet handling, such as forwarding or delivering.
+}
+

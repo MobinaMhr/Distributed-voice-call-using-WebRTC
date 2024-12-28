@@ -39,7 +39,28 @@ public:
     void setIpV4Address(const IPv4_t& ipv4Address);
     void setIpV6Address(const IPv6_t& ipv6Address);
 
+    void getPacket(const PacketPtr_t &packet) {
+        if (!packet) {
+            qDebug() << name() << ": Received a null packet.";
+            return;
+        }
 
+        switch (packet->packetType()) {
+            case UT::PacketType::Control:
+                processControlPacket(packet);
+                break;
+
+            case UT::PacketType::Data:
+                processDataPacket(packet);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    virtual void processControlPacket(const PacketPtr_t &packet) = 0;
+    virtual void processDataPacket(const PacketPtr_t &packet) = 0;
     virtual PortPtr_t getIdlePort() = 0;
 
 protected:
@@ -48,6 +69,22 @@ protected:
     IPv6_t          m_ipv6Address;
 
     void run() override;
+    bool isPacketMine(const PacketPtr_t &packet) {
+        bool isMine = false;
+        UT::IPVersion packetIpVersion = packet->ipVersion();
+
+        /// Add BroadCast
+        /// Add MultiCast
+
+        if (packetIpVersion == UT::IPVersion::IPv4) {
+            if (m_ipv4Address.toString() == packet->ipv4Header().destIp())
+                isMine = true;
+        } else if (packetIpVersion == UT::IPVersion::IPv6) {
+            if (m_ipv6Address.toString() == packet->ipv6Header().destIp())
+                isMine = true;
+        }
+        return isMine;
+    }
 
 public Q_SLOTS:
     virtual void receivePacket(const PacketPtr_t &packet) = 0;

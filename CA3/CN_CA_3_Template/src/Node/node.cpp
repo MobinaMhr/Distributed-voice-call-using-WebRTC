@@ -41,10 +41,10 @@ MacAddress Node::macAddress() const {
     return m_macAddress;
 }
 
-
 UT::NodeState Node::state() {
     return m_state;
 }
+
 void Node::setState(UT::NodeState state) {
     m_state = state;
 }
@@ -61,6 +61,7 @@ void Node::setIpV4Address(const IPv4_t& ipv4Address) {
     m_ipv4Address = ipv4Address;
     qDebug() << "IPv4 address set to:" << ipv4Address.toString();
 }
+
 void Node::setIpV6Address(const IPv6_t& ipv6Address) {
     m_ipv6Address = ipv6Address;
     qDebug() << "IPv6 address set to:" << ipv6Address.toString();

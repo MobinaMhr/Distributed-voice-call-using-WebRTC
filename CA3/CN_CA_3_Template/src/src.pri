@@ -27,7 +27,7 @@ SOURCES += \
     $$PWD/AutonomousSystem/autonomoussystem.cpp \
     $$PWD/Protocol/rip.cpp \
     $$PWD/Protocol/dijkstra.cpp \
-    $$PWD/Protocol/ospf.cpp \
+    # $$PWD/Protocol/ospf.cpp \
     # # # $$PWD/MACAddress/testmacaddress.cpp \
     # # # $$PWD/MACAddress/testmacaddressgenerator.cpp \
     $$PWD/main.cpp \
@@ -55,6 +55,6 @@ HEADERS += \
     $$PWD/AutonomousSystem/autonomoussystem.h \
     $$PWD/Protocol/rip.h \
     $$PWD/Protocol/dijkstra.h \
-    $$PWD/Protocol/ospf.h \
+    # $$PWD/Protocol/ospf.h \
     # # # $$PWD/MACAddress/testmacaddress.h \
     # # # $$PWD/MACAddress/testmacaddressgenerator.h \

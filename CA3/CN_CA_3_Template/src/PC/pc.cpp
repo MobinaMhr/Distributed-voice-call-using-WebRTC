@@ -10,25 +10,39 @@ PC::PC(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVers
 PC::~PC() {}
 
 void PC::receivePacket(const PacketPtr_t &packet) {
-    bool isMine = false;
-    UT::IPVersion packetIpVersion = packet->ipVersion();
-    if (packetIpVersion == UT::IPVersion::IPv4){
-        if (m_ipv4Address.toString() == packet->ipv4Header().destIp())
-            isMine = true;
+    if (!packet) {
+        qDebug() << name() << ": Received a null packet.";
+        return;
     }
-    else if(packetIpVersion == UT::IPVersion::IPv6){
-        if (m_ipv6Address.toString() == packet->ipv6Header().destIp())
-            isMine = true;
+    if (!isPacketMine(packet)) {
+        return;
     }
 
-    if (isMine){
-        qDebug() << "PC" << name() << "recieved :";
-        packet->print();
+    switch (packet->packetType()) {
+        case UT::PacketType::Control:
+            processControlPacket(packet);
+            break;
+
+        case UT::PacketType::Data:
+            processDataPacket(packet);
+            break;
+
+        default:
+            break;
     }
-    // Process the packet based on specific PC logic
 }
 
 PortPtr_t PC::getIdlePort() {
     if (m_port->state() == UT::PortState::Idle) return m_port;
     else return nullptr;
+}
+
+void PC::processControlPacket(const PacketPtr_t &packet) {
+    qDebug() << name() << ": Implement control packet handling logic.";
+    // Add specific logic for Control Packet processing (e.g., routing updates, acknowledgments).
+}
+
+void PC::processDataPacket(const PacketPtr_t &packet) {
+    qDebug() << name() << ": Implement data packet handling logic.";
+    // Add specific logic for Data Packet handling, such as forwarding or delivering.
 }
