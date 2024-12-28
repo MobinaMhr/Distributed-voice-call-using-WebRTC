@@ -7,6 +7,10 @@
 #include "routingtable.h"
 #include <QString>
 #include <deque>
+#include <QJsonObject>
+#include <QJsonDocument>
+
+const QString DEFAULT_MASK = "255.255.255.0";
 
 class Router : public Node {
     Q_OBJECT
@@ -40,11 +44,12 @@ private:
     std::vector<QSharedPointer<Node>>   m_neighbors;
     DHCP*                               m_dhcp;
 
-
+    QString createDhcpAckBody(PacketPtr_t packet);
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);
     void handleDhcpDiscovery(PacketPtr_t packet);
     void handleDhcpOffer(PacketPtr_t packet);
+    void handleDhcpReq(PacketPtr_t packet);
 };
 
 #endif // ROUTER_H
