@@ -67,11 +67,11 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
                                                DHCP_TTL);
         offer->storeStringInPayload(sugestedIp);
         PacketPtr_t offerPt = PacketPtr_t(offer);
-        sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
+        Q_EMIT sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
         // generate offer packet
     }
     else
-        sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
 }
 
 void Router::handleDhcpOffer(PacketPtr_t packet)
@@ -91,11 +91,11 @@ void Router::handleDhcpOffer(PacketPtr_t packet)
                                                DHCP_TTL);
             req->storeIntInPayload(m_id);
             PacketPtr_t reqPt = PacketPtr_t(req);
-            sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);
+            Q_EMIT sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);
         }
     }
     else
-        sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
 }
 
 void Router::handleDhcpReq(PacketPtr_t packet)
@@ -114,11 +114,11 @@ void Router::handleDhcpReq(PacketPtr_t packet)
                                            DHCP_TTL);
         ack->storeStringInPayload(response);
         PacketPtr_t ackPt = PacketPtr_t(ack);
-        sendPacket(ackPt, BROADCAST_ON_ALL_PORTS);
+        Q_EMIT sendPacket(ackPt, BROADCAST_ON_ALL_PORTS);
         // generate offer packet
     }
     else
-        sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
 }
 
 void Router::receivePacket(const PacketPtr_t &packet) {
