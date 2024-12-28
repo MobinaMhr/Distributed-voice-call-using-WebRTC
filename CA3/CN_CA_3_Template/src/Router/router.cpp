@@ -158,8 +158,43 @@ std::vector<QSharedPointer<Node>> Router::neighbors() {
 }
 
 void Router::processControlPacket(const PacketPtr_t &packet) {
-    qDebug() << name() << ": Implement control packet handling logic.";
-    // Add specific logic for Control Packet processing (e.g., routing updates, acknowledgments).
+    switch (packet->controlType()) {
+        case UT::PacketControlType::Request:
+
+            break;
+        case UT::PacketControlType::Response:
+
+            break;
+        case UT::PacketControlType::Acknowledge:
+
+            break;
+        case UT::PacketControlType::Error:
+
+            break;
+        case UT::PacketControlType::DHCPDiscovery:
+
+            break;
+        case UT::PacketControlType::DHCPOffer:
+
+            break;
+        case UT::PacketControlType::DHCPRequest:
+
+            break;
+        case UT::PacketControlType::DHCPAcknowledge:
+
+            break;
+        case UT::PacketControlType::DHCPNak:
+
+            break;
+        case UT::PacketControlType::RIP:
+
+            break;
+        case UT::PacketControlType::OSPF:
+
+            break;
+        default:
+            break;
+    }
 }
 
 void Router::processDataPacket(const PacketPtr_t &packet) {
