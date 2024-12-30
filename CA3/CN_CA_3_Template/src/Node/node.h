@@ -90,7 +90,7 @@ protected:
 
 public Q_SLOTS:
     virtual void receivePacket(const PacketPtr_t &packet) = 0;
-    virtual void getIP();
+    virtual void getIP() = 0;
 
 private Q_SLOTS:
 

@@ -28,8 +28,6 @@ public:
     std::vector<PortPtr_t> getPorts();
     void setDhcp(int asNumber);
 
-    void setDhcp(int asNumber);
-
     std::vector<QSharedPointer<Node>> neighbors();
     void processControlPacket(const PacketPtr_t &packet) override;
     void processDataPacket(const PacketPtr_t &packet) override;
@@ -55,10 +53,6 @@ private:
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);
-    void handleDhcpDiscovery(PacketPtr_t packet);
-    void handleDhcpOffer(PacketPtr_t packet);
-    void handleDhcpReq(PacketPtr_t packet);
-    void handleDhcpAck(PacketPtr_t packet);
 };
 
 #endif // ROUTER_H
