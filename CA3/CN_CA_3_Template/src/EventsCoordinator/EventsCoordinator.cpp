@@ -83,8 +83,7 @@ void EventsCoordinator::handleTimeout() {
         return;
     }
 
-    int packetsCount = m_distribution[m_currentCycle];
-    handleCurrentCyclePackets(packetsCount);
+    Q_EMIT nextTick(m_currentCycle);
 
     m_currentCycle++;
 }
