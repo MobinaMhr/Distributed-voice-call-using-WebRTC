@@ -298,4 +298,3 @@ void Router::processDataPacket(const PacketPtr_t &packet) {
     qDebug() << name() << ": Implement data packet handling logic.";
     // Add specific logic for Data Packet handling, such as forwarding or delivering.
 }
-
