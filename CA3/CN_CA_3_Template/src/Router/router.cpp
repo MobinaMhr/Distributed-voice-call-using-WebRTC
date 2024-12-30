@@ -77,7 +77,7 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
 void Router::handleDhcpOffer(PacketPtr_t packet)
 {
     if (packet->dataLinkHeader().source().toString() == m_macAddress.toString()){
-        if (m_ipv4Address.toValue() == DEFAULT_IP_VALUE){
+        if (m_ipv4Address->toValue() == DEFAULT_IP_VALUE){
             QString sugestedIp = packet->readStringFromPayload();
             IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
             QByteArray payload ;

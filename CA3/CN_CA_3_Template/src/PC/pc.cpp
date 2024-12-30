@@ -32,6 +32,11 @@ void PC::receivePacket(const PacketPtr_t &packet) {
     }
 }
 
+void PC::getIP()
+{
+    sendDiscovery();
+}
+
 PortPtr_t PC::getIdlePort() {
     if (m_port->state() == UT::PortState::Idle) return m_port;
     else return nullptr;
