@@ -64,7 +64,7 @@ void EventsCoordinator::handleCyclesPackets()
             UT::PacketType packetType = (QRandomGenerator::global()->bounded(2) == 0) ?
                                           UT::PacketType::Data : UT::PacketType::Control;
 
-            packets.emplace_back(senderID, receiverID, packetType);
+            packets.emplace_back(senderID, receiverID, packetType, cycle);
             usedSenders.insert(senderID);
 
             if (usedSenders.size() == m_pcCount) {
