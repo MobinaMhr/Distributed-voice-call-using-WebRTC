@@ -161,6 +161,7 @@ void Network::initializeNetwork() {
             int gatewayNode = gatewayObj["node"].toInt();
             QJsonArray users = gatewayObj["users"].toArray();
             qDebug() << "Gateway Node:" << gatewayNode << "Users:" << users;
+            /// TODO::
         }
         if (!connectToAS.isNull()) {
             qDebug() << "--- Connect to AS ---";
@@ -176,6 +177,7 @@ void Network::initializeNetwork() {
                     int gateway = pairObj["gateway"].toInt();
                     int connectTo = pairObj["connect_to"].toInt();
                     qDebug() << "Gateway:" << gateway << "Connect To:" << connectTo;
+                    /// TODO::
                 }
             }
         }
