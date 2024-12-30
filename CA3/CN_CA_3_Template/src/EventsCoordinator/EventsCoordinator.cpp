@@ -34,6 +34,7 @@ void EventsCoordinator::run() {
     m_distribution = m_dataGenerator->generatePacketDistribution();
     handleCyclesPackets();
     Q_EMIT packetsReady(m_allPackets);
+    qDebug() << "packets calcualted";
     m_timer->start(m_cycleLength);
     exec();
 }
