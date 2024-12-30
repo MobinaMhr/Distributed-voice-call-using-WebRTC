@@ -39,6 +39,8 @@ int Router::findBufferPositionForPacket(UT::PacketType packetType) {
             return pkt->packetType() == UT::PacketType::Control;
         });
 
+        /// Potential Bugs. TODO:: fix the findBuff for Control Packets.
+
         if (it != m_buffer.rend()) {
             if (isBufferAtCapacity()) m_buffer.pop_back();
             return static_cast<int>(it.base() - m_buffer.begin());
