@@ -1,4 +1,5 @@
 #include "autonomoussystem.h"
+#include "qjsonarray.h"
 
 #include <QDebug>
 
@@ -18,19 +19,68 @@ AutonomousSystem::AutonomousSystem(int routerCount, int pcCount, int routerOffse
     initializeAS();
 }
 
+int AutonomousSystem::routerCount() {
+    return m_routerCount;
+}
+
+int AutonomousSystem::pcCount() {
+    return m_pcCount;
+}
+
 AutonomousSystem::~AutonomousSystem() {
     // delete m_dhcpServer;
+    /// Note that this is QSharedPointer, will it interrupt the programm?????
     delete m_topologyController;
     // delete m_routingProtocol;
+}
+
+QSharedPointer<Router> AutonomousSystem::findRouterById(const int routerId) {
+    for (const auto &router : m_routers) {
+        if (router->id() == routerId) {
+            return router;
+        }
+    }
+    return nullptr;
+}
+
+void AutonomousSystem::setDHCPServer(int routerId) {
+    auto router = findRouterById(routerId);
+    if (router == nullptr) {
+        qWarning() << "Router ID" << routerId << "not found in Autonomous System. Unable to set DHCP server.";
+        return;
+    }
+    m_dhcpServer = router;
+}
+
+void AutonomousSystem::setUserGateways(const QJsonArray &userGateways) {
+    m_userGateways.clear();
+    for (const QJsonValue &value : userGateways) {
+        auto router = findRouterById(0);
+        m_userGateways.append(router);
+    }
+}
+
+void AutonomousSystem::setBrokenRouters(const QJsonArray &brokenRouters) {
+    m_brokenRouters.clear();
+    for (const QJsonValue &value : brokenRouters) {
+        auto router = findRouterById(0);
+        m_brokenRouters.append(router);
+    }
+}
+
+void AutonomousSystem::setGateways(const QJsonArray &gateways) {
+    m_as_gateways.clear();
+    for (const QJsonValue &value : gateways) {
+        auto router = findRouterById(0);
+        m_as_gateways.append(router);
+    }
 }
 
 void AutonomousSystem::initializeAS() {
     int portCount = 4;
     m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_routerOffset, portCount);
     m_routers = m_topologyController->getCurrentTopology();
-
     m_topologyController->getPcs(m_pcCount, m_pcOffset, m_ipVersion, 1);
-
     assignIPAddresses();
 }
 
@@ -95,4 +145,8 @@ void AutonomousSystem::stopSimulation() {
     m_isSimulationActive = false;
     m_topologyController->deactivateNodes();
     qDebug() << "Simulation stopped.";
+}
+
+QVector<QSharedPointer<Router>> AutonomousSystem::routers() {
+    return m_routers;
 }

@@ -3,8 +3,11 @@
 
 TopologyController::TopologyController(int routerBufferSize, QObject *parent) :
     QObject(parent),
-    m_topologyBuilder(new TopologyBuilder(routerBufferSize, this)),
-    m_isActive(false) {}
+    m_topologyBuilder(new TopologyBuilder(routerBufferSize)),
+    m_isActive(false) {
+    // qDebug() << "Here in Topology Controller";
+    // m_topologyBuilder = new TopologyBuilder(routerBufferSize);
+}
 
 TopologyController::~TopologyController() {
     delete m_topologyBuilder;
@@ -37,7 +40,6 @@ void TopologyController::initializeTopology(UT::TopologyType topologyType, int r
     setTopologyType(topologyType);
     updateTopology();
     m_currentTopology = m_topologyBuilder->routers();
-
     Q_EMIT topologyChanged(m_activeTopologyType);
 }
 

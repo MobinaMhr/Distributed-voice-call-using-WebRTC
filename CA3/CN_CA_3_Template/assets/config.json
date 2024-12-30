@@ -16,7 +16,7 @@
     [
         {
             "id": 1,
-            "topology_type": "Mesh | Torus",
+            "topology_type": "Mesh",
             "node_count": 16,
             "as_gateways": [14, 15, 16],
             "user_gateways": [1, 2, 3, 4],

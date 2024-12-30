@@ -57,14 +57,14 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
         QString sugestedIp = m_dhcp->assignIPToNode(id);
         IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
         QByteArray payload ;
-        DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress,
-                                                packet->dataLinkHeader().destination());
+        DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress, packet->dataLinkHeader().destination());
+
         TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
         IPHv4_t *iphv4 = new IPHv4_t();
         IPHv6_t *iphv6 = new IPHv6_t();
         Packet *offer = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPOffer,
-                                               1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
-                                               DHCP_TTL);
+                                           1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
+                                           DHCP_TTL);
         offer->storeStringInPayload(sugestedIp);
         PacketPtr_t offerPt = PacketPtr_t(offer);
         Q_EMIT sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
@@ -86,9 +86,8 @@ void Router::handleDhcpOffer(PacketPtr_t packet)
             TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
             IPHv4_t *iphv4 = new IPHv4_t();
             IPHv6_t *iphv6 = new IPHv6_t();
-            Packet *req = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPRequest,
-                                               1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
-                                               DHCP_TTL);
+            Packet *req = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPRequest, 1, 0, 0, 
+                                     fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL);
             req->storeIntInPayload(m_id);
             PacketPtr_t reqPt = PacketPtr_t(req);
             Q_EMIT sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);
@@ -298,4 +297,3 @@ void Router::processDataPacket(const PacketPtr_t &packet) {
     qDebug() << name() << ": Implement data packet handling logic.";
     // Add specific logic for Data Packet handling, such as forwarding or delivering.
 }
-
