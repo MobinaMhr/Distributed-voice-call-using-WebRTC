@@ -5,6 +5,7 @@
 #include <QString>
 #include <QStringList>
 #include <QByteArray>
+#include <QDataStream>
 #include "../Globals/globals.h"
 #include "../IP/ipheader.h"
 #include "../TCPHeader/tcpheader.h"
@@ -18,7 +19,7 @@ public:
                     quint32 waitCycles, quint32 totalCycles, IpPtr_t destIP,
                     const QByteArray &payload, const DataLinkHeader &dataLinkHeader,
                     const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header,
-                    QObject *parent);
+                    qint32 ttl, QObject *parent = nullptr);
 
     void updatePath(const QString& ipAddress);
 
@@ -27,6 +28,12 @@ public:
 
     void increaseWaitingCycles();
     void increaseTotalCycles();
+    void decreasePacketTtl();
+    bool shouldDrop();
+    void storeIntInPayload(int value);
+    int readIntFromPayload() const;
+    void storeStringInPayload(const QString &value);
+    QString readStringFromPayload() const;
 
     // Getters
     UT::PacketType packetType() const;
@@ -69,6 +76,7 @@ private:
     quint32                     m_waitingCycles;
     quint32                     m_totalCycles;
     QStringList                 m_path;
+    qint32                      m_ttl;
 };
 
 #endif // PACKET_H

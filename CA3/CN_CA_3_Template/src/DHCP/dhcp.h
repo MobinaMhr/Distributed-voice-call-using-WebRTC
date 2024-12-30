@@ -17,13 +17,13 @@ class DHCP : public QObject
 public:
     explicit DHCP(int asNumber, QObject *parent = nullptr);
     ~DHCP() override;
-    void assignIPToNode(const QSharedPointer<Node>& node);
+    QString assignIPToNode(const int &id);
 
 private:
     int m_asNumber;
     QFile m_outputFile;
     QTextStream m_outputStream;
-    QMap<QString, IpPtr_t> m_assignedIPs; // Key: MACAddress, Value: IP
+    QMap<QString, IpPtr_t> m_assignedIPs; // Key: Id, Value: IP
 
     IpPtr_t generateIPv4();
     IpPtr_t generateIPv6();

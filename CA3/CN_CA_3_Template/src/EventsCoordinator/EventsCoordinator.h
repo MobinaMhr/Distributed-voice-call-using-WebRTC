@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QVector>
 #include <QRandomGenerator>
+#include <QDebug>
 #include "../DataGenerator/datagenerator.h"
 #include "../Globals/Globals.h"
 
@@ -22,7 +23,7 @@ public:
 
 protected:
     void run() override;
-    void handleCurrentCyclePackets(const int &packetsCount);
+    void handleCyclesPackets();
 
 public Q_SLOTS:
 
@@ -30,7 +31,7 @@ private Q_SLOTS:
     void handleTimeout();
 
 Q_SIGNALS:
-    void packetsReady(std::vector<UT::PacketDetails> packets);
+    void packetsReady(QVector<std::vector<UT::PacketDetails>> packets);
     void nextTick(int currentCycle);
     void distributePackets(const QVector<int>& distribution);
 
@@ -39,6 +40,7 @@ private:
     DataGenerator*  m_dataGenerator;
     QTimer* m_timer = nullptr;
     QVector<int>    m_distribution;
+    QVector<std::vector<UT::PacketDetails>> m_allPackets;
     int             m_currentCycle = 0;
     int             m_cycleCount;
     int             m_pcCount;

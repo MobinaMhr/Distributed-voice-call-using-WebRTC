@@ -26,6 +26,7 @@ public:
     // QString ipv6Address() const override;
     PortPtr_t getIdlePort() override;
     std::vector<PortPtr_t> getPorts();
+    void setDhcp(int asNumber);
 
     void setDhcp(int asNumber);
 
@@ -54,6 +55,10 @@ private:
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);
+    void handleDhcpDiscovery(PacketPtr_t packet);
+    void handleDhcpOffer(PacketPtr_t packet);
+    void handleDhcpReq(PacketPtr_t packet);
+    void handleDhcpAck(PacketPtr_t packet);
 };
 
 #endif // ROUTER_H

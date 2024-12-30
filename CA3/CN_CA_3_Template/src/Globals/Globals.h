@@ -94,9 +94,10 @@ struct PacketDetails
     int senderID;
     int receiverID;
     PacketType packetType;
+    int cycle;
 
-    PacketDetails(int sender, int receiver, PacketType type)
-        : senderID(sender), receiverID(receiver), packetType(type) {}
+    PacketDetails(int sender, int receiver, PacketType type, int _cycle)
+        : senderID(sender), receiverID(receiver), packetType(type), cycle(_cycle) {}
 };
 }    // namespace UT
 

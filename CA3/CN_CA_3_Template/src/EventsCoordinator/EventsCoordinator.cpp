@@ -31,9 +31,49 @@ void EventsCoordinator::release() {
 }
 
 void EventsCoordinator::run() {
-    m_timer->start(m_cycleLength);
     m_distribution = m_dataGenerator->generatePacketDistribution();
+    handleCyclesPackets();
+    Q_EMIT packetsReady(m_allPackets);
+    qDebug() << "packets calcualted";
+    m_timer->start(m_cycleLength);
     exec();
+}
+
+void EventsCoordinator::handleCyclesPackets()
+{
+    m_allPackets.clear();
+    m_allPackets.resize(m_cycleCount);
+    for (int cycle = 0; cycle < m_cycleCount; ++cycle){
+        int packetsCount = m_distribution[cycle];
+        std::vector<UT::PacketDetails> packets;
+        std::set<int> usedSenders;
+
+        for (int idx = 0; idx < packetsCount; ++idx){
+            int senderID;
+
+            do {
+                senderID = QRandomGenerator::global()->bounded(m_pcCount);
+            } while (usedSenders.find(senderID) != usedSenders.end());
+
+            int receiverID;
+
+            do {
+                receiverID = QRandomGenerator::global()->bounded(m_pcCount);
+            } while (receiverID == senderID);
+
+            UT::PacketType packetType = (QRandomGenerator::global()->bounded(2) == 0) ?
+                                          UT::PacketType::Data : UT::PacketType::Control;
+
+            packets.emplace_back(senderID, receiverID, packetType, cycle);
+            usedSenders.insert(senderID);
+
+            if (usedSenders.size() == m_pcCount) {
+                break;
+            }
+        }
+        m_allPackets[cycle] = packets;
+    }
+
 }
 
 void EventsCoordinator::handleTimeout() {
@@ -44,39 +84,7 @@ void EventsCoordinator::handleTimeout() {
         return;
     }
 
-    int packetsCount = m_distribution[m_currentCycle];
-    handleCurrentCyclePackets(packetsCount);
+    Q_EMIT nextTick(m_currentCycle);
 
     m_currentCycle++;
-}
-
-void EventsCoordinator::handleCurrentCyclePackets(const int &packetsCount) {
-    std::vector<UT::PacketDetails> packets;
-    std::set<int> usedSenders;
-
-    for (int idx = 0; idx < packetsCount; ++idx) {
-        int senderID;
-
-        do {
-            senderID = QRandomGenerator::global()->bounded(m_pcCount);
-        } while (usedSenders.find(senderID) != usedSenders.end());
-
-        int receiverID;
-
-        do {
-            receiverID = QRandomGenerator::global()->bounded(m_pcCount);
-        } while (receiverID == senderID);
-
-        UT::PacketType packetType = (QRandomGenerator::global()->bounded(2) == 0) ?
-                                      UT::PacketType::Data : UT::PacketType::Control;
-
-        packets.emplace_back(senderID, receiverID, packetType);
-        usedSenders.insert(senderID);
-
-        if (usedSenders.size() == m_pcCount) {
-            break;
-        }
-    }
-
-    Q_EMIT packetsReady(packets);
 }

@@ -29,6 +29,30 @@ void Node::run() {
     exec();
 }
 
+void Node::sendDiscovery()
+{
+    IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+    QByteArray payload ;
+    DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress, this->m_macAddress);
+    TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+    IPHv4_t *iphv4 = new IPHv4_t();
+    IPHv6_t *iphv6 = new IPHv6_t();
+    Packet *discovery = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPDiscovery,
+                                             1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
+                                             DHCP_TTL);
+    discovery->storeIntInPayload(m_id);
+    PacketPtr_t discoveryPt = PacketPtr_t(discovery);
+    sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
+    //send dhcp discover packet
+}
+
+void Node::setIP(QString sugestedIP, QString mask)
+{
+    m_ipv4Address = IPv4Ptr_t(new IPv4_t(sugestedIP, mask));
+    if (m_ipVersion == UT::IPVersion::IPv6)
+        m_ipv6Address = m_ipv4Address->toIPv6();
+}
+
 int Node::id() const {
     return m_id;
 }
@@ -57,21 +81,13 @@ void Node::setIPVersion(UT::IPVersion ipVersion) {
     m_ipVersion = ipVersion;
 }
 
-void Node::setIpV4Address(const IPv4_t& ipv4Address) {
-    m_ipv4Address = ipv4Address;
-    qDebug() << "IPv4 address set to:" << ipv4Address.toString();
-}
-
-void Node::setIpV6Address(const IPv6_t& ipv6Address) {
-    m_ipv6Address = ipv6Address;
-    qDebug() << "IPv6 address set to:" << ipv6Address.toString();
-}
-
 QString Node::ipv6Address() const
 {
-    return m_ipv6Address.toString();
+    return m_ipv6Address->toString();
 }
 
 QString Node::ipv4Address() const {
-    return m_ipv4Address.toString();
+    return m_ipv4Address->toString();
 }
+
+

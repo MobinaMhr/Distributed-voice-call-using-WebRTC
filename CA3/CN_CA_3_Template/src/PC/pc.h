@@ -22,6 +22,7 @@ public:
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet) override;
+    virtual void getIP() override;
 
 private:
     PortPtr_t       m_port;

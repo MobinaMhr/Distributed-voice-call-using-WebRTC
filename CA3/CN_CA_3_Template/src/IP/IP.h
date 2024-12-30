@@ -48,6 +48,8 @@ Q_SIGNALS:
 protected:
 };
 
+typedef QSharedPointer<AbstractIP> IpPtr_t;
+
 /**
  * ===========================================
  * ===========================================
@@ -87,6 +89,8 @@ public:
 
     IPv4Ptr_t toIPv4() const override;
     IPv6Ptr_t toIPv6() const override;
+
+    static IpPtr_t createIpPtr(const QString &ipString = "", const QString &subnetMask = "", QObject *parent = nullptr);
 
 public:
     bool operator==(const IP<UT::IPVersion::IPv4> &other) const {
@@ -148,6 +152,7 @@ public:    // methods
 
     IPv4Ptr_t toIPv4() const override;
     IPv6Ptr_t toIPv6() const override;
+    static IpPtr_t createIpPtr(const QString &ipString = "", int prefixLength = 128, QObject *parent = nullptr);
 
 public:
     bool operator==(const IP<UT::IPVersion::IPv6> &other) const {
@@ -171,4 +176,4 @@ private:
 #endif    // IP_H
 
 
-typedef QSharedPointer<AbstractIP> IpPtr_t;
+

@@ -262,3 +262,9 @@ IPv4Ptr_t IP<UT::IPVersion::IPv6>::toIPv4() const {
         throw std::invalid_argument("Not a mapped IPv4 address");
     }
 }
+
+IpPtr_t IP<UT::IPVersion::IPv6>::createIpPtr(const QString &ipString, int prefixLength, QObject *parent)
+{return IpPtr_t(new IPv6_t(ipString, prefixLength, parent));}
+
+IpPtr_t IP<UT::IPVersion::IPv4>::createIpPtr(const QString &ipString, const QString &subnetMask, QObject *parent)
+{return IpPtr_t(new IPv4_t(ipString, subnetMask, parent));}

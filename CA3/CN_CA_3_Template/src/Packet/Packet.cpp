@@ -28,11 +28,11 @@ QString toString(PacketControlType type) {
 Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber, quint32 waitCycles,
                quint32 totalCycles, IpPtr_t destIP, const QByteArray &payload,
                const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader,
-               IPHv4_t ipv4Header, IPHv6_t ipv6Header, QObject *parent)
+               IPHv4_t ipv4Header, IPHv6_t ipv6Header, qint32 ttl, QObject *parent)
     : QObject(parent), m_packetType(packetType), m_controlType(controlType),
     m_destinationIP(destIP), m_ipv4Header(ipv4Header), m_ipv6Header(ipv6Header),
     m_tcpHeader(tcpHeader), m_dataLinkHeader(dataLinkHeader), m_payload(payload),
-    m_sequenceNumber(seqNumber), m_waitingCycles(waitCycles), m_totalCycles(totalCycles) {}
+    m_sequenceNumber(seqNumber), m_waitingCycles(waitCycles), m_totalCycles(totalCycles), m_ttl(ttl) {}
 
 void Packet::updatePath(const QString& ipAddress) {
     m_path.append(ipAddress);
@@ -50,6 +50,44 @@ void Packet::increaseWaitingCycles() {
 }
 void Packet::increaseTotalCycles() {
     m_totalCycles = m_totalCycles + 1;
+}
+
+void Packet::decreasePacketTtl()
+{
+    this->m_ttl--;
+}
+
+bool Packet::shouldDrop()
+{
+    return this->m_ttl == 0;
+}
+
+void Packet::storeIntInPayload(int value)
+{
+    QDataStream stream(&m_payload, QIODevice::WriteOnly);
+    stream << value;
+}
+
+int Packet::readIntFromPayload() const
+{
+    QDataStream stream(m_payload);
+    int value;
+    stream >> value;
+    return value;
+}
+
+void Packet::storeStringInPayload(const QString &value)
+{
+    QDataStream stream(&m_payload, QIODevice::WriteOnly);
+    stream << value;
+}
+
+QString Packet::readStringFromPayload() const
+{
+    QDataStream stream(m_payload);
+    QString value;
+    stream >> value;
+    return value;
 }
 
 // Getters
