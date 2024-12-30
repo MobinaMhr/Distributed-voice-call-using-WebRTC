@@ -12,28 +12,31 @@ class RoutingTable : public QObject
     Q_OBJECT
 
 public:
-    explicit RoutingTable(QObject *parent = nullptr);
-    ~RoutingTable() = default;
-
-public:
-    void addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const QString &protocol);
-    void removeRoute(const IpPtr_t &destIp);
-    QSharedPointer<Port> getPort(const IpPtr_t &destIp) const;
-    bool routeExists(const IpPtr_t &destIp) const;
-    QList<QPair<IpPtr_t, QSharedPointer<Port>>> getAllRoutes() const;
-
-    void printRoutingTable() const;
-
-Q_SIGNALS:
-
-private:
     struct RouteEntry {
         IpPtr_t nextHopIp;
         QSharedPointer<Port> port;
         QString protocol;
+        int metric;
     };
 
+private:
+
     QMap<IpPtr_t, RouteEntry> m_routingTable;
+
+public:
+    explicit RoutingTable(QObject *parent = nullptr);
+    ~RoutingTable() = default;
+
+public:
+    void addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const QString &protocol, const int metric);
+    void removeRoute(const IpPtr_t &destIp);
+    QSharedPointer<Port> getPort(const IpPtr_t &destIp) const;
+    bool routeExists(const IpPtr_t &destIp) const;
+    QMap<IpPtr_t, RouteEntry> getAllRoutes() const;
+
+    void printRoutingTable() const;
+
+Q_SIGNALS:
 };
 
 #endif    // ROUTINGTABLE_H
