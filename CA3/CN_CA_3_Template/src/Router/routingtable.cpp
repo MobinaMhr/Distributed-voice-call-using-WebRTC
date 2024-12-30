@@ -4,8 +4,8 @@ RoutingTable::RoutingTable(QObject *parent) :
     QObject {parent}
 {}
 
-void RoutingTable::addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const QString &protocol) {
-    m_routingTable[destIp] = {nextHopIp, port, protocol};
+void RoutingTable::addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const QString &protocol, const int metric) {
+    m_routingTable[destIp] = {nextHopIp, port, protocol, metric};
 }
 
 void RoutingTable::removeRoute(const IpPtr_t &destIp)
@@ -26,14 +26,9 @@ bool RoutingTable::routeExists(const IpPtr_t &destIp) const
     return m_routingTable.contains(destIp);
 }
 
-QList<QPair<IpPtr_t, QSharedPointer<Port>>> RoutingTable::getAllRoutes() const
+QMap<IpPtr_t, RoutingTable::RouteEntry> RoutingTable::getAllRoutes() const
 {
-    QList<QPair<IpPtr_t, QSharedPointer<Port>>> routes;
-    for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it)
-    {
-        routes.append(qMakePair(it.key(), it.value().port));
-    }
-    return routes;
+    return m_routingTable;
 }
 
 void RoutingTable::printRoutingTable() const

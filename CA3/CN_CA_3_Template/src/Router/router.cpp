@@ -21,8 +21,8 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
 
 Router::~Router() {}
 
-void Router::addRoutingEntry(IpPtr_t &destinationIp, IpPtr_t &nextHopIp, QSharedPointer<Port> &port) {
-    m_routing_table->addRoute(destinationIp, nextHopIp, port, "TODO::");
+void Router::addRoutingEntry(IpPtr_t &destinationIp, IpPtr_t &nextHopIp, QSharedPointer<Port> &port, int metric) {
+    m_routing_table->addRoute(destinationIp, nextHopIp, port, "TODO::", metric);
 }
 
 bool Router::isBufferAtCapacity() {

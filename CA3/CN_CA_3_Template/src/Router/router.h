@@ -20,7 +20,7 @@ public:
     ~Router() override;
 
     void bufferPacket(const PacketPtr_t &packet);
-    void addRoutingEntry(IpPtr_t &destinationIp, IpPtr_t &nextHopIp, QSharedPointer<Port> &port);
+    void addRoutingEntry(IpPtr_t &destinationIp, IpPtr_t &nextHopIp, QSharedPointer<Port> &port, int metric);
     void routePackets();
     // QString ipv4Address() const override;
     // QString ipv6Address() const override;
