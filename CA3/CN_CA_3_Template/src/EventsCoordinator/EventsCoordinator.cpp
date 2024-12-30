@@ -31,8 +31,10 @@ void EventsCoordinator::release() {
 }
 
 void EventsCoordinator::run() {
-    m_timer->start(m_cycleLength);
     m_distribution = m_dataGenerator->generatePacketDistribution();
+    handleCyclesPackets();
+    Q_EMIT packetsReady(m_allPackets);
+    m_timer->start(m_cycleLength);
     exec();
 }
 

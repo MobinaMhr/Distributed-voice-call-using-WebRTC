@@ -30,7 +30,7 @@ private Q_SLOTS:
     void handleTimeout();
 
 Q_SIGNALS:
-    void packetsReady(std::vector<UT::PacketDetails> packets);
+    void packetsReady(QVector<std::vector<UT::PacketDetails>> packets);
     void nextTick(int currentCycle);
     void distributePackets(const QVector<int>& distribution);
 
