@@ -50,16 +50,97 @@ int Router::findBufferPositionForPacket(UT::PacketType packetType) {
     return -1;
 }
 
+void Router::handleDhcpDiscovery(PacketPtr_t packet)
+{
+    if (m_dhcp != nullptr){
+        int id = packet->readIntFromPayload();
+        QString sugestedIp = m_dhcp->assignIPToNode(id);
+        IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+        QByteArray payload ;
+        DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress,
+                                                   packet->dataLinkHeader().destination());
+        TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+        IPHv4_t *iphv4 = new IPHv4_t();
+        IPHv6_t *iphv6 = new IPHv6_t();
+        Packet *offer = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPOffer,
+                                           1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
+                                           DHCP_TTL);
+        offer->storeStringInPayload(sugestedIp);
+        PacketPtr_t offerPt = PacketPtr_t(offer);
+        Q_EMIT sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
+        // generate offer packet
+    }
+    else
+        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+}
+
+void Router::handleDhcpOffer(PacketPtr_t packet)
+{
+    if (packet->dataLinkHeader().source().toString() == m_macAddress.toString()){
+        if (m_ipv4Address->toValue() == DEFAULT_IP_VALUE){
+            QString sugestedIp = packet->readStringFromPayload();
+            IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+            QByteArray payload ;
+            DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress,
+                                                       packet->dataLinkHeader().destination());
+            TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+            IPHv4_t *iphv4 = new IPHv4_t();
+            IPHv6_t *iphv6 = new IPHv6_t();
+            Packet *req = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPRequest,
+                                               1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
+                                               DHCP_TTL);
+            req->storeIntInPayload(m_id);
+            PacketPtr_t reqPt = PacketPtr_t(req);
+            Q_EMIT sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);
+        }
+    }
+    else
+        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+}
+
+void Router::handleDhcpReq(PacketPtr_t packet)
+{
+    if (m_dhcp != nullptr){
+        QString response = createDhcpAckBody(packet);
+        IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+        QByteArray payload ;
+        DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress,
+                                                   packet->dataLinkHeader().destination());
+        TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+        IPHv4_t *iphv4 = new IPHv4_t();
+        IPHv6_t *iphv6 = new IPHv6_t();
+        Packet *ack = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPAcknowledge,
+                                           1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
+                                           DHCP_TTL);
+        ack->storeStringInPayload(response);
+        PacketPtr_t ackPt = PacketPtr_t(ack);
+        Q_EMIT sendPacket(ackPt, BROADCAST_ON_ALL_PORTS);
+        // generate offer packet
+    }
+    else
+        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+}
+
+void Router::handleDhcpAck(PacketPtr_t packet)
+{
+    QString payload = packet->readStringFromPayload();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(payload.toUtf8());
+    QString ip = jsonDoc.object().value("ip").toString();
+    QString mask = jsonDoc.object().value("mask").toString();
+    setIP(ip, mask);
+}
+
 void Router::receivePacket(const PacketPtr_t &packet) {
     if (!packet) {
         qDebug() << name() << ": Received a null packet.";
         return;
     }
+    packet->decreasePacketTtl();
 
-    if (!isPacketMine(packet)) {
+    if (!isPacketMine(packet) && !packet->shouldDrop()) {
         bufferPacket(packet);
         return;
-    }
+    }//TODO:should move somewhere else;
 
     switch (packet->packetType()) {
         case UT::PacketType::Control:
@@ -73,6 +154,32 @@ void Router::receivePacket(const PacketPtr_t &packet) {
         default:
             break;
     }
+}
+
+void Router::getIP()
+{
+    if (m_dhcp != nullptr){
+        QString sugestedIp = m_dhcp->assignIPToNode(m_id);
+        setIP(sugestedIp, DEFAULT_MASK);
+    }else
+        sendDiscovery();
+}
+
+QString Router::createDhcpAckBody(PacketPtr_t packet)
+{
+    int id = packet->readIntFromPayload();
+    QString sugestedIp = m_dhcp->assignIPToNode(id);
+    QJsonObject jsonObject;
+    jsonObject["ip"] = sugestedIp;
+    jsonObject["mask"] = DEFAULT_MASK;
+
+    // Convert the JSON object to a QJsonDocument
+    QJsonDocument jsonDoc(jsonObject);
+
+    // Convert the JSON document to a QString
+    QString jsonString = jsonDoc.toJson(QJsonDocument::Compact);
+
+    return jsonString;
 }
 
 void Router::bufferPacket(const PacketPtr_t &packet) {
@@ -153,48 +260,38 @@ std::vector<PortPtr_t> Router::getPorts() {
     return m_ports;
 }
 
+void Router::setDhcp(int asNumber)
+{
+    this->m_dhcp = new DHCP(asNumber);
+}
+
 std::vector<QSharedPointer<Node>> Router::neighbors() {
     return m_neighbors;
 }
 
 void Router::processControlPacket(const PacketPtr_t &packet) {
+    qDebug() << name() << ": Implement control packet handling logic.";
     switch (packet->controlType()) {
-        case UT::PacketControlType::Request:
-
-            break;
-        case UT::PacketControlType::Response:
-
-            break;
-        case UT::PacketControlType::Acknowledge:
-
-            break;
-        case UT::PacketControlType::Error:
-
-            break;
         case UT::PacketControlType::DHCPDiscovery:
-
+            handleDhcpDiscovery(packet);
             break;
+
         case UT::PacketControlType::DHCPOffer:
-
+            handleDhcpOffer(packet);
             break;
+
         case UT::PacketControlType::DHCPRequest:
-
+            handleDhcpReq(packet);
             break;
+
         case UT::PacketControlType::DHCPAcknowledge:
-
+            handleDhcpAck(packet);
             break;
-        case UT::PacketControlType::DHCPNak:
 
-            break;
-        case UT::PacketControlType::RIP:
-
-            break;
-        case UT::PacketControlType::OSPF:
-
-            break;
         default:
             break;
     }
+    // Add specific logic for Control Packet processing (e.g., routing updates, acknowledgments).
 }
 
 void Router::processDataPacket(const PacketPtr_t &packet) {
