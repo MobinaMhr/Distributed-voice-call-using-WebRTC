@@ -22,7 +22,7 @@ public:
 
 protected:
     void run() override;
-    void handleCurrentCyclePackets(const int &packetsCount);
+    void handleCyclesPackets();
 
 public Q_SLOTS:
 
@@ -39,6 +39,7 @@ private:
     DataGenerator*  m_dataGenerator;
     QTimer* m_timer = nullptr;
     QVector<int>    m_distribution;
+    QVector<std::vector<UT::PacketDetails>> m_allPackets;
     int             m_currentCycle = 0;
     int             m_cycleCount;
     int             m_pcCount;
