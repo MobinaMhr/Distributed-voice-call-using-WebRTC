@@ -32,6 +32,8 @@ void RIP::handleRIPPacket(const PacketPtr_t &packet, const QSharedPointer<Port> 
     QVector<int> costs = extractCosts(update);
     if (type == HELLO)
         handleHello(packet, port);
+    else
+
 
 }
 
@@ -100,6 +102,16 @@ void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &por
     else
         nodeIP = IPv6_t::createIpPtr(packet->ipv6Header().sourceIp(), DEFAULT_IPV6_PREFIX_LENGTH);
     m_routingTable->addRoute(nodeIP, nodeIP, port, PROTOCOL, NEIGHBOR_COST);
+}
+
+void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes, const QVector<int> costs, const QSharedPointer<Port> &port)
+{
+
+}
+
+void RIP::handleUpdate(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
+{
+
 }
 
 // RIP::RIP(Router* router, QObject* parent)

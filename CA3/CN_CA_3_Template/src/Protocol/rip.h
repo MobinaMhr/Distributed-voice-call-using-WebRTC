@@ -40,6 +40,8 @@ private:
     QVector<QString> extractNodes(QJsonObject update);
     QVector<int> extractCosts(QJsonObject update);
     void handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &port);
+    void handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes, const QVector<int> costs,
+                                    const QSharedPointer<Port> &port);
 
     void updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric);
 
