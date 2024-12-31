@@ -44,6 +44,7 @@ void OSPF::run()
 void OSPF::processHelloPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port) {
     qDebug() << "Processing Hello packet from port" << port->number();
     // Update neighbor list based on received Hello packet.
+    // TODO:: update
 }
 
 void OSPF::processLSAPacket(const PacketPtr_t &packet) {
@@ -60,7 +61,7 @@ void OSPF::updateTopologyGraph(const QJsonObject &lsaData) {
 
     for (const auto& link : links) {
         QString neighbor = link.toString();
-        m_topologyGraph[router].insert(neighbor);
+        m_topologyGraph[router].insert(neighbor);//prevent repeted neighbors
     }
 }
 

@@ -16,8 +16,6 @@ const QString HELLO = "hello";
 const QString LSA = "lsa";
 const QString DEFAULT_MASK = "255.255.255.0";
 const QString PROTOCOL = "OSPF";
-const int HELLO_INTERVAL = 10;
-const int LSA_INTERVAL = 30;
 
 
 class OSPF : public QObject {
