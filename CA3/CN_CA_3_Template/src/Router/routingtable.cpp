@@ -54,3 +54,16 @@ void RoutingTable::printRoutingTable() const
     for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it) {
     }
 }
+
+int RoutingTable::getRouteCost(const IpPtr_t &destIp) const {
+    if (!destIp) {
+        return std::numeric_limits<int>::max();
+    }
+
+    auto it = m_routingTable.find(destIp);
+    if (it != m_routingTable.end()) {
+        return it.value().metric;
+    }
+
+    return std::numeric_limits<int>::max();
+}

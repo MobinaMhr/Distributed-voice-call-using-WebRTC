@@ -7,9 +7,8 @@
 #include <QSharedPointer>
 #include <QString>
 
-/// 1. Fix the contains mathod
-/// 2. add a new method getting IPPtr and returning cost, if no router, returns infinity
 /// 3. a method to update route that gets destination IP, updated nextHopIp, port, metric and updates them.
+/// 4. getNodes, getCosts ( returns QVector of QStringified of IPs , ...)
 
 class RoutingTable : public QObject
 {
@@ -39,6 +38,7 @@ public:
     QMap<IpPtr_t, RouteEntry> getAllRoutes() const;
 
     void printRoutingTable() const;
+    int getRouteCost(const IpPtr_t &destIp) const;
 
 Q_SIGNALS:
 };
