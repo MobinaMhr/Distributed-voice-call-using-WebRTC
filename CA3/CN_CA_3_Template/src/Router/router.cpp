@@ -327,6 +327,9 @@ void Router::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber)
         case UT::PacketControlType::DHCPAcknowledge:
             handleDhcpAck(packet);
             break;
+        case UT::PacketControlType::RIP:
+            m_rip.handleRIPPacket(packet, m_ports[portNumber]);
+            break;
 
         default:
             break;
