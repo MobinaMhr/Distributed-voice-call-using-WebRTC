@@ -209,6 +209,13 @@ void Router::handleRoutingPacket()
             Q_EMIT sendPacket(PacketPtr_t(update), BROADCAST_ON_ALL_PORTS);
         }
     }
+    else if(m_protocol == UT::PacketControlType::OSPF){
+        for (int i = 0 ; i < m_buffer.size(); i++){
+            Q_EMIT sendPacket(m_buffer[i], BROADCAST_ON_ALL_PORTS);
+        }
+        m_buffer.clear();
+        // Q_EMIT sendPacket(m_ospf.getupdatePacket(), BROADCAST_ON_ALL_PORTS);
+    }
 }
 
 void Router::bufferPacket(const PacketPtr_t &packet) {
@@ -329,6 +336,10 @@ void Router::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber)
             break;
         case UT::PacketControlType::RIP:
             m_rip.handleRIPPacket(packet, m_ports[portNumber]);
+            break;
+        case UT::PacketControlType::OSPF:
+            bufferPacket(packet);
+            // m_ospf.
             break;
 
         default:
