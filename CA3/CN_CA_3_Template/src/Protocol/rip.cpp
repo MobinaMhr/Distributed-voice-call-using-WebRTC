@@ -25,7 +25,9 @@ void RIP::run()
                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
                                        RIP_TTL);
 
-    hello->storeStringInPayload(generateUpdatePayload(HELLO, {}, {}));
+    QVector<IpPtr_t> nodes = {};
+
+    hello->storeStringInPayload(generateUpdatePayload(HELLO, nodes, {}));
     m_updatePacket = *hello;
     /// set hello packet as update packet : DONE!!!
     /// receive others hello -> add the sender ip by the cost 1 to the routing table???
@@ -64,6 +66,26 @@ QString RIP::generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector
     for (const auto& cost : costs) {
         costsArray.append(cost);
     }
+    jsonObject["costs"] = costsArray;
+
+    QJsonDocument jsonDoc(jsonObject);
+    return QString(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+QString RIP::generateUpdatePayload(QString type, QVector<QString> nodes, QVector<int> costs)
+{
+    QJsonObject jsonObject;
+    jsonObject["type"] = type;
+
+    QJsonArray nodesArray;
+    for (const QString& node : nodes)
+            nodesArray.append(node);
+
+    jsonObject["nodes"] = nodesArray;
+
+    QJsonArray costsArray;
+    for (const auto& cost : costs)
+        costsArray.append(cost);
     jsonObject["costs"] = costsArray;
 
     QJsonDocument jsonDoc(jsonObject);
@@ -128,10 +150,10 @@ void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes,
             nodeIP = IPv6_t::createIpPtr(node, DEFAULT_IPV6_PREFIX_LENGTH);
         else
             nodeIP = IPv4_t::createIpPtr(node, DEFAULT_MASK);
-        int currentCost = m_routingTable.getCost(nodeIP);
+        int currentCost = m_routingTable->getRouteCost(nodeIP);
         int costFromNeighbor = costs[i] + NEIGHBOR_COST;
         if (currentCost > costFromNeighbor)
-            m_routingTable.updateRoute(nodeIP ,nextHopIP, port, costFromNeighbor);
+            m_routingTable->updateRoute(nodeIP ,nextHopIP, port, costFromNeighbor);
     }
     generateUpdatePacket();
 }
@@ -142,12 +164,14 @@ QString RIP::generateUpdatePacket()
     QByteArray payload ;
     DataLinkHeader *dh = new DataLinkHeader(this->m_routerMacAddress, this->m_routerMacAddress);
     TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
-    Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
+    Packet *update = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
                                        RIP_TTL);
+    auto nodes = m_routingTable->getNodes();
+    auto costs = m_routingTable->getCosts();
 
-    hello->storeStringInPayload(generateUpdatePayload(UPDATE, {}, {}));
-    m_updatePacket = *hello;
+    update->storeStringInPayload(generateUpdatePayload(UPDATE, nodes, costs));
+    m_updatePacket = *update;
 }
 
 // RIP::RIP(Router* router, QObject* parent)

@@ -37,6 +37,7 @@ private:
     IPHv6_t m_routerIpv6Header;
 
     QString generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs);
+    QString generateUpdatePayload(QString type, QVector<QString> nodes, QVector<int> costs);
     QJsonObject extractUpdatePayloadJson(const QString& jsonString);
     QVector<QString> extractNodes(QJsonObject update);
     QVector<int> extractCosts(QJsonObject update);
