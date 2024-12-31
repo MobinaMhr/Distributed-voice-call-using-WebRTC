@@ -116,7 +116,38 @@ void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &por
 
 void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes, const QVector<int> costs, const QSharedPointer<Port> &port)
 {
+    IpPtr_t nextHopIP;
+    if(packet->ipVersion() == UT::IPVersion::IPv4)
+        nextHopIP = IPv4_t::createIpPtr(packet->ipv4Header().sourceIp(), DEFAULT_MASK);
+    else
+        nextHopIP = IPv6_t::createIpPtr(packet->ipv6Header().sourceIp(), DEFAULT_IPV6_PREFIX_LENGTH);
+    for (int i = 0; i<nodes.size(); i++){
+        auto node = nodes[i];
+        IpPtr_t nodeIP;
+        if (node.contains(':'))
+            nodeIP = IPv6_t::createIpPtr(node, DEFAULT_IPV6_PREFIX_LENGTH);
+        else
+            nodeIP = IPv4_t::createIpPtr(node, DEFAULT_MASK);
+        int currentCost = m_routingTable.getCost(nodeIP);
+        int costFromNeighbor = costs[i] + NEIGHBOR_COST;
+        if (currentCost > costFromNeighbor)
+            m_routingTable.updateRoute(nodeIP ,nextHopIP, port, costFromNeighbor);
+    }
+    generateUpdatePacket();
+}
 
+QString RIP::generateUpdatePacket()
+{
+    IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+    QByteArray payload ;
+    DataLinkHeader *dh = new DataLinkHeader(this->m_routerMacAddress, this->m_routerMacAddress);
+    TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+    Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
+                                       1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
+                                       RIP_TTL);
+
+    hello->storeStringInPayload(generateUpdatePayload(UPDATE, {}, {}));
+    m_updatePacket = *hello;
 }
 
 // RIP::RIP(Router* router, QObject* parent)
