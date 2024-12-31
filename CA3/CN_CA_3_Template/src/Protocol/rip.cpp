@@ -181,7 +181,7 @@ void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes,
         m_notUpdatedTimes++;
     else
         m_updateIsReady = true;
-    if (m_notUpdatedTimes >= FINISH_THRESHOLD){
+    if (m_notUpdatedTimes == FINISH_THRESHOLD){
         m_isFinished = true;
         Q_EMIT routingFinished(*m_routingTable);
     }

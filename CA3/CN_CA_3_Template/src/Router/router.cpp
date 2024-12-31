@@ -165,6 +165,7 @@ void Router::finishRouting(RoutingTable routingTable)
 {
     m_routing_table = new RoutingTable(routingTable);
     m_isRouting = false;
+    Q_EMIT routingFinished(m_id);
 }
 
 void Router::getIP()
@@ -174,6 +175,13 @@ void Router::getIP()
         setIP(sugestedIp, DEFAULT_MASK);
     }else
         sendDiscovery();
+}
+
+void Router::handleTick(int cycleNumebt)
+{
+    if (m_isRouting){
+        handleRoutingPacket();
+    }
 }
 
 QString Router::createDhcpAckBody(PacketPtr_t packet)
@@ -191,6 +199,16 @@ QString Router::createDhcpAckBody(PacketPtr_t packet)
     QString jsonString = jsonDoc.toJson(QJsonDocument::Compact);
 
     return jsonString;
+}
+
+void Router::handleRoutingPacket()
+{
+    if (m_protocol == UT::PacketControlType::RIP){
+        if (m_rip.isUpdateReady()){
+            Packet *update = new Packet(m_rip.getUpdatePacket());
+            Q_EMIT sendPacket(PacketPtr_t(update), BROADCAST_ON_ALL_PORTS);
+        }
+    }
 }
 
 void Router::bufferPacket(const PacketPtr_t &packet) {

@@ -32,10 +32,14 @@ public:
     void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     void processDataPacket(const PacketPtr_t &packet) override;
 
+Q_SIGNALS:
+    void routingFinished(int id);
+
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     void finishRouting(RoutingTable routingTable);
     virtual void getIP() override;
+    void handleTick(int cycleNumebt);
 public:
     RoutingTable*                       m_routing_table;
 private:
@@ -54,6 +58,7 @@ private:
     void handleDhcpReq(PacketPtr_t packet);
     void handleDhcpAck(PacketPtr_t packet);
     QString createDhcpAckBody(PacketPtr_t packet);
+    void handleRoutingPacket();
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);
