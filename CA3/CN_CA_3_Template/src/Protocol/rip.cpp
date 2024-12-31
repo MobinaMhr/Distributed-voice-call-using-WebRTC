@@ -12,15 +12,21 @@ void RIP::run()
     QByteArray payload ;
     DataLinkHeader *dh = new DataLinkHeader(this->m_routerMacAddress, this->m_routerMacAddress);
     TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
-    Packet *hellow = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
+    Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
                                        RIP_TTL);
 
-    /// set hello packet as update packet
+    hello->storeStringInPayload(generateUpdatePayload("hello", {}, {}));
+    /// set hello packet as update packet : DONE!!!
     /// receive others hello -> add the sender ip by the cost 1 to the routing table???
     /// send update packet -> send current ips and costs in the routing table !!!
     /// receive others update packet -> update routing table enties if other update cost + other cost < current cost!!!
     /// if the routing table wasnt updated after n update packets emit end signal
+}
+
+void RIP::handleRIPPacket(const PacketPtr_t &packet, int portNumebr)
+{
+    if ()
 }
 
 QString RIP::generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs)
@@ -44,6 +50,40 @@ QString RIP::generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector
 
     QJsonDocument jsonDoc(jsonObject);
     return QString(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+QJsonObject RIP::extractUpdatePayloadJson(const QString &jsonString)
+{
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonString.toUtf8());
+
+    if (!jsonDoc.isObject()) {
+        qWarning() << "Invalid JSON string";
+        return *(new QJsonObject);
+    }
+
+    return jsonDoc.object();
+}
+
+QVector<QString> RIP::extractNodes(QJsonObject update)
+{
+    QVector<QString> nodes;
+    QJsonArray nodesArray = update["nodes"].toArray();
+    for (const QJsonValue& nodeValue : nodesArray) {
+        nodes.append(nodeValue.toString());
+    }
+    qDebug() << "Nodes:" << nodes;
+    return nodes;
+}
+
+QVector<int> RIP::extractCosts(QJsonObject update)
+{
+    QVector<int> costs;
+    QJsonArray costsArray = update["costs"].toArray();
+    for (const QJsonValue& costValue : costsArray) {
+        costs.append(costValue.toInt());
+    }
+    qDebug() << "Costs:" << costs;
+    return costs;
 }
 
 // RIP::RIP(Router* router, QObject* parent)

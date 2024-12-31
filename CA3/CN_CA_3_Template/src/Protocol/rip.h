@@ -20,7 +20,7 @@ public:
     void run();
 
     void initiateRoutingUpdate();
-    void handleRIPPacket(const PacketPtr_t& packet);
+    void handleRIPPacket(const PacketPtr_t& packet, int portNumebr);
 
 private:
     RoutingTable* m_routingTable;
@@ -32,6 +32,9 @@ private:
     IPHv6_t m_routerIpv6Header;
 
     QString generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs);
+    QJsonObject extractUpdatePayloadJson(const QString& jsonString);
+    QVector<QString> extractNodes(QJsonObject update);
+    QVector<int> extractCosts(QJsonObject update);
 
     void updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric);
 
