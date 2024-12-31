@@ -416,3 +416,164 @@ void Router::handleRoutingPacket()
     }
 }
 ```
+
+# Routing Table
+
+This is the constructor for the RoutingTable class. It initializes the RoutingTable object and sets its parent to the provided parent object.
+```cpp
+RoutingTable::RoutingTable(QObject *parent) :
+    QObject {parent}
+{}
+```
+
+This method adds a route to the routing table. It takes the destination IP address (destIp), the next hop IP address (nextHopIp), the port (port), the protocol (protocol), and the metric (metric). The route is added to the m_routingTable map with the destination IP as the key and a RouteEntry struct containing the next hop IP, port, protocol, and metric as the value.
+```cpp
+void RoutingTable::addRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const QString &protocol, const int metric) {
+    m_routingTable[destIp] = {nextHopIp, port, protocol, metric};
+}
+```
+
+This method removes a route from the routing table. It takes the destination IP address (destIp) and removes the corresponding entry from the m_routingTable map.
+```cpp
+void RoutingTable::removeRoute(const IpPtr_t &destIp)
+{
+    m_routingTable.remove(destIp);
+}
+```
+
+This method retrieves the port associated with a given destination IP address. It takes the destination IP address (destIp) and returns the corresponding port from the m_routingTable map. If the destination IP is not found, it returns nullptr.
+```cpp
+QSharedPointer<Port> RoutingTable::getPort(const IpPtr_t &destIp) const {
+    auto it = m_routingTable.find(destIp);
+    if (it != m_routingTable.end()) {
+        return it.value().port;
+    }
+    return nullptr;
+}
+```
+
+This method checks if a route exists for a given destination IP address. It takes the destination IP address (destIp) and returns true if a route exists, otherwise it returns false.
+```cpp
+bool RoutingTable::routeExists(const IpPtr_t &destIp) const
+{
+    if (!destIp) {
+        return false;
+    }
+
+    QString destIpString = destIp->toString();
+
+    for (auto it = m_routingTable.cbegin(); it != m_routingTable.cend(); ++it) {
+        if (it.key() && it.key()->toString() == destIpString) {
+            return true;
+        }
+    }
+
+    return false;
+}
+```
+
+This method returns all the routes in the routing table. It returns the m_routingTable map containing all the routes.
+```cpp
+QMap<IpPtr_t, RoutingTable::RouteEntry> RoutingTable::getAllRoutes() const
+{
+    return m_routingTable;
+}
+```
+
+This method prints the routing table to the debug output. If the routing table is empty, it prints a message indicating that the routing table is empty. Otherwise, it iterates through the m_routingTable map and prints each route.
+```cpp
+void RoutingTable::printRoutingTable() const
+{
+    if (m_routingTable.isEmpty()) {
+        qDebug() << "Routing Table is empty.";
+        return;
+    }
+
+    qDebug() << "Routing Table:";
+    for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it) {
+    }
+}
+```
+
+This method retrieves the cost (metric) of a route for a given destination IP address. It takes the destination IP address (destIp) and returns the corresponding metric from the m_routingTable map. If the destination IP is not found, it returns the maximum integer value.
+```cpp
+int RoutingTable::getRouteCost(const IpPtr_t &destIp) const {
+    if (!destIp) {
+        return std::numeric_limits<int>::max();
+    }
+
+    auto it = m_routingTable.find(destIp);
+    if (it != m_routingTable.end()) {
+        return it.value().metric;
+    }
+
+    return std::numeric_limits<int>::max();
+}
+```
+
+This method updates an existing route or adds a new route if it doesn't exist. It takes the destination IP address (destIp), the next hop IP address (nextHopIp), the port (port), and the metric (metric). If the route exists, it updates the next hop IP, port, and metric. If the route doesn't exist, it adds a new route and logs a warning message.
+```cpp
+void RoutingTable::updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const int metric) {
+    if (!destIp) {
+        qWarning() << "Invalid destination IP.";
+        return;
+    }
+
+    auto it = m_routingTable.find(destIp);
+    if (it != m_routingTable.end()) {
+        it.value().nextHopIp = nextHopIp;
+        it.value().port = port;
+        it.value().metric = metric;
+    } else {
+        addRoute(destIp, nextHopIp, port, "TODO", metric);
+        qWarning() << "A new route for destination IP" << destIp->toString() << "Added.";
+    }
+}
+```
+
+This method retrieves all the nodes (destination IP addresses) in the routing table. It returns a vector of strings containing the IP addresses of all the nodes.
+```cpp
+QVector<QString> RoutingTable::getNodes() const {
+    QVector<QString> nodes;
+    for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it) {
+        if (it.key()) {
+            nodes.append(it.key()->toString());
+        }
+    }
+    return nodes;
+}
+```
+
+This method retrieves the costs (metrics) of all the routes in the routing table. It returns a vector of integers containing the metrics of all the routes.
+```cpp
+QVector<int> RoutingTable::getCosts() const {
+    QVector<int> costs;
+    for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it) {
+        costs.append(it.value().metric);
+    }
+    return costs;
+}
+```
+
+This is the copy constructor for the RoutingTable class. It initializes a new RoutingTable object by copying the routing table from another RoutingTable object.
+```cpp
+RoutingTable::RoutingTable(const RoutingTable &other) :
+    QObject(other.parent())
+{
+    m_routingTable = other.m_routingTable;
+}
+```
+
+This is the assignment operator for the RoutingTable class. It assigns the routing table from another RoutingTable object to the current object. If the current object is not the same as the other object, it sets the parent to the other object's parent and copies the routing table.
+```cpp
+RoutingTable &
+RoutingTable::operator=(const RoutingTable &other)
+{
+    if(this != &other)
+    {
+        QObject::setParent(other.parent());
+        m_routingTable = other.m_routingTable;
+    }
+    return *this;
+}
+```
