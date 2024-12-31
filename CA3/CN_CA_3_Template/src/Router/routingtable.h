@@ -7,6 +7,8 @@
 #include <QSharedPointer>
 #include <QString>
 
+/// 4. getNodes, getCosts ( returns QVector of QStringified of IPs , ...)
+
 class RoutingTable : public QObject
 {
     Q_OBJECT
@@ -35,6 +37,10 @@ public:
     QMap<IpPtr_t, RouteEntry> getAllRoutes() const;
 
     void printRoutingTable() const;
+    int getRouteCost(const IpPtr_t &destIp) const;
+    void updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const int metric);
+    QVector<QString> getNodes() const;
+    QVector<int> getCosts() const;
 
 Q_SIGNALS:
 };
