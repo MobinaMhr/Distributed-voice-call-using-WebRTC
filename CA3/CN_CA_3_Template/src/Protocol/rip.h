@@ -51,7 +51,7 @@ Q_SIGNALS:
     void sendRoutingUpdate(PacketPtr_t packet);
 
 private Q_SLOTS:
-    void onNeighborTimeout();
+    // void onNeighborTimeout();
 };
 
 #endif // RIP_H

@@ -7,6 +7,10 @@
 #include <QSharedPointer>
 #include <QString>
 
+/// 1. Fix the contains mathod
+/// 2. add a new method getting IPPtr and returning cost, if no router, returns infinity
+/// 3. a method to update route that gets destination IP, updated nextHopIp, port, metric and updates them.
+
 class RoutingTable : public QObject
 {
     Q_OBJECT

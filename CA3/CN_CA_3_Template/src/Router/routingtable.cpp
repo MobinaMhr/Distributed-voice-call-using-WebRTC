@@ -23,7 +23,19 @@ QSharedPointer<Port> RoutingTable::getPort(const IpPtr_t &destIp) const {
 
 bool RoutingTable::routeExists(const IpPtr_t &destIp) const
 {
-    return m_routingTable.contains(destIp);
+    if (!destIp) {
+        return false;
+    }
+
+    QString destIpString = destIp->toString();
+
+    for (auto it = m_routingTable.cbegin(); it != m_routingTable.cend(); ++it) {
+        if (it.key() && it.key()->toString() == destIpString) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 QMap<IpPtr_t, RoutingTable::RouteEntry> RoutingTable::getAllRoutes() const

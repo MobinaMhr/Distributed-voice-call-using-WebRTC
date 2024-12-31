@@ -42,7 +42,7 @@ void RIP::handleRIPPacket(const PacketPtr_t &packet, const QSharedPointer<Port> 
     QVector<int> costs = extractCosts(update);
     if (type == HELLO)
         handleHello(packet, port);
-    else
+    // else
 
 
 }
