@@ -9,7 +9,7 @@ PC::PC(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVers
 
 PC::~PC() {}
 
-void PC::receivePacket(const PacketPtr_t &packet) {
+void PC::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
     if (!packet) {
         qDebug() << name() << ": Received a null packet.";
         return;
@@ -20,7 +20,7 @@ void PC::receivePacket(const PacketPtr_t &packet) {
 
     switch (packet->packetType()) {
         case UT::PacketType::Control:
-            processControlPacket(packet);
+            processControlPacket(packet, portNumber);
             break;
 
         case UT::PacketType::Data:
@@ -42,7 +42,7 @@ PortPtr_t PC::getIdlePort() {
     else return nullptr;
 }
 
-void PC::processControlPacket(const PacketPtr_t &packet) {
+void PC::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) {
     switch (packet->controlType()) {
         case UT::PacketControlType::Request:
 

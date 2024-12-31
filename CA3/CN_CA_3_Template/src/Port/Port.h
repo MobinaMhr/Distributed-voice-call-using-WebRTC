@@ -29,7 +29,7 @@ public: // Setters
 
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
-    void packetReceived(const PacketPtr_t &data);
+    void packetReceived(const PacketPtr_t &data, uint8_t portNumber);
 
 public Q_SLOTS:
     void sendPacket(const PacketPtr_t &data, int portNumber);

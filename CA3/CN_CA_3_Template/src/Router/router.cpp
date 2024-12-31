@@ -69,7 +69,9 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
                                            DHCP_TTL);
         offer->storeStringInPayload(sugestedIp);
         PacketPtr_t offerPt = PacketPtr_t(offer);
-        Q_EMIT sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
+        /// BUFFER HERE instead of send
+
+        // Q_EMIT sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
         // generate offer packet
     }
     else
@@ -131,7 +133,7 @@ void Router::handleDhcpAck(PacketPtr_t packet)
     setIP(ip, mask);
 }
 
-void Router::receivePacket(const PacketPtr_t &packet) {
+void Router::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
     if (!packet) {
         qDebug() << name() << ": Received a null packet.";
         return;
@@ -145,7 +147,7 @@ void Router::receivePacket(const PacketPtr_t &packet) {
 
     switch (packet->packetType()) {
         case UT::PacketType::Control:
-            processControlPacket(packet);
+            processControlPacket(packet, portNumber);
             break;
 
         case UT::PacketType::Data:
@@ -270,7 +272,7 @@ std::vector<QSharedPointer<Node>> Router::neighbors() {
     return m_neighbors;
 }
 
-void Router::processControlPacket(const PacketPtr_t &packet) {
+void Router::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) {
     qDebug() << name() << ": Implement control packet handling logic.";
     switch (packet->controlType()) {
         case UT::PacketControlType::DHCPDiscovery:

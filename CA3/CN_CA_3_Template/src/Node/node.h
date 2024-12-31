@@ -33,6 +33,13 @@ public:
     QString ipv6Address() const;
     MacAddress macAddress() const;
     UT::NodeState state();
+    IpPtr_t getIP2() {
+        if (m_ipVersion == UT::IPVersion::IPv4) {
+            return m_ipv4Address;
+        }else {
+            return m_ipv6Address;
+        }
+    }
 
     // Setters
     void setState(UT::NodeState state);
@@ -40,27 +47,7 @@ public:
 
     void sendDiscovery();
 
-    void getPacket(const PacketPtr_t &packet) {
-        if (!packet) {
-            qDebug() << name() << ": Received a null packet.";
-            return;
-        }
-
-        switch (packet->packetType()) {
-            case UT::PacketType::Control:
-                processControlPacket(packet);
-                break;
-
-            case UT::PacketType::Data:
-                processDataPacket(packet);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    virtual void processControlPacket(const PacketPtr_t &packet) = 0;
+    virtual void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) = 0;
     virtual void processDataPacket(const PacketPtr_t &packet) = 0;
     virtual PortPtr_t getIdlePort() = 0;
 
@@ -89,7 +76,7 @@ protected:
     }
 
 public Q_SLOTS:
-    virtual void receivePacket(const PacketPtr_t &packet) = 0;
+    virtual void receivePacket(const PacketPtr_t &packet, uint8_t portNumber) = 0;
     virtual void getIP() = 0;
 
 private Q_SLOTS:

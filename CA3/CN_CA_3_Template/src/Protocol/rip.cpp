@@ -1,169 +1,100 @@
-#include "rip.h"
+#include "RIP.h"
 #include <QDebug>
 
-RIP::RIP(QObject *parent) : QObject(parent) {}
-
-RIP::~RIP() {}
-
-void RIP::startProtocol(const QVector<QSharedPointer<Router>> &routers)
-{
-    m_routers = routers;
-    initializeRoutingTables();
-    sendRoutingUpdates();
+RIP::RIP(IPv4Ptr_t routerIp, QObject *parent):
+    m_currentRouterIp(routerIp) {
+    m_routingTable = new RoutingTable(this);
 }
 
-void RIP::stopProtocol()
+void RIP::run()
 {
-    m_updateTimer.stop();
-    qDebug() << "RIP protocol stopped.";
+    /// send hello packet
+    /// receive others hello -> add the sender ip by the cost 1 to the routing table???
+    /// send update packet -> send current ips and costs in the routing table !!!
+    /// receive others update packet -> update routing table enties if other update cost + other cost < current cost!!!
+    /// if the routing table wasnt updated after n update packets emit end signal
 }
 
-void RIP::initializeRoutingTables()
-{
-    for (const auto &router : m_routers) {
-        QMap<int, int> table;
-        for (const auto &neighbor : router->neighbors()) {
-            table[neighbor->id()] = 1; // Direct neighbors have cost 1
-        }
-        m_routingTables[router->id()] = table;
-    }
-    qDebug() << "RIP routing tables initialized.";
-}
+// RIP::RIP(Router* router, QObject* parent)
+//     : QObject(parent), m_router(router) {
+//     connect(router, &Router::receivePacket, this, [this](const PacketPtr_t& packet) {
+//         if (packet->packetType() == UT::PacketType::Control &&
+//            packet->controlType() == UT::PacketControlType::RIPUpdate) {
+//             handleRIPPacket(packet);
+//         }
+//     });
+// }
 
-void RIP::sendRoutingUpdates()
-{
-    for (const auto &router : m_routers) {
-        QMap<int, int> update = m_routingTables[router->id()];
-        for (const auto &neighbor : router->neighbors()) {
-            MacAddress srcMacAddress = router->macAddress();
-            MacAddress destMacAddress = neighbor->macAddress();
+// void RIP::initiateRoutingUpdate() {
+//     sendRoutingUpdate(); // PacketPtr_t packet
+// }
 
-            uint16_t srcPort;
-            uint16_t destPort;
+// void RIP::sendRoutingUpdate() {
+//     QJsonObject routingData = createRoutingData(m_router->m_routing_table);
+//     QJsonDocument doc(routingData);
+//     QByteArray payload = doc.toJson(QJsonDocument::Compact);
 
-            QByteArray payload;
-            QDataStream stream(&payload, QIODevice::WriteOnly);
-            stream << update;
+//     for (auto& neighbor : m_router->neighbors()) {
+//         Packet* ripPacket = new Packet(
+//           UT::PacketType::Control,
+//           UT::PacketControlType::RIPUpdate,
+//           m_router->id(),  // source
+//           neighbor->id(),  // destination
+//           0,               // sequence
+//           neighbor->ip(),
+//           payload,
+//           DataLinkHeader(m_router->macAddress(), neighbor->macAddress()),
+//           TCPHeader(520, 520));  // RIP uses port 520
 
-            PacketPtr_t packetPtr = QSharedPointer<Packet>::create(
-                UT::PacketType::Control, UT::PacketControlType::RIP, 0, 0, 0, nullptr,
-                payload, DataLinkHeader(srcMacAddress, destMacAddress), TCPHeader(srcPort, destPort),
-                IPHv4_t(), IPHv6_t(), nullptr
-            );
-            Q_EMIT router->sendPacket(packetPtr, 0);
-        }
-    }
-}
+//         PacketPtr_t ripPacketPtr(ripPacket);
+//         emit m_router->sendPacket(ripPacketPtr, neighbor->getIdlePort()->number());
+//     }
+// }
 
-void RIP::receiveRoutingUpdate(int routerId, const QMap<int, int> &update)
-{
-    QMap<int, int> &table = m_routingTables[routerId];
-    bool updated = false;
+// void RIP::handleRIPPacket(const PacketPtr_t& packet) {
+//     QJsonDocument doc = QJsonDocument::fromJson(packet->payload());
+//     QJsonObject routingData = doc.object();
 
-    for (auto it = update.begin(); it != update.end(); ++it) {
-        int destination = it.key();
-        int cost = it.value() + 1; // Add cost to reach neighbor
+//     IpPtr_t neighborIp = packet->sourceIP();
+//     int neighborMetric = 1; // Assuming metric for direct neighbors is 1
 
-        if (!table.contains(destination) || table[destination] > cost) {
-            table[destination] = cost;
-            updated = true;
-        }
-    }
+//     updateRoutingTable(routingData, neighborIp, neighborMetric);
+// }
 
-    if (updated) {
-        sendRoutingUpdates();
-    }
-}
+// void RIP::updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric) {
+//     for (auto it = routingData.begin(); it != routingData.end(); ++it) {
+//         IpPtr_t destIp = IPv4_t::createIpPtr(it.key(), DEFAULT_MASK);
+//         QJsonObject entry = it.value().toObject();
 
-void RIP::finalizeRoutingTables()
-{
-    qDebug() << "RIP routing tables finalized.";
-    Q_EMIT routingStable();
-}
+//         int newMetric = entry["metric"].toInt() + neighborMetric;
+//         if (!m_router->m_routing_table->routeExists(destIp) ||
+//            m_router->m_routing_table->getPort(destIp)->metric > newMetric) {
 
-OSPF::OSPF(QObject *parent) : QObject(parent) {}
+//             QSharedPointer<Port> port = m_router->getIdlePort();
+//             m_router->addRoutingEntry(destIp, neighborIp, port, newMetric);
+//         }
+//     }
+// }
 
-OSPF::~OSPF() {}
+// QJsonObject RIP::createRoutingData(const RoutingTable* routingTable) {
+//     QJsonObject routingData;
 
-void OSPF::startProtocol(const QVector<QSharedPointer<Router>> &routers)
-{
-    m_routers = routers;
-    initializeLSAs();
-    sendLSAs();
-}
+//     for (const auto& route : routingTable->getAllRoutes()) {
+//         QJsonObject entry;
+//         entry["nextHop"] = route.nextHopIp->toString();
+//         entry["metric"] = route.metric;
+//         routingData[route.nextHopIp->toString()] = entry;
+//     }
 
-void OSPF::stopProtocol()
-{
-    m_updateTimer.stop();
-    qDebug() << "OSPF protocol stopped.";
-}
+//     return routingData;
+// }
 
-void OSPF::initializeLSAs()
-{
-    for (const auto &router : m_routers) {
-        QMap<int, int> lsas;
-        for (const auto &neighbor : router->neighbors()) {
-            lsas[neighbor->id()] = 1; // Direct neighbors have cost 1
-        }
-        m_linkStateDatabases[router->id()] = lsas;
-    }
-    qDebug() << "OSPF LSAs initialized.";
-}
-
-void OSPF::sendLSAs()
-{
-    for (const auto &router : m_routers) {
-        QMap<int, int> lsa = m_linkStateDatabases[router->id()];
-        for (const auto &neighbor : router->neighbors()) {
-            MacAddress srcMacAddress = router->macAddress();
-            MacAddress destMacAddress = neighbor->macAddress();
-
-            uint16_t srcPort;
-            uint16_t destPort;
-
-            QByteArray payload;
-            QDataStream stream(&payload, QIODevice::WriteOnly);
-            stream << lsa;
-
-            PacketPtr_t packetPtr = QSharedPointer<Packet>::create(
-                UT::PacketType::Control, UT::PacketControlType::OSPF, 0, 0, 0, nullptr,
-                payload, DataLinkHeader(srcMacAddress, destMacAddress), TCPHeader(srcPort, destPort),
-                IPHv4_t(), IPHv6_t(), nullptr
-            );
-            Q_EMIT router->sendPacket(packetPtr, 0);
-        }
-    }
-}
-
-void OSPF::receiveLSA(int routerId, const QMap<int, int> &lsa)
-{
-    QMap<int, int> &database = m_linkStateDatabases[routerId];
-    bool updated = false;
-
-    for (auto it = lsa.begin(); it != lsa.end(); ++it) {
-        int neighbor = it.key();
-        int cost = it.value();
-
-        if (!database.contains(neighbor) || database[neighbor] > cost) {
-            database[neighbor] = cost;
-            updated = true;
-        }
-    }
-
-    if (updated) {
-        calculateShortestPaths();
-    }
-}
-
-void OSPF::calculateShortestPaths()
-{
-    // Implement Dijkstra's algorithm here
-    qDebug() << "OSPF shortest paths calculated.";
-    finalizeRoutingTables();
-}
-
-void OSPF::finalizeRoutingTables()
-{
-    qDebug() << "OSPF routing tables finalized.";
-    Q_EMIT routingStable();
-}
+// void RIP::onNeighborTimeout() {
+//     for (auto it = m_router->neighbors().begin(); it != m_router->neighbors().end(); ++it) {
+//         // Check if the neighbor has not responded
+//         if (!(*it)->isAlive()) {
+//             qDebug() << "Neighbor down:" << (*it)->name();
+//             m_router->m_routing_table->removeRoute((*it)->ip());
+//         }
+//     }
+// }

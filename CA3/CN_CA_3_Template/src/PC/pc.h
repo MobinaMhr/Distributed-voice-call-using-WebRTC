@@ -17,11 +17,11 @@ public:
     PortPtr_t getIdlePort() override;
     //void send(IPv4_t dest_ip);
     //void send(IPv6_t dest_ip); // create packets and send them;
-    void processControlPacket(const PacketPtr_t &packet) override;
+    void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     void processDataPacket(const PacketPtr_t &packet) override;
 
 public Q_SLOTS:
-    void receivePacket(const PacketPtr_t &packet) override;
+    void receivePacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     virtual void getIP() override;
 
 private:

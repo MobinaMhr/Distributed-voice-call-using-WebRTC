@@ -29,11 +29,11 @@ public:
     void setDhcp(int asNumber);
 
     std::vector<QSharedPointer<Node>> neighbors();
-    void processControlPacket(const PacketPtr_t &packet) override;
+    void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     void processDataPacket(const PacketPtr_t &packet) override;
 
 public Q_SLOTS:
-    void receivePacket(const PacketPtr_t &packet) override;
+    void receivePacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     virtual void getIP() override;
 public:
     RoutingTable*                       m_routing_table;

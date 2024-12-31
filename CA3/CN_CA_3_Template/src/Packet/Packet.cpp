@@ -24,7 +24,6 @@ QString toString(PacketControlType type) {
     return "Unknown";
 }
 
-
 Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, quint32 seqNumber, quint32 waitCycles,
                quint32 totalCycles, IpPtr_t destIP, const QByteArray &payload,
                const DataLinkHeader &dataLinkHeader, const TCPHeader &tcpHeader,

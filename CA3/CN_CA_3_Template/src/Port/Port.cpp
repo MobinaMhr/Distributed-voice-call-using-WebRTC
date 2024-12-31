@@ -43,7 +43,7 @@ void Port::sendPacket(const PacketPtr_t &data, int portNumber)
 
 void Port::receivePacket(const PacketPtr_t &data)
 {
-    Q_EMIT packetReceived(data);
+    Q_EMIT packetReceived(data, m_number);
 }
 
 uint8_t Port::number()

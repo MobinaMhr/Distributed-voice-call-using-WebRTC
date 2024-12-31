@@ -1,62 +1,37 @@
-#ifndef RIP_OSPF_H
-#define RIP_OSPF_H
+#ifndef RIP_H
+#define RIP_H
 
-#include <QObject>
-#include <QMap>
-#include <QSharedPointer>
 #include <QTimer>
-#include <QVector>
-#include "../Router/router.h"
+#include <QSet>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include "../Router/routingtable.h"
 
-class RIP : public QObject
-{
+class RIP : public QObject {
     Q_OBJECT
 
 public:
-    explicit RIP(QObject *parent = nullptr);
-    ~RIP() override;
+    explicit RIP(IPv4Ptr_t routerIp, QObject* parent = nullptr);
+    ~RIP() override = default;
+    void run();
 
-    void startProtocol(const QVector<QSharedPointer<Router>> &routers);
-    void stopProtocol();
-
-Q_SIGNALS:
-    void routingStable();
+    void initiateRoutingUpdate();
+    void handleRIPPacket(const PacketPtr_t& packet);
 
 private:
-    QVector<QSharedPointer<Router>> m_routers;
-    QMap<int, QMap<int, int>> m_routingTables; // Router ID -> (Destination ID -> Cost)
-    QTimer m_updateTimer;
+    RoutingTable* m_routingTable;
+    QSet<IpPtr_t> m_knownDestinations;
+    IPv4Ptr_t     m_currentRouterIp;
 
-    void initializeRoutingTables();
-    void sendRoutingUpdates();
-    void receiveRoutingUpdate(int routerId, const QMap<int, int> &update);
-    void finalizeRoutingTables();
-};
+    void updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric);
 
-class OSPF : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit OSPF(QObject *parent = nullptr);
-    ~OSPF() override;
-
-    void startProtocol(const QVector<QSharedPointer<Router>> &routers);
-    void stopProtocol();
+    static QJsonObject createRoutingData(const RoutingTable* routingTable);
 
 Q_SIGNALS:
-    void routingStable();
+    void sendRoutingUpdate(PacketPtr_t packet);
 
-private:
-    QVector<QSharedPointer<Router>> m_routers;
-    QMap<int, QMap<int, int>> m_linkStateDatabases; // Router ID -> (Neighbor ID -> Cost)
-    QTimer m_updateTimer;
-
-    void initializeLSAs();
-    void sendLSAs();
-    void receiveLSA(int routerId, const QMap<int, int> &lsa);
-    void calculateShortestPaths();
-    void finalizeRoutingTables();
+private Q_SLOTS:
+    void onNeighborTimeout();
 };
 
-#endif // RIP_OSPF_H
+#endif // RIP_H
