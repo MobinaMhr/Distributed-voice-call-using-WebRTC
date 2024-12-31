@@ -39,6 +39,7 @@ public:
 
     void printRoutingTable() const;
     int getRouteCost(const IpPtr_t &destIp) const;
+    void updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const int metric);
 
 Q_SIGNALS:
 };
