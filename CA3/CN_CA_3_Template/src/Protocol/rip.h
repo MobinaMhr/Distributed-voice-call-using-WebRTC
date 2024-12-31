@@ -5,7 +5,11 @@
 #include <QSet>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonArray>
+#include <QVector>
 #include "../Router/routingtable.h"
+
+const int RIP_TTL = 16;
 
 class RIP : public QObject {
     Q_OBJECT
@@ -22,6 +26,12 @@ private:
     RoutingTable* m_routingTable;
     QSet<IpPtr_t> m_knownDestinations;
     IPv4Ptr_t     m_currentRouterIp;
+    Packet m_updatePacket;
+    MacAddress m_routerMacAddress;
+    IPHv4_t m_routerIpv4Header;
+    IPHv6_t m_routerIpv6Header;
+
+    QString generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs);
 
     void updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric);
 
