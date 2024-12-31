@@ -102,3 +102,20 @@ QVector<int> RoutingTable::getCosts() const {
     }
     return costs;
 }
+
+RoutingTable::RoutingTable(const RoutingTable &other) :
+    QObject(other.parent())
+{
+    m_routingTable = other.m_routingTable;
+}
+
+RoutingTable &
+RoutingTable::operator=(const RoutingTable &other)
+{
+    if(this != &other)
+    {
+        QObject::setParent(other.parent());
+        m_routingTable = other.m_routingTable;
+    }
+    return *this;
+}

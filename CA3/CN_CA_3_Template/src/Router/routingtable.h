@@ -27,6 +27,10 @@ private:
 
 public:
     explicit RoutingTable(QObject *parent = nullptr);
+    RoutingTable(const RoutingTable &other);
+
+    // Assignment Operator
+    RoutingTable &operator=(const RoutingTable &other);
     ~RoutingTable() = default;
 
 public:

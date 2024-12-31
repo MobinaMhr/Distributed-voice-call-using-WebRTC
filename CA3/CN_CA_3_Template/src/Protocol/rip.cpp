@@ -8,7 +8,7 @@ RIP::RIP(IPv4Ptr_t routerIp, MacAddress routerMac, QObject* parent)
                    IPv4_t::createIpPtr("0.0.0.0", "255.255.255.0"), QByteArray(),
                    DataLinkHeader(MacAddress("00:00:00:00:00:00"), MacAddress("00:00:00:00:00:00")),
                    TCPHeader(0, 0), IPHv4_t(), IPHv6_t(), RIP_TTL, this),
-    m_routerMacAddress(routerMac), m_updateIsReady(false)
+    m_routerMacAddress(routerMac), m_updateIsReady(false), m_isFinished(false), m_notUpdatedTimes(0)
 {
     m_routingTable = new RoutingTable(this);
     m_routerIpv4Header = *(new IPHv4_t());
@@ -32,6 +32,7 @@ void RIP::run()
 
     hello->storeStringInPayload(generateUpdatePayload(HELLO, nodes, {}));
     m_updatePacket = *hello;
+    m_updateIsReady = true;
     /// set hello packet as update packet : DONE!!!
     /// receive others hello -> add the sender ip by the cost 1 to the routing table???
     /// send update packet -> send current ips and costs in the routing table !!!
@@ -51,6 +52,18 @@ void RIP::handleRIPPacket(const PacketPtr_t &packet, const QSharedPointer<Port> 
         handleUpdate(packet, nodes, costs, port);
 
 
+}
+
+bool RIP::isUpdateReady()
+{
+    return m_updateIsReady;
+}
+
+Packet RIP::getUpdatePacket()
+{
+    if(!m_isFinished)
+        m_updateIsReady = false;
+    return m_updatePacket;
 }
 
 QString RIP::generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs)
@@ -138,11 +151,14 @@ void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &por
     else
         nodeIP = IPv6_t::createIpPtr(packet->ipv6Header().sourceIp(), DEFAULT_IPV6_PREFIX_LENGTH);
     m_routingTable->addRoute(nodeIP, nodeIP, port, PROTOCOL, NEIGHBOR_COST);
+    generateUpdatePacket();
+    m_updateIsReady = true;
 }
 
 void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes, const QVector<int> costs, const QSharedPointer<Port> &port)
 {
     IpPtr_t nextHopIP;
+    bool isUpdated = false;
     if(packet->ipVersion() == UT::IPVersion::IPv4)
         nextHopIP = IPv4_t::createIpPtr(packet->ipv4Header().sourceIp(), DEFAULT_MASK);
     else
@@ -156,8 +172,18 @@ void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes,
             nodeIP = IPv4_t::createIpPtr(node, DEFAULT_MASK);
         int currentCost = m_routingTable->getRouteCost(nodeIP);
         int costFromNeighbor = costs[i] + NEIGHBOR_COST;
-        if (currentCost > costFromNeighbor)
+        if (currentCost > costFromNeighbor){
             m_routingTable->updateRoute(nodeIP ,nextHopIP, port, costFromNeighbor);
+            isUpdated = true;
+        }
+    }
+    if (!isUpdated)
+        m_notUpdatedTimes++;
+    else
+        m_updateIsReady = true;
+    if (m_notUpdatedTimes >= FINISH_THRESHOLD){
+        m_isFinished = true;
+        Q_EMIT routingFinished(*m_routingTable);
     }
     generateUpdatePacket();
 }

@@ -15,6 +15,7 @@ const QString UPDATE = "update";
 const QString DEFAULT_MASK = "255.255.255.0";
 const QString PROTOCOL = "RIP";
 const int NEIGHBOR_COST = 1;
+const int FINISH_THRESHOLD = 12;
 
 class RIP : public QObject {
     Q_OBJECT
@@ -25,6 +26,8 @@ public:
     void run();
 
     void handleRIPPacket(const PacketPtr_t& packet, const QSharedPointer<Port> &port);
+    bool isUpdateReady();
+    Packet getUpdatePacket();
 
 private:
     RoutingTable* m_routingTable;
@@ -34,6 +37,8 @@ private:
     IPHv4_t m_routerIpv4Header;
     IPHv6_t m_routerIpv6Header;
     bool m_updateIsReady;
+    bool m_isFinished;
+    int m_notUpdatedTimes;
 
     QString generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs);
     QString generateUpdatePayload(QString type, QVector<QString> nodes, QVector<int> costs);
@@ -50,6 +55,7 @@ private:
     static QJsonObject createRoutingData(const RoutingTable* routingTable);
 
 Q_SIGNALS:
+    void routingFinished(RoutingTable routingTable);
 
 private Q_SLOTS:
     // void onNeighborTimeout();
