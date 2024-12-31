@@ -20,21 +20,20 @@ class RIP : public QObject {
     Q_OBJECT
 
 public:
-    explicit RIP(IPv4Ptr_t routerIp, QObject* parent = nullptr);
+    explicit RIP(IPv4Ptr_t routerIp, MacAddress routerMac, QObject* parent = nullptr);
     ~RIP() override = default;
     void run();
 
-    void initiateRoutingUpdate();
     void handleRIPPacket(const PacketPtr_t& packet, const QSharedPointer<Port> &port);
 
 private:
     RoutingTable* m_routingTable;
-    QSet<IpPtr_t> m_knownDestinations;
     IPv4Ptr_t     m_currentRouterIp;
     Packet m_updatePacket;
     MacAddress m_routerMacAddress;
     IPHv4_t m_routerIpv4Header;
     IPHv6_t m_routerIpv6Header;
+    bool m_updateIsReady;
 
     QString generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs);
     QString generateUpdatePayload(QString type, QVector<QString> nodes, QVector<int> costs);
@@ -51,7 +50,6 @@ private:
     static QJsonObject createRoutingData(const RoutingTable* routingTable);
 
 Q_SIGNALS:
-    void sendRoutingUpdate(PacketPtr_t packet);
 
 private Q_SLOTS:
     // void onNeighborTimeout();

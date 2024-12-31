@@ -5,6 +5,8 @@
 #include "./Globals.h"
 #include "IP.h"
 
+const int IPV4_HEADER_LENGTH = 20;
+
 template <UT::IPVersion version>
 class IPHeader;
 

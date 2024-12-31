@@ -10,7 +10,7 @@ UT::IPVersion AbstractIPHeader::ipVersion() const{
 
 IPHeader<UT::IPVersion::IPv4>::IPHeader(QObject *parent)
     : AbstractIPHeader(parent),
-    m_versionHeaderLength(0),
+    m_versionHeaderLength(IPV4_HEADER_LENGTH),
     m_typeOfService(0),
     m_totalLength(0),
     m_identification(0),

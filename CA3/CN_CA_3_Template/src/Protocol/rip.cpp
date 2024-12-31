@@ -1,17 +1,20 @@
 #include "RIP.h"
 #include <QDebug>
 
-RIP::RIP(IPv4Ptr_t routerIp, QObject *parent)
+RIP::RIP(IPv4Ptr_t routerIp, MacAddress routerMac, QObject* parent)
     : QObject(parent),
     m_currentRouterIp(routerIp),
     m_updatePacket(UT::PacketType::Control, UT::PacketControlType::RIP, 1, 0, 0,
                    IPv4_t::createIpPtr("0.0.0.0", "255.255.255.0"), QByteArray(),
                    DataLinkHeader(MacAddress("00:00:00:00:00:00"), MacAddress("00:00:00:00:00:00")),
                    TCPHeader(0, 0), IPHv4_t(), IPHv6_t(), RIP_TTL, this),
-    m_routerMacAddress("00:00:00:00:00:00") // Default MAC address for initialization
-
+    m_routerMacAddress(routerMac), m_updateIsReady(false)
 {
     m_routingTable = new RoutingTable(this);
+    m_routerIpv4Header = *(new IPHv4_t());
+    m_routerIpv4Header.setSourceIp(m_currentRouterIp);
+    m_routerIpv6Header = *(new IPHv6_t());
+    m_routerIpv6Header.setSourceIp(m_currentRouterIp->toIPv6());
 }
 
 
@@ -44,7 +47,8 @@ void RIP::handleRIPPacket(const PacketPtr_t &packet, const QSharedPointer<Port> 
     QVector<int> costs = extractCosts(update);
     if (type == HELLO)
         handleHello(packet, port);
-    // else
+    else
+        handleUpdate(packet, nodes, costs, port);
 
 
 }
