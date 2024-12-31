@@ -16,7 +16,7 @@ void RIP::run()
                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
                                        RIP_TTL);
 
-    hello->storeStringInPayload(generateUpdatePayload("hello", {}, {}));
+    hello->storeStringInPayload(generateUpdatePayload(HELLO, {}, {}));
     /// set hello packet as update packet : DONE!!!
     /// receive others hello -> add the sender ip by the cost 1 to the routing table???
     /// send update packet -> send current ips and costs in the routing table !!!
@@ -24,9 +24,15 @@ void RIP::run()
     /// if the routing table wasnt updated after n update packets emit end signal
 }
 
-void RIP::handleRIPPacket(const PacketPtr_t &packet, int portNumebr)
+void RIP::handleRIPPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
 {
-    if ()
+    QJsonObject update = extractUpdatePayloadJson(packet->readStringFromPayload());
+    QString type = update["type"].toString();
+    QVector<QString> nodes = extractNodes(update);
+    QVector<int> costs = extractCosts(update);
+    if (type == HELLO)
+        handleHello(packet, port);
+
 }
 
 QString RIP::generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs)
@@ -84,6 +90,16 @@ QVector<int> RIP::extractCosts(QJsonObject update)
     }
     qDebug() << "Costs:" << costs;
     return costs;
+}
+
+void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
+{
+    IpPtr_t nodeIP ;
+    if(packet->ipVersion() == UT::IPVersion::IPv4)
+        nodeIP = IPv4_t::createIpPtr(packet->ipv4Header().sourceIp(), DEFAULT_MASK);
+    else
+        nodeIP = IPv6_t::createIpPtr(packet->ipv6Header().sourceIp(), DEFAULT_IPV6_PREFIX_LENGTH);
+    m_routingTable->addRoute(nodeIP, nodeIP, port, PROTOCOL, NEIGHBOR_COST);
 }
 
 // RIP::RIP(Router* router, QObject* parent)

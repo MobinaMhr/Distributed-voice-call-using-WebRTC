@@ -10,6 +10,10 @@
 #include "../Router/routingtable.h"
 
 const int RIP_TTL = 16;
+const QString HELLO = "hello";
+const QString DEFAULT_MASK = "255.255.255.0";
+const QString PROTOCOL = "RIP";
+const int NEIGHBOR_COST = 1;
 
 class RIP : public QObject {
     Q_OBJECT
@@ -20,7 +24,7 @@ public:
     void run();
 
     void initiateRoutingUpdate();
-    void handleRIPPacket(const PacketPtr_t& packet, int portNumebr);
+    void handleRIPPacket(const PacketPtr_t& packet, const QSharedPointer<Port> &port);
 
 private:
     RoutingTable* m_routingTable;
@@ -35,6 +39,7 @@ private:
     QJsonObject extractUpdatePayloadJson(const QString& jsonString);
     QVector<QString> extractNodes(QJsonObject update);
     QVector<int> extractCosts(QJsonObject update);
+    void handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &port);
 
     void updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric);
 
