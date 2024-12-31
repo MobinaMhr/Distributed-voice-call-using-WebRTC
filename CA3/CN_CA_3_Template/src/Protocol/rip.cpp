@@ -1,10 +1,19 @@
 #include "RIP.h"
 #include <QDebug>
 
-RIP::RIP(IPv4Ptr_t routerIp, QObject *parent):
-    m_currentRouterIp(routerIp) {
+RIP::RIP(IPv4Ptr_t routerIp, QObject *parent)
+    : QObject(parent),
+    m_currentRouterIp(routerIp),
+    m_updatePacket(UT::PacketType::Control, UT::PacketControlType::RIP, 1, 0, 0,
+                   IPv4_t::createIpPtr("0.0.0.0", "255.255.255.0"), QByteArray(),
+                   DataLinkHeader(MacAddress("00:00:00:00:00:00"), MacAddress("00:00:00:00:00:00")),
+                   TCPHeader(0, 0), IPHv4_t(), IPHv6_t(), RIP_TTL, this),
+    m_routerMacAddress("00:00:00:00:00:00") // Default MAC address for initialization
+
+{
     m_routingTable = new RoutingTable(this);
 }
+
 
 void RIP::run()
 {
@@ -97,7 +106,7 @@ QVector<int> RIP::extractCosts(QJsonObject update)
 
 void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
 {
-    IpPtr_t nodeIP ;
+    IpPtr_t nodeIP;
     if(packet->ipVersion() == UT::IPVersion::IPv4)
         nodeIP = IPv4_t::createIpPtr(packet->ipv4Header().sourceIp(), DEFAULT_MASK);
     else
