@@ -190,3 +190,35 @@ void IPHeader<UT::IPVersion::IPv4>::print()
     qDebug() << "Source IP : " << m_sourceIp->toString() ;
     qDebug() << "Destenation IP : " << m_destIp->toString() ;
 }
+
+IPHeader<UT::IPVersion::IPv4> &IPHeader<UT::IPVersion::IPv4>::operator=(const IPHeader<UT::IPVersion::IPv4> &other)
+{
+    if (this != &other) { // Check for self-assignment
+        AbstractIPHeader::setParent(other.parent()); // Copy parent QObject
+        m_versionHeaderLength = other.m_versionHeaderLength;
+        m_typeOfService = other.m_typeOfService;
+        m_totalLength = other.m_totalLength;
+        m_identification = other.m_identification;
+        m_flagsFragmentOffset = other.m_flagsFragmentOffset;
+        m_ttl = other.m_ttl;
+        m_protocol = other.m_protocol;
+        m_headerChecksum = other.m_headerChecksum;
+        m_sourceIp = other.m_sourceIp;
+        m_destIp = other.m_destIp;
+    }
+    return *this;
+}
+
+IPHeader<UT::IPVersion::IPv6> &IPHeader<UT::IPVersion::IPv6>::operator=(const IPHeader<UT::IPVersion::IPv6> &other)
+{
+    if (this != &other) { // Check for self-assignment
+        AbstractIPHeader::setParent(other.parent()); // Copy parent QObject
+        m_versionTrafficClassFlowLabel = other.m_versionTrafficClassFlowLabel;
+        m_payloadLength = other.m_payloadLength;
+        m_nextHeader = other.m_nextHeader;
+        m_hopLimit = other.m_hopLimit;
+        m_sourceIp = other.m_sourceIp;
+        m_destIp = other.m_destIp;
+    }
+    return *this;
+}

@@ -33,6 +33,45 @@ Packet::Packet(UT::PacketType packetType, UT::PacketControlType controlType, qui
     m_tcpHeader(tcpHeader), m_dataLinkHeader(dataLinkHeader), m_payload(payload),
     m_sequenceNumber(seqNumber), m_waitingCycles(waitCycles), m_totalCycles(totalCycles), m_ttl(ttl) {}
 
+Packet::Packet(const Packet& other)
+    : QObject(other.parent()), // Copy parent QObject
+    m_packetType(other.m_packetType),
+    m_controlType(other.m_controlType),
+    m_destinationIP(other.m_destinationIP),
+    m_ipVersion(other.m_ipVersion),
+    m_ipv4Header(other.m_ipv4Header),
+    m_ipv6Header(other.m_ipv6Header),
+    m_tcpHeader(other.m_tcpHeader),
+    m_dataLinkHeader(other.m_dataLinkHeader),
+    m_payload(other.m_payload),
+    m_sequenceNumber(other.m_sequenceNumber),
+    m_waitingCycles(other.m_waitingCycles),
+    m_totalCycles(other.m_totalCycles),
+    m_path(other.m_path),
+    m_ttl(other.m_ttl) {}
+
+Packet& Packet::operator=(const Packet& other) {
+    if (this != &other) { // Check for self-assignment
+        QObject::setParent(other.parent()); // Copy parent QObject
+
+        m_packetType = other.m_packetType;
+        m_controlType = other.m_controlType;
+        m_destinationIP = other.m_destinationIP;
+        m_ipVersion = other.m_ipVersion;
+        m_ipv4Header = other.m_ipv4Header;
+        m_ipv6Header = other.m_ipv6Header;
+        m_tcpHeader = other.m_tcpHeader;
+        m_dataLinkHeader = other.m_dataLinkHeader;
+        m_payload = other.m_payload;
+        m_sequenceNumber = other.m_sequenceNumber;
+        m_waitingCycles = other.m_waitingCycles;
+        m_totalCycles = other.m_totalCycles;
+        m_path = other.m_path;
+        m_ttl = other.m_ttl;
+    }
+    return *this;
+}
+
 void Packet::updatePath(const QString& ipAddress) {
     m_path.append(ipAddress);
 }

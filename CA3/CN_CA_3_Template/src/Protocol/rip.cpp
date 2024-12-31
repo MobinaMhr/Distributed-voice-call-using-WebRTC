@@ -17,6 +17,7 @@ void RIP::run()
                                        RIP_TTL);
 
     hello->storeStringInPayload(generateUpdatePayload(HELLO, {}, {}));
+    m_updatePacket = *hello;
     /// set hello packet as update packet : DONE!!!
     /// receive others hello -> add the sender ip by the cost 1 to the routing table???
     /// send update packet -> send current ips and costs in the routing table !!!
@@ -105,11 +106,6 @@ void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &por
 }
 
 void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes, const QVector<int> costs, const QSharedPointer<Port> &port)
-{
-
-}
-
-void RIP::handleUpdate(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
 {
 
 }

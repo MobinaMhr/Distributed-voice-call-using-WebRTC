@@ -21,6 +21,12 @@ public:
                     const TCPHeader &tcpHeader, IPHv4_t ipv4Header, IPHv6_t ipv6Header,
                     qint32 ttl, QObject *parent = nullptr);
 
+    // Copy constructor
+    Packet(const Packet& other);
+
+    // Assignment operator
+    Packet& operator=(const Packet& other);
+
     void updatePath(const QString& ipAddress);
 
     void increaseWaitingCyclesBy(int additionalCycles);
@@ -49,7 +55,6 @@ public:
     UT::IPVersion ipVersion() const;
     const IPHv4_t ipv4Header() const;
     const IPHv6_t ipv6Header() const;
-
 
     // Setters
     void setPacketType(UT::PacketType packetType);

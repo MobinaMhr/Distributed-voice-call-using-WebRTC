@@ -44,6 +44,7 @@ public:    // constructors
         , m_sourceIp(other.m_sourceIp)
         , m_destIp(other.m_destIp)
     {}
+    IPHeader& operator=(const IPHeader& other);
 
 public:    // Getters and Setters
     uint8_t versionHeaderLength() const;
@@ -109,6 +110,8 @@ public:    // constructors
         , m_sourceIp(other.m_sourceIp)
         , m_destIp(other.m_destIp)
     {}
+
+    IPHeader& operator=(const IPHeader& other);
 
 public:    // Getters and Setters
     uint32_t versionTrafficClassFlowLabel() const;
