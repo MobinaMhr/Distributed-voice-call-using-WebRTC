@@ -161,6 +161,12 @@ void Router::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
     }
 }
 
+void Router::finishRouting(RoutingTable routingTable)
+{
+    m_routing_table = new RoutingTable(routingTable);
+    m_isRouting = false;
+}
+
 void Router::getIP()
 {
     if (m_dhcp != nullptr){
@@ -276,6 +282,7 @@ void Router::route(UT::PacketControlType protocol)
     m_protocol = protocol;
     if (m_protocol == UT::PacketControlType::RIP){
         m_rip = *(new RIP(m_ipv4Address, m_macAddress, this));
+        connect(&m_rip, &RIP::routingFinished, this, &Router::finishRouting, Qt::AutoConnection);
         m_rip.run();
     }
 }

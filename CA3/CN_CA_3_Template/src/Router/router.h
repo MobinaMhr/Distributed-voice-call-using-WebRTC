@@ -34,6 +34,7 @@ public:
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet, uint8_t portNumber) override;
+    void finishRouting(RoutingTable routingTable);
     virtual void getIP() override;
 public:
     RoutingTable*                       m_routing_table;
