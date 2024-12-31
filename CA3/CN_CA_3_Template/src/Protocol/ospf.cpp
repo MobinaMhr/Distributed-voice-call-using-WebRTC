@@ -1,136 +1,110 @@
 #include "ospf.h"
+#include <QDebug>
 
-OSPF::OSPF(Router *router, QObject *parent)
-    : QObject(parent){}
+OSPF::OSPF(IPv4Ptr_t routerIp, MacAddress routerMac, QObject* parent)
+    : QObject(parent),
+    m_routerIp(routerIp),
+    m_lsaPacket(UT::PacketType::Control, UT::PacketControlType::OSPF, 1, 0, 0,
+                   IPv4_t::createIpPtr("0.0.0.0", "255.255.255.0"), QByteArray(),
+                   DataLinkHeader(MacAddress("00:00:00:00:00:00"), MacAddress("00:00:00:00:00:00")),
+                   TCPHeader(0, 0), IPHv4_t(), IPHv6_t(), OSPF_TTL, this),
+    m_routerMac(routerMac),
+    m_lsaIsReady(false),
+    m_isFinished(false),
+    m_notUpdatedTimes(0) {
+    m_routingTable = new RoutingTable(this);
+    m_routerIpv4Header = *(new IPHv4_t());
+    m_routerIpv4Header.setSourceIp(m_routerIp);
+    m_routerIpv6Header = *(new IPHv6_t());
+    m_routerIpv6Header.setSourceIp(m_routerIp->toIPv6());
+}
 
-OSPF::~OSPF(){}
+void OSPF::run()
+{
+    IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+    QByteArray payload;
+    DataLinkHeader *dh = new DataLinkHeader(this->m_routerMac, this->m_routerMac);
+    TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+    Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::OSPF,
+                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
+                                        OSPF_TTL);
 
-// OSPF::OSPF(Router *router, QObject *parent)
-//     : QObject(parent)//,
-//     m_router(router),
-//     m_helloTimer(new QTimer(this)),
-//     m_lsaTimer(new QTimer(this))
-// {
-//     connect(m_helloTimer, &QTimer::timeout, this, &OSPF::onHelloTimerTimeout);
-//     connect(m_lsaTimer, &QTimer::timeout, this, &OSPF::onLsaTimerTimeout);
-//     connect(m_router, &Router::sendPacket, this, &OSPF::onPacketReceived);
+    QVector<IpPtr_t> nodes = {};
 
-//     m_helloTimer->setInterval(1000); // Send Hello every 1 second
-//     m_lsaTimer->setInterval(5000);  // Send LSAs every 5 seconds
-// }
+    hello->storeStringInPayload(generateLSAPayload());
+    m_lsaPacket = *hello;
+    m_lsaIsReady = true;
+    /// set hello packet as update packet : DONE!!!
+    /// receive others hello -> add the sender ip by the cost 1 to the routing table???
+    /// send update packet -> send current ips and costs in the routing table !!!
+    /// receive others update packet -> update routing table enties if other update cost + other cost < current cost!!!
+    /// if the routing table wasnt updated after n update packets emit end signal
+}
 
-// OSPF::~OSPF()
-// {
-//     stop();
-// }
+void OSPF::processHelloPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port) {
+    qDebug() << "Processing Hello packet from port" << port->number();
+    // Update neighbor list based on received Hello packet.
+}
 
-// void OSPF::start()
-// {
-//     qDebug() << "OSPF started on Router ID:" << m_router->id();
-//     m_helloTimer->start();
-//     m_lsaTimer->start();
-// }
+void OSPF::processLSAPacket(const PacketPtr_t &packet) {
+    QString payload = packet->readStringFromPayload();
+    QJsonObject lsaData = parsePayload(payload);
+    updateTopologyGraph(lsaData);
+    computeRoutingTable();
+}
 
-// void OSPF::stop()
-// {
-//     m_helloTimer->stop();
-//     m_lsaTimer->stop();
-//     qDebug() << "OSPF stopped on Router ID:" << m_router->id();
-// }
+void OSPF::updateTopologyGraph(const QJsonObject &lsaData) {
+    qDebug() << "Updating topology graph.";
+    QString router = lsaData["router"].toString();
+    QJsonArray links = lsaData["links"].toArray();
 
-// void OSPF::identifyNeighbors()
-// {
-//     // Identify neighbors by sending Hello packets
-//     sendHelloPacket();
-// }
+    for (const auto& link : links) {
+        QString neighbor = link.toString();
+        m_topologyGraph[router].insert(neighbor);
+    }
+}
 
-// void OSPF::sendHelloPacket()
-// {
-//     qDebug() << "Router ID:" << m_router->id() << "sending Hello packets to identify neighbors.";
-//     for (const auto &port : m_router->getPorts()) {
-//         if (port->state() == UT::PortState::Idle) {
-//             // PacketPtr_t helloPacket = QSharedPointer<Packet>::create(/* Fill Hello packet details */);
-//             // Q_EMIT m_router->sendPacket(helloPacket, port->number());
-//         }
-//     }
-// }
+void OSPF::computeRoutingTable() {
+    qDebug() << "Computing routing table using Dijkstra's algorithm.";
+    // Implement Dijkstra's algorithm to compute shortest paths.
+}
 
-// void OSPF::sendLsa()
-// {
-//     qDebug() << "Router ID:" << m_router->id() << "sending LSAs.";
-//     // PacketPtr_t lsaPacket = QSharedPointer<Packet>::create(/* Fill LSA details */);
-//     // for (const auto &neighbor : m_router->neighbors()) {
-//     //     auto port = neighbor->getIdlePort();
-//     //     if (port) {
-//     //         Q_EMIT m_router->sendPacket(lsaPacket, port->number());
-//     //     }
-//     // }
-// }
+QString OSPF::generateHelloPayload() {
+    QJsonObject helloPacket;
+    helloPacket["type"] = HELLO;
+    helloPacket["router"] = m_routerIp->toString();
 
-// void OSPF::processReceivedLsa(const PacketPtr_t &packet)
-// {
-//     qDebug() << "Router ID:" << m_router->id() << "processing received LSA.";
+    QJsonDocument doc(helloPacket);
+    return QString(doc.toJson(QJsonDocument::Compact));
+}
 
-//     IpPtr_t sourceIp;
+QString OSPF::generateLSAPayload() {
+    QJsonObject lsaPacket;
+    lsaPacket["type"] = LSA;
+    lsaPacket["router"] = m_routerIp->toString();
 
-//     if (packet->ipVersion() == UT::IPVersion::IPv4) {
-//         auto header = packet->ipv4Header(); // Extract the IPv4 header
-//         // sourceIp = QSharedPointer<IPv4_t>::create(header.toString(), DEFAULT_SUBNET_MASK);
-//     }
-//     else if (packet->ipVersion() == UT::IPVersion::IPv6) {
-//         auto header = packet->ipv6Header(); // Extract the IPv6 header
-//         // sourceIp = QSharedPointer<IPv6_t>::create(header.toString(), DEFAULT_IPV6_PREFIX_LENGTH);
-//     }
+    QJsonArray links;
+    for (const auto& neighbor : m_topologyGraph[m_routerIp->toString()]) {
+        links.append(neighbor);
+    }
 
-//     if (!sourceIp) {
-//         qWarning() << "Invalid IP source in received LSA.";
-//         return;
-//     }
+    lsaPacket["links"] = links;
 
-//     // Update the LSDB
-//     // QSet<IpPtr_t> links = /* Extract link information from the packet */;
-//     // m_lsdb[sourceIp] = links;
+    QJsonDocument doc(lsaPacket);
+    return QString(doc.toJson(QJsonDocument::Compact));
+}
 
-//     // Recalculate shortest paths when LSDB changes
-//     calculateShortestPaths();
-// }
+QJsonObject OSPF::parsePayload(const QString& payload) {
+    QJsonDocument doc = QJsonDocument::fromJson(payload.toUtf8());
+    return doc.object();
+}
 
-// void OSPF::calculateShortestPaths()
-// {
-//     qDebug() << "Router ID:" << m_router->id() << "calculating shortest paths.";
-//     // Dijkstra dijkstraAlgorithm(m_lsdb, m_router->id());
-//     // auto shortestPaths = dijkstraAlgorithm.calculateShortestPaths();
+bool OSPF::isLSAReady() {
+    return m_lsaIsReady;
+}
 
-//     // // Update routing table
-//     // for (const auto &[destIp, pathInfo] : shortestPaths) {
-//     //     IpPtr_t nextHop = pathInfo.nextHop;
-//     //     auto port = m_router->getPort(nextHop);
-//     //     m_router->addRoutingEntry(destIp, nextHop, port);
-//     // }
-
-//     finalizeRouting();
-// }
-
-// void OSPF::finalizeRouting()
-// {
-//     qDebug() << "Router ID:" << m_router->id() << "finalizing routing tables.";
-//     m_router->m_routing_table->printRoutingTable();
-//     Q_EMIT routingFinalized();
-// }
-
-// void OSPF::onHelloTimerTimeout()
-// {
-//     identifyNeighbors();
-// }
-
-// void OSPF::onLsaTimerTimeout()
-// {
-//     sendLsa();
-// }
-
-// void OSPF::onPacketReceived(const PacketPtr_t &packet)
-// {
-//     if (packet->packetType() == UT::PacketType::Control) {
-//         processReceivedLsa(packet);
-//     }
+// Packet OSPF::getLSAPacket() {
+//     m_lsaIsReady = false;
+//     // Construct and return the LSA packet.
+//     return Packet();
 // }

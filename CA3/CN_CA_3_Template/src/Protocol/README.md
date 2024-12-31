@@ -1,6 +1,17 @@
-#include "RIP.h"
-#include <QDebug>
+# Protocol
 
+# RIP
+
+This class implements the Routing Information Protocol (RIP) for a router. 
+
+RIP is a distance-vector routing protocol used in local and wide area networks. 
+
+It ensures efficient routing by continuously updating the routing table based on received information and terminating the process when no further updates are necessary. 
+
+The use of Qt framework facilitates JSON handling and signal-slot mechanisms, making the implementation robust and efficient.
+
+The constructor class sets some instances of related pointers for the RiP algorithm.
+```cpp
 RIP::RIP(IPv4Ptr_t routerIp, MacAddress routerMac, QObject* parent)
     : QObject(parent),
     m_currentRouterIp(routerIp),
@@ -16,8 +27,10 @@ RIP::RIP(IPv4Ptr_t routerIp, MacAddress routerMac, QObject* parent)
     m_routerIpv6Header = *(new IPHv6_t());
     m_routerIpv6Header.setSourceIp(m_currentRouterIp->toIPv6());
 }
+```
 
-
+The run method creates a HELLO packet with the bellow detail. This packet will be broadcasted in all ports of the router.
+```cpp
 void RIP::run()
 {
     IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
@@ -33,13 +46,11 @@ void RIP::run()
     hello->storeStringInPayload(generateUpdatePayload(HELLO, nodes, {}));
     m_updatePacket = *hello;
     m_updateIsReady = true;
-    /// set hello packet as update packet : DONE!!!
-    /// receive others hello -> add the sender ip by the cost 1 to the routing table???
-    /// send update packet -> send current ips and costs in the routing table !!!
-    /// receive others update packet -> update routing table enties if other update cost + other cost < current cost!!!
-    /// if the routing table wasnt updated after n update packets emit end signal
 }
+```
 
+The `handleRIPPacket()` method processes incoming RIP packets. It extracts the update payload from the packet, determines the type of the update (either HELLO or UPDATE), and calls the appropriate handler method (handleHello or handleUpdate). It uses helper methods to extract nodes and costs from the update payload.
+```cpp
 void RIP::handleRIPPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
 {
     QJsonObject update = extractUpdatePayloadJson(packet->readStringFromPayload());
@@ -51,19 +62,28 @@ void RIP::handleRIPPacket(const PacketPtr_t &packet, const QSharedPointer<Port> 
     else
         handleUpdate(packet, nodes, costs, port);
 }
+```
 
+This method returns a boolean indicating whether an update is ready to be sent. It checks the m_updateIsReady member variable.
+```cpp
 bool RIP::isUpdateReady()
 {
     return m_updateIsReady;
 }
+```
 
+This method returns the update packet. If the routing process is not finished, it sets m_updateIsReady to false before returning the packet.
+```cpp
 Packet RIP::getUpdatePacket()
 {
     if(!m_isFinished)
         m_updateIsReady = false;
     return m_updatePacket;
 }
+```
 
+This method generates a JSON payload for an update. It takes the update type, a vector of nodes, and a vector of costs as input. It constructs a JSON object with these values and returns it as a compact JSON string.
+```cpp
 QString RIP::generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector<int> costs)
 {
     QJsonObject jsonObject;
@@ -86,7 +106,10 @@ QString RIP::generateUpdatePayload(QString type, QVector<IpPtr_t> nodes, QVector
     QJsonDocument jsonDoc(jsonObject);
     return QString(jsonDoc.toJson(QJsonDocument::Compact));
 }
+```
 
+This method is similar to the previous one but takes a vector of node strings instead of IpPtr_t objects. It constructs a JSON object with the update type, nodes, and costs, and returns it as a compact JSON string.
+```cpp
 QString RIP::generateUpdatePayload(QString type, QVector<QString> nodes, QVector<int> costs)
 {
     QJsonObject jsonObject;
@@ -106,7 +129,10 @@ QString RIP::generateUpdatePayload(QString type, QVector<QString> nodes, QVector
     QJsonDocument jsonDoc(jsonObject);
     return QString(jsonDoc.toJson(QJsonDocument::Compact));
 }
+```
 
+This method extracts a JSON object from a JSON string. It parses the string into a QJsonDocument and returns the document's object. If the string is not a valid JSON, it logs a warning and returns an empty JSON object.
+```cpp
 QJsonObject RIP::extractUpdatePayloadJson(const QString &jsonString)
 {
     QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonString.toUtf8());
@@ -118,7 +144,10 @@ QJsonObject RIP::extractUpdatePayloadJson(const QString &jsonString)
 
     return jsonDoc.object();
 }
+```
 
+This method extracts a vector of node strings from a JSON object. It reads the "nodes" array from the JSON object and converts each value to a string, which it adds to the vector. It logs the extracted nodes for debugging purposes.
+```cpp
 QVector<QString> RIP::extractNodes(QJsonObject update)
 {
     QVector<QString> nodes;
@@ -129,7 +158,10 @@ QVector<QString> RIP::extractNodes(QJsonObject update)
     qDebug() << "Nodes:" << nodes;
     return nodes;
 }
+```
 
+This method extracts a vector of costs from a JSON object. It reads the "costs" array from the JSON object and converts each value to an integer, which it adds to the vector. It logs the extracted costs for debugging purposes.
+```cpp
 QVector<int> RIP::extractCosts(QJsonObject update)
 {
     QVector<int> costs;
@@ -140,7 +172,10 @@ QVector<int> RIP::extractCosts(QJsonObject update)
     qDebug() << "Costs:" << costs;
     return costs;
 }
+```
 
+This method handles HELLO packets. It extracts the source IP address from the packet and adds a route to the routing table with the source IP as both the destination and next hop. It then generates an update packet and sets m_updateIsReady to true.
+```cpp
 void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
 {
     IpPtr_t nodeIP;
@@ -152,7 +187,10 @@ void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &por
     generateUpdatePacket();
     m_updateIsReady = true;
 }
+```
 
+This method handles UPDATE packets. It extracts the next hop IP address from the packet and updates the routing table with the new routes and costs. If any routes are updated, it sets m_updateIsReady to true. If no routes are updated for a certain number of times, it marks the routing process as finished and emits a signal. It then generates an update packet.
+```cpp
 void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes, const QVector<int> costs, const QSharedPointer<Port> &port)
 {
     IpPtr_t nextHopIP;
@@ -179,13 +217,16 @@ void RIP::handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes,
         m_notUpdatedTimes++;
     else
         m_updateIsReady = true;
-    if (m_notUpdatedTimes == FINISH_THRESHOLD){
+    if (m_notUpdatedTimes >= FINISH_THRESHOLD){
         m_isFinished = true;
         Q_EMIT routingFinished(*m_routingTable);
     }
     generateUpdatePacket();
 }
+```
 
+This method generates an update packet. It creates a fake destination IP address and constructs a packet with the appropriate headers. It retrieves the nodes and costs from the routing table and stores the generated update payload in the packet's payload. It then sets the m_updatePacket member variable to the generated packet.
+```cpp
 QString RIP::generateUpdatePacket()
 {
     IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
@@ -201,125 +242,6 @@ QString RIP::generateUpdatePacket()
     update->storeStringInPayload(generateUpdatePayload(UPDATE, nodes, costs));
     m_updatePacket = *update;
 }
+```
 
-// RIP::RIP(Router* router, QObject* parent)
-//     : QObject(parent), m_router(router) {
-//     connect(router, &Router::receivePacket, this, [this](const PacketPtr_t& packet) {
-//         if (packet->packetType() == UT::PacketType::Control &&
-//            packet->controlType() == UT::PacketControlType::RIPUpdate) {
-//             handleRIPPacket(packet);
-//         }
-//     });
-// }
-
-// void RIP::initiateRoutingUpdate() {
-//     sendRoutingUpdate(); // PacketPtr_t packet
-// }
-
-// void RIP::sendRoutingUpdate() {
-//     QJsonObject routingData = createRoutingData(m_router->m_routing_table);
-//     QJsonDocument doc(routingData);
-//     QByteArray payload = doc.toJson(QJsonDocument::Compact);
-
-//     for (auto& neighbor : m_router->neighbors()) {
-//         Packet* ripPacket = new Packet(
-//           UT::PacketType::Control,
-//           UT::PacketControlType::RIPUpdate,
-//           m_router->id(),  // source
-//           neighbor->id(),  // destination
-//           0,               // sequence
-//           neighbor->ip(),
-//           payload,
-//           DataLinkHeader(m_router->macAddress(), neighbor->macAddress()),
-//           TCPHeader(520, 520));  // RIP uses port 520
-
-//         PacketPtr_t ripPacketPtr(ripPacket);
-//         emit m_router->sendPacket(ripPacketPtr, neighbor->getIdlePort()->number());
-//     }
-// }
-
-// void RIP::handleRIPPacket(const PacketPtr_t& packet) {
-//     QJsonDocument doc = QJsonDocument::fromJson(packet->payload());
-//     QJsonObject routingData = doc.object();
-
-//     IpPtr_t neighborIp = packet->sourceIP();
-//     int neighborMetric = 1; // Assuming metric for direct neighbors is 1
-
-//     updateRoutingTable(routingData, neighborIp, neighborMetric);
-// }
-
-// void RIP::updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric) {
-//     for (auto it = routingData.begin(); it != routingData.end(); ++it) {
-//         IpPtr_t destIp = IPv4_t::createIpPtr(it.key(), DEFAULT_MASK);
-//         QJsonObject entry = it.value().toObject();
-
-//         int newMetric = entry["metric"].toInt() + neighborMetric;
-//         if (!m_router->m_routing_table->routeExists(destIp) ||
-//            m_router->m_routing_table->getPort(destIp)->metric > newMetric) {
-
-//             QSharedPointer<Port> port = m_router->getIdlePort();
-//             m_router->addRoutingEntry(destIp, neighborIp, port, newMetric);
-//         }
-//     }
-// }
-
-// QJsonObject RIP::createRoutingData(const RoutingTable* routingTable) {
-//     QJsonObject routingData;
-
-//     for (const auto& route : routingTable->getAllRoutes()) {
-//         QJsonObject entry;
-//         entry["nextHop"] = route.nextHopIp->toString();
-//         entry["metric"] = route.metric;
-//         routingData[route.nextHopIp->toString()] = entry;
-//     }
-
-//     return routingData;
-// }
-
-// void RIP::onNeighborTimeout() {
-//     for (auto it = m_router->neighbors().begin(); it != m_router->neighbors().end(); ++it) {
-//         // Check if the neighbor has not responded
-//         if (!(*it)->isAlive()) {
-//             qDebug() << "Neighbor down:" << (*it)->name();
-//             m_router->m_routing_table->removeRoute((*it)->ip());
-//         }
-//     }
-// }
-RIP::RIP::RIP(const RIP &other) :
-    QObject(other.parent()),
-    m_currentRouterIp(other.m_currentRouterIp),
-    m_updatePacket(other.m_updatePacket),
-    m_routerMacAddress(other.m_routerMacAddress),
-    m_routerIpv4Header(other.m_routerIpv4Header),
-    m_routerIpv6Header(other.m_routerIpv6Header),
-    m_updateIsReady(other.m_updateIsReady),
-    m_isFinished(other.m_isFinished),
-    m_notUpdatedTimes(other.m_notUpdatedTimes)
-{
-    m_routingTable = new RoutingTable(*other.m_routingTable);
-}
-
-RIP &
-RIP::RIP::operator=(const RIP &other)
-{
-    if(this != &other)
-    {
-        QObject::setParent(other.parent());
-
-        // Clean up existing resources
-        delete m_routingTable;
-
-        m_currentRouterIp  = other.m_currentRouterIp;
-        m_updatePacket     = other.m_updatePacket;
-        m_routerMacAddress = other.m_routerMacAddress;
-        m_routerIpv4Header = other.m_routerIpv4Header;
-        m_routerIpv6Header = other.m_routerIpv6Header;
-        m_updateIsReady    = other.m_updateIsReady;
-        m_isFinished       = other.m_isFinished;
-        m_notUpdatedTimes  = other.m_notUpdatedTimes;
-
-        // Perform a deep copy of the RoutingTable
-        m_routingTable     = new RoutingTable(*other.m_routingTable);
-    }
-    return *this;
-}
+# OSPF
