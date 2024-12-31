@@ -287,3 +287,41 @@ QString RIP::generateUpdatePacket()
 //         }
 //     }
 // }
+RIP::RIP::RIP(const RIP &other) :
+    QObject(other.parent()),
+    m_currentRouterIp(other.m_currentRouterIp),
+    m_updatePacket(other.m_updatePacket),
+    m_routerMacAddress(other.m_routerMacAddress),
+    m_routerIpv4Header(other.m_routerIpv4Header),
+    m_routerIpv6Header(other.m_routerIpv6Header),
+    m_updateIsReady(other.m_updateIsReady),
+    m_isFinished(other.m_isFinished),
+    m_notUpdatedTimes(other.m_notUpdatedTimes)
+{
+    m_routingTable = new RoutingTable(*other.m_routingTable);
+}
+
+RIP &
+RIP::RIP::operator=(const RIP &other)
+{
+    if(this != &other)
+    {
+        QObject::setParent(other.parent());
+
+        // Clean up existing resources
+        delete m_routingTable;
+
+        m_currentRouterIp  = other.m_currentRouterIp;
+        m_updatePacket     = other.m_updatePacket;
+        m_routerMacAddress = other.m_routerMacAddress;
+        m_routerIpv4Header = other.m_routerIpv4Header;
+        m_routerIpv6Header = other.m_routerIpv6Header;
+        m_updateIsReady    = other.m_updateIsReady;
+        m_isFinished       = other.m_isFinished;
+        m_notUpdatedTimes  = other.m_notUpdatedTimes;
+
+        // Perform a deep copy of the RoutingTable
+        m_routingTable     = new RoutingTable(*other.m_routingTable);
+    }
+    return *this;
+}

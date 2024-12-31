@@ -5,6 +5,7 @@
 #include <QString>
 #include <QRegularExpression>
 
+const uint64_t DEFAULT_MAC = 0xFFFFFFFFFFFF;
 
 class MacAddress {
 public:

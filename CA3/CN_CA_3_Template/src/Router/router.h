@@ -5,12 +5,11 @@
 #include "../Port/Port.h"
 #include "../DHCP/dhcp.h"
 #include "routingtable.h"
+#include "../Protocol/rip.h"
 #include <QString>
 #include <deque>
 #include <QJsonObject>
 #include <QJsonDocument>
-
-const QString DEFAULT_MASK = "255.255.255.0";
 
 class Router : public Node {
     Q_OBJECT
@@ -27,6 +26,7 @@ public:
     PortPtr_t getIdlePort() override;
     std::vector<PortPtr_t> getPorts();
     void setDhcp(int asNumber);
+    void route(UT::PacketControlType protocol);
 
     std::vector<QSharedPointer<Node>> neighbors();
     void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
@@ -44,6 +44,9 @@ private:
 
     std::vector<QSharedPointer<Node>>   m_neighbors;
     DHCP*                               m_dhcp;
+    bool                                m_isRouting;
+    UT::PacketControlType               m_protocol;
+    RIP                                 m_rip;
 
     void handleDhcpDiscovery(PacketPtr_t packet);
     void handleDhcpOffer(PacketPtr_t packet);

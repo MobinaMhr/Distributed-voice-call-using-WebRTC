@@ -22,6 +22,8 @@ class RIP : public QObject {
 
 public:
     explicit RIP(IPv4Ptr_t routerIp, MacAddress routerMac, QObject* parent = nullptr);
+    RIP(const RIP &other);
+    RIP &operator=(const RIP &other);
     ~RIP() override = default;
     void run();
 

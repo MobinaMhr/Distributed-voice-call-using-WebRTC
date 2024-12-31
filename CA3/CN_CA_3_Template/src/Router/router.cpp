@@ -9,9 +9,11 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
     m_routing_table(new RoutingTable),
     m_ports(portCount),
     m_bufferSize(bufferSize),
-    m_dhcp(nullptr){
-
-    for (int i = 0; i < portCount; ++i) {
+    m_dhcp(nullptr),
+    m_isRouting(false),
+    m_rip(*(new RIP(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))),
+                    MacAddress(DEFAULT_MAC)))){
+        for (int i = 0; i < portCount; ++i) {
         m_ports[i] = QSharedPointer<Port>::create(i);
 
         connect(this, &Router::sendPacket, m_ports[i].data(), &Port::sendPacket, Qt::AutoConnection);
@@ -266,6 +268,16 @@ std::vector<PortPtr_t> Router::getPorts() {
 void Router::setDhcp(int asNumber)
 {
     this->m_dhcp = new DHCP(asNumber);
+}
+
+void Router::route(UT::PacketControlType protocol)
+{
+    m_isRouting = true;
+    m_protocol = protocol;
+    if (m_protocol == UT::PacketControlType::RIP){
+        m_rip = *(new RIP(m_ipv4Address, m_macAddress, this));
+        m_rip.run();
+    }
 }
 
 std::vector<QSharedPointer<Node>> Router::neighbors() {
