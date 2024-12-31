@@ -11,6 +11,7 @@
 
 const int RIP_TTL = 16;
 const QString HELLO = "hello";
+const QString UPDATE = "update";
 const QString DEFAULT_MASK = "255.255.255.0";
 const QString PROTOCOL = "RIP";
 const int NEIGHBOR_COST = 1;
@@ -42,6 +43,7 @@ private:
     void handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &port);
     void handleUpdate(const PacketPtr_t &packet, const QVector<QString> &nodes, const QVector<int> costs,
                                     const QSharedPointer<Port> &port);
+    QString generateUpdatePacket();
 
     void updateRoutingTable(const QJsonObject& routingData, const IpPtr_t& neighborIp, int neighborMetric);
 
