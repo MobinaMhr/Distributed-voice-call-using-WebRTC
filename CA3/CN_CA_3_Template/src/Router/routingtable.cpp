@@ -84,3 +84,21 @@ void RoutingTable::updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, 
         qWarning() << "A new route for destination IP" << destIp->toString() << "Added.";
     }
 }
+
+QVector<QString> RoutingTable::getNodes() const {
+    QVector<QString> nodes;
+    for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it) {
+        if (it.key()) {
+            nodes.append(it.key()->toString());
+        }
+    }
+    return nodes;
+}
+
+QVector<int> RoutingTable::getCosts() const {
+    QVector<int> costs;
+    for (auto it = m_routingTable.constBegin(); it != m_routingTable.constEnd(); ++it) {
+        costs.append(it.value().metric);
+    }
+    return costs;
+}

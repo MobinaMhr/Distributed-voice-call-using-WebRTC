@@ -7,7 +7,6 @@
 #include <QSharedPointer>
 #include <QString>
 
-/// 3. a method to update route that gets destination IP, updated nextHopIp, port, metric and updates them.
 /// 4. getNodes, getCosts ( returns QVector of QStringified of IPs , ...)
 
 class RoutingTable : public QObject
@@ -40,6 +39,8 @@ public:
     void printRoutingTable() const;
     int getRouteCost(const IpPtr_t &destIp) const;
     void updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const int metric);
+    QVector<QString> getNodes() const;
+    QVector<int> getCosts() const;
 
 Q_SIGNALS:
 };
