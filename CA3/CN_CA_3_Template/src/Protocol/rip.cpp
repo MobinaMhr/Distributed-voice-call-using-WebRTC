@@ -148,7 +148,7 @@ void RIP::handleHello(const PacketPtr_t &packet, const QSharedPointer<Port> &por
         nodeIP = IPv4_t::createIpPtr(packet->ipv4Header().sourceIp(), DEFAULT_MASK);
     else
         nodeIP = IPv6_t::createIpPtr(packet->ipv6Header().sourceIp(), DEFAULT_IPV6_PREFIX_LENGTH);
-    m_routingTable->addRoute(nodeIP, nodeIP, port, PROTOCOL, NEIGHBOR_COST);
+    m_routingTable->addRoute(nodeIP, nodeIP, port, RIP_PROTOCOL, NEIGHBOR_COST);
     generateUpdatePacket();
     m_updateIsReady = true;
 }

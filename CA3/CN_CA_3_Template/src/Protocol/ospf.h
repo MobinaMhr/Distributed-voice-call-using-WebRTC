@@ -12,10 +12,9 @@
 #include "../Router/routingtable.h"
 
 const int OSPF_TTL = 16;
-const QString HELLO = "hello";
 const QString LSA = "lsa";
-const QString DEFAULT_MASK = "255.255.255.0";
-const QString PROTOCOL = "OSPF";
+const QString OSPF_PROTOCOL = "OSPF";
+const int OSPF_FINISH_THRESHOLD = 50;
 
 
 class OSPF : public QObject {
@@ -45,6 +44,7 @@ private:
     void processHelloPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port);
     void processLSAPacket(const PacketPtr_t &packet);
     void updateTopologyGraph(const QJsonObject &lsaData);
+    void updateLsaPacket();
     void computeRoutingTable();
 
     QString generateHelloPayload();
@@ -54,7 +54,7 @@ private:
     void updateRoutingTable();
 
 Q_SIGNALS:
-    void routingUpdated(RoutingTable routingTable);
+    void routingFinished(RoutingTable routingTable);
 
 private Q_SLOTS:
 };

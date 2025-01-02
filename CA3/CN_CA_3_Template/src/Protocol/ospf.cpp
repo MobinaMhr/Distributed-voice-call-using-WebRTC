@@ -29,9 +29,7 @@ void OSPF::run()
                                         1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
                                         OSPF_TTL);
 
-    QVector<IpPtr_t> nodes = {};
-
-    hello->storeStringInPayload(generateLSAPayload());
+    hello->storeStringInPayload(generateHelloPayload());
     m_lsaPacket = *hello;
     m_lsaIsReady = true;
     /// set hello packet as update packet : DONE!!!
@@ -41,8 +39,20 @@ void OSPF::run()
     /// if the routing table wasnt updated after n update packets emit end signal
 }
 
+void OSPF::handleOSPFPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port)
+{
+    QJsonObject update = parsePayload(packet->readStringFromPayload());
+    QString type = update["type"].toString();
+    if (type == HELLO)
+        processHelloPacket(packet, port);
+    else
+        processLSAPacket(packet);
+}
+
 void OSPF::processHelloPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port) {
     qDebug() << "Processing Hello packet from port" << port->number();
+    m_topologyGraph[m_routerIp->toString()].insert(packet->ipv4Header().sourceIp());
+    updateLsaPacket();
     // Update neighbor list based on received Hello packet.
     // TODO:: update
 }
@@ -51,18 +61,45 @@ void OSPF::processLSAPacket(const PacketPtr_t &packet) {
     QString payload = packet->readStringFromPayload();
     QJsonObject lsaData = parsePayload(payload);
     updateTopologyGraph(lsaData);
-    computeRoutingTable();
+    updateLsaPacket();
 }
 
 void OSPF::updateTopologyGraph(const QJsonObject &lsaData) {
     qDebug() << "Updating topology graph.";
     QString router = lsaData["router"].toString();
     QJsonArray links = lsaData["links"].toArray();
+    bool isTopologyUpdated = false;
 
     for (const auto& link : links) {
         QString neighbor = link.toString();
-        m_topologyGraph[router].insert(neighbor);//prevent repeted neighbors
+        if (!m_topologyGraph[router].contains(neighbor)){
+            m_topologyGraph[router].insert(neighbor);//prevent repeted neighbors
+            isTopologyUpdated = true;
+        }
     }
+    if (!isTopologyUpdated)
+        m_notUpdatedTimes++;
+    else
+        m_lsaIsReady = true;
+    if (m_notUpdatedTimes == OSPF_FINISH_THRESHOLD){
+        m_isFinished = true;
+        computeRoutingTable();
+        Q_EMIT routingFinished(*m_routingTable);
+    }
+}
+
+void OSPF::updateLsaPacket()
+{
+    IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+    QByteArray payload;
+    DataLinkHeader *dh = new DataLinkHeader(this->m_routerMac, this->m_routerMac);
+    TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+    Packet *lsa = new Packet(UT::PacketType::Control, UT::PacketControlType::OSPF,
+                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
+                                        OSPF_TTL);
+
+    lsa->storeStringInPayload(generateLSAPayload());
+    m_lsaPacket = *lsa;
 }
 
 void OSPF::computeRoutingTable() {

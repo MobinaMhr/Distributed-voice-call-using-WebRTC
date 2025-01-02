@@ -9,6 +9,9 @@
 
 /// 4. getNodes, getCosts ( returns QVector of QStringified of IPs , ...)
 
+const QString HELLO = "hello";
+const QString DEFAULT_MASK = "255.255.255.0";
+
 class RoutingTable : public QObject
 {
     Q_OBJECT

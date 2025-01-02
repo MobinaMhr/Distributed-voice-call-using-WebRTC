@@ -10,10 +10,8 @@
 #include "../Router/routingtable.h"
 
 const int RIP_TTL = 16;
-const QString HELLO = "hello";
 const QString UPDATE = "update";
-const QString DEFAULT_MASK = "255.255.255.0";
-const QString PROTOCOL = "RIP";
+const QString RIP_PROTOCOL = "RIP";
 const int NEIGHBOR_COST = 1;
 const int FINISH_THRESHOLD = 12;
 

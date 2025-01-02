@@ -11,8 +11,9 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
     m_bufferSize(bufferSize),
     m_dhcp(nullptr),
     m_isRouting(false),
-    m_rip(*(new RIP(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))),
-                    MacAddress(DEFAULT_MAC)))){
+    m_rip((new RIP(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))),
+                    MacAddress(DEFAULT_MAC)))),
+    m_ospf(new OSPF(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))), m_macAddress, this)){
         for (int i = 0; i < portCount; ++i) {
         m_ports[i] = QSharedPointer<Port>::create(i);
 
@@ -204,8 +205,8 @@ QString Router::createDhcpAckBody(PacketPtr_t packet)
 void Router::handleRoutingPacket()
 {
     if (m_protocol == UT::PacketControlType::RIP){
-        if (m_rip.isUpdateReady()){
-            Packet *update = new Packet(m_rip.getUpdatePacket());
+        if (m_rip->isUpdateReady()){
+            Packet *update = new Packet(m_rip->getUpdatePacket());
             Q_EMIT sendPacket(PacketPtr_t(update), BROADCAST_ON_ALL_PORTS);
         }
     }
@@ -216,6 +217,16 @@ void Router::handleRoutingPacket()
         m_buffer.clear();
         // Q_EMIT sendPacket(m_ospf.getupdatePacket(), BROADCAST_ON_ALL_PORTS);
     }
+}
+
+void Router::handleOspfPacket(PacketPtr_t packet, int portNumber)
+{
+    QString payload = packet->readStringFromPayload();
+    QJsonDocument doc = QJsonDocument::fromJson(payload.toUtf8());
+    QString type = doc.object()["type"].toString();
+    if (type != HELLO)
+        bufferPacket(packet);
+    m_ospf->handleOSPFPacket(packet, m_ports[portNumber]);
 }
 
 void Router::bufferPacket(const PacketPtr_t &packet) {
@@ -306,9 +317,12 @@ void Router::route(UT::PacketControlType protocol)
     m_isRouting = true;
     m_protocol = protocol;
     if (m_protocol == UT::PacketControlType::RIP){
-        m_rip = *(new RIP(m_ipv4Address, m_macAddress, this));
-        connect(&m_rip, &RIP::routingFinished, this, &Router::finishRouting, Qt::AutoConnection);
-        m_rip.run();
+        m_rip = new RIP(m_ipv4Address, m_macAddress, this);
+        connect(m_rip, &RIP::routingFinished, this, &Router::finishRouting, Qt::AutoConnection);
+        m_rip->run();
+    }else if(protocol == UT::PacketControlType::OSPF){
+        m_ospf = new OSPF(m_ipv4Address, m_macAddress, this);
+        connect(m_ospf, &OSPF::routingFinished, this, &Router::finishRouting, Qt::AutoConnection);
     }
 }
 
@@ -318,32 +332,33 @@ std::vector<QSharedPointer<Node>> Router::neighbors() {
 
 void Router::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) {
     qDebug() << name() << ": Implement control packet handling logic.";
-    switch (packet->controlType()) {
-        case UT::PacketControlType::DHCPDiscovery:
-            handleDhcpDiscovery(packet);
-            break;
+    if (m_ipv4Address->isInSubnet(packet->ipv4Header().sourceIp())){
+        switch (packet->controlType()) {
+            case UT::PacketControlType::DHCPDiscovery:
+                handleDhcpDiscovery(packet);
+                break;
 
-        case UT::PacketControlType::DHCPOffer:
-            handleDhcpOffer(packet);
-            break;
+            case UT::PacketControlType::DHCPOffer:
+                handleDhcpOffer(packet);
+                break;
 
-        case UT::PacketControlType::DHCPRequest:
-            handleDhcpReq(packet);
-            break;
+            case UT::PacketControlType::DHCPRequest:
+                handleDhcpReq(packet);
+                break;
 
-        case UT::PacketControlType::DHCPAcknowledge:
-            handleDhcpAck(packet);
-            break;
-        case UT::PacketControlType::RIP:
-            m_rip.handleRIPPacket(packet, m_ports[portNumber]);
-            break;
-        case UT::PacketControlType::OSPF:
-            bufferPacket(packet);
-            // m_ospf.
-            break;
+            case UT::PacketControlType::DHCPAcknowledge:
+                handleDhcpAck(packet);
+                break;
+            case UT::PacketControlType::RIP:
+                m_rip->handleRIPPacket(packet, m_ports[portNumber]);
+                break;
+            case UT::PacketControlType::OSPF:
+                handleOspfPacket(packet, portNumber);
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
     // Add specific logic for Control Packet processing (e.g., routing updates, acknowledgments).
 }

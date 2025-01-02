@@ -6,6 +6,7 @@
 #include "../DHCP/dhcp.h"
 #include "routingtable.h"
 #include "../Protocol/rip.h"
+#include "../Protocol/ospf.h"
 #include <QString>
 #include <deque>
 #include <QJsonObject>
@@ -51,7 +52,8 @@ private:
     DHCP*                               m_dhcp;
     bool                                m_isRouting;
     UT::PacketControlType               m_protocol;
-    RIP                                 m_rip;
+    RIP                                 *m_rip;
+    OSPF                                *m_ospf;
 
     void handleDhcpDiscovery(PacketPtr_t packet);
     void handleDhcpOffer(PacketPtr_t packet);
@@ -59,6 +61,7 @@ private:
     void handleDhcpAck(PacketPtr_t packet);
     QString createDhcpAckBody(PacketPtr_t packet);
     void handleRoutingPacket();
+    void handleOspfPacket(PacketPtr_t packet, int portNumber);
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);
