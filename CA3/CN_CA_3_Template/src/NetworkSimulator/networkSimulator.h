@@ -1,5 +1,5 @@
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef NETWORKSIMULATOR_H
+#define NETWORKSIMULATOR_H
 
 #include <QObject>
 #include <QVector>
@@ -9,14 +9,13 @@
 #include <QJsonArray>
 #include "../AutonomousSystem/autonomoussystem.h"
 #include "../EventsCoordinator/EventsCoordinator.h"
-#include "../Globals/globals.h"
 
-class Network : public QObject {
+class NetworkSimulator : public QObject {
     Q_OBJECT
 
 public:
-    explicit Network(const QString &configFilePath, QObject *parent = nullptr);
-    ~Network() override;
+    explicit NetworkSimulator(const QString &configFilePath, QObject *parent = nullptr);
+    ~NetworkSimulator() override;
 
     void initializeNetwork();
     void startPhaseOne(const QString &configFilePath);
@@ -44,4 +43,4 @@ private:
     int m_totalRouters;
 };
 
-#endif // NETWORK_H
+#endif // NETWORKSIMULATOR_H

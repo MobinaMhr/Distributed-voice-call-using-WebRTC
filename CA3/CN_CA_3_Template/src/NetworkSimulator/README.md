@@ -1,6 +1,6 @@
-# Network
+# NetworkSimulator
 
-The constructor of this class initializes the Network object with the given configuration file path and parent object.
+The constructor of this class initializes the NetworkSimulator object with the given configuration file path and parent object.
 
 Parameters:
 
@@ -14,17 +14,17 @@ Initialization:
 - It sets m_routingCompletionCount and m_totalRouters to 0.
 
 ```cpp
-Network::Network(const QString &configFilePath, QObject *parent)
+NetworkSimulator::NetworkSimulator(const QString &configFilePath, QObject *parent)
     : QObject(parent),
     m_eventCoordinator(EventsCoordinator::instance(1.0, 10, 100, 5, 1000)),
     m_routingCompletionCount(0),
     m_totalRouters(0) {}
 ```
 
-It cleans up resources used by the Network object and deletes the m_eventCoordinator object.
+It cleans up resources used by the NetworkSimulator object and deletes the m_eventCoordinator object.
 
 ```cpp
-Network::~Network() {
+NetworkSimulator::~NetworkSimulator() {
     delete m_eventCoordinator;
 }
 ```
@@ -35,7 +35,7 @@ It reads the file content and parses it as a JSON document.
 It stores the parsed JSON object in m_config.
 
 ```cpp
-void Network::loadConfig(const QString &filePath) {
+void NetworkSimulator::loadConfig(const QString &filePath) {
     QFile configFile(filePath);
     // qDebug() << "Current working directory:" << QDir::currentPath();
     // qDebug() << "Attempting to open configuration file at:" << QFileInfo(configFile).absoluteFilePath();
@@ -59,7 +59,7 @@ It extracts and logs various simulation parameters from m_config.
 It processes and logs details of autonomous systems defined in the configuration.
 
 ```cpp
-void Network::isConfigLoaded() {
+void NetworkSimulator::isConfigLoaded() {
     bool isLoaded = !m_config.isEmpty();
     qDebug() << "isLoaded: " << isLoaded;
 
@@ -137,7 +137,7 @@ It calculates offsets for routers and PCs based on the current state of autonomo
 It returns a pair of integers representing the router and PC offsets.
 
 ```cpp
-std::pair<int, int> Network::calculateOffsets() {
+std::pair<int, int> NetworkSimulator::calculateOffsets() {
     int routerOffset = m_autonomousSystems.isEmpty() ? 0 : m_autonomousSystems.back()->routerCount();
     int pcOffset = m_autonomousSystems.isEmpty() ? 23 : 23 + m_autonomousSystems.back()->pcCount();
     return std::make_pair(routerOffset, pcOffset);
@@ -153,7 +153,7 @@ It updates the total router count.
 It calls connectAS to establish connections between autonomous systems.
 
 ```cpp
-void Network::initializeNetwork() {
+void NetworkSimulator::initializeNetwork() {
     QString simulation_duration = m_config["simulation_duration"].toString();
     QString cycle_duration = m_config["cycle_duration"].toString();
     int ttl = m_config["TTL"].toInt();
@@ -241,7 +241,7 @@ It iterates through autonomous systems and their connections.
 It establishes connections between source and target gateways.
 
 ```cpp
-void Network::connectAS() {
+void NetworkSimulator::connectAS() {
     QJsonArray asArray = m_config["Autonomous_systems"].toArray();
     for (const auto &asValue : asArray) {
         QJsonObject asConfig = asValue.toObject();
@@ -265,14 +265,14 @@ void Network::connectAS() {
 }
 ```
 
-IT starts the first phase of the network simulation (Network Construction).
+IT starts the first phase of the network simulation (NetworkSimulator Construction).
 It logs the start of Phase One.
 It calls loadConfig to load the configuration.
 It calls initializeNetwork to set up the network.
 
 ```cpp
-void Network::startPhaseOne(const QString &configFilePath) {
-    qDebug() << "Starting Phase One: Network Construction.";
+void NetworkSimulator::startPhaseOne(const QString &configFilePath) {
+    qDebug() << "Starting Phase One: NetworkSimulator Construction.";
     loadConfig(configFilePath);
     initializeNetwork();
 }
@@ -284,7 +284,7 @@ It starts the routing protocol for each autonomous system.
 It calls monitorRoutingCompletion to monitor the completion of routing protocols.
 
 ```cpp
-void Network::startPhaseTwo() {
+void NetworkSimulator::startPhaseTwo() {
     qDebug() << "Starting Phase Two: Identification.";
     for (const auto &as : m_autonomousSystems) {
         as->startRoutingProtocol();
@@ -300,7 +300,7 @@ It increments m_routingCompletionCount when a routing protocol stops.
 It logs the completion of all routing protocols when the count matches m_totalRouters.
 
 ```cpp
-void Network::monitorRoutingCompletion() {
+void NetworkSimulator::monitorRoutingCompletion() {
     for (const auto &as : m_autonomousSystems) {
         connect(as.data(), &AutonomousSystem::routingProtocolStopped, this, [this]() {
             m_routingCompletionCount++;
@@ -317,7 +317,7 @@ It starts the third phase of the network simulation (Execution).
 IT logs the start of Phase Three. And also uses the simulation duration from m_config.
 
 ```cpp
-void Network::startPhaseThree() {
+void NetworkSimulator::startPhaseThree() {
     qDebug() << "Starting Phase Three: Execution.";
     m_config["simulation_duration"].toString();
 }
@@ -327,7 +327,7 @@ This method starts the fourth phase of the network simulation (Analysis).
 It logs the start of Phase Four. And also it calls analyzeResults to analyze the simulation results.
 
 ```cpp
-void Network::startPhaseFour() {
+void NetworkSimulator::startPhaseFour() {
     qDebug() << "Starting Phase Four: Analysis.";
     analyzeResults();
 }
@@ -337,7 +337,7 @@ This method analyzes the results of the network simulation.
 It logs the start of result analysis.
 
 ```cpp
-void Network::analyzeResults() {
+void NetworkSimulator::analyzeResults() {
     qDebug() << "Analyzing simulation results...";
 }
 ```

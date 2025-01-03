@@ -1,20 +1,20 @@
-#include "network.h"
+#include "networkSimulator.h"
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
 #include <QDebug>
 
-Network::Network(const QString &configFilePath, QObject *parent)
+NetworkSimulator::NetworkSimulator(const QString &configFilePath, QObject *parent)
     : QObject(parent),
     m_eventCoordinator(EventsCoordinator::instance(1.0, 10, 100, 5, 1000)),
     m_routingCompletionCount(0),
     m_totalRouters(0) {}
 
-Network::~Network() {
+NetworkSimulator::~NetworkSimulator() {
     delete m_eventCoordinator;
 }
 
-void Network::loadConfig(const QString &filePath) {
+void NetworkSimulator::loadConfig(const QString &filePath) {
     QFile configFile(filePath);
     // qDebug() << "Current working directory:" << QDir::currentPath();
     // qDebug() << "Attempting to open configuration file at:" << QFileInfo(configFile).absoluteFilePath();
@@ -30,7 +30,7 @@ void Network::loadConfig(const QString &filePath) {
     configFile.close();
 }
 
-void Network::isConfigLoaded() {
+void NetworkSimulator::isConfigLoaded() {
     bool isLoaded = !m_config.isEmpty();
     qDebug() << "isLoaded: " << isLoaded;
 
@@ -103,13 +103,13 @@ void Network::isConfigLoaded() {
     }
 }
 
-std::pair<int, int> Network::calculateOffsets() {
+std::pair<int, int> NetworkSimulator::calculateOffsets() {
     int routerOffset = m_autonomousSystems.isEmpty() ? 0 : m_autonomousSystems.back()->routerCount();
     int pcOffset = m_autonomousSystems.isEmpty() ? 23 : 23 + m_autonomousSystems.back()->pcCount();
     return std::make_pair(routerOffset, pcOffset);
 }
 
-void Network::initializeNetwork() {
+void NetworkSimulator::initializeNetwork() {
     QString simulation_duration = m_config["simulation_duration"].toString();
     QString cycle_duration = m_config["cycle_duration"].toString();
     int ttl = m_config["TTL"].toInt();
@@ -191,7 +191,7 @@ void Network::initializeNetwork() {
     connectAS();
 }
 
-void Network::connectAS() {
+void NetworkSimulator::connectAS() {
     QJsonArray asArray = m_config["Autonomous_systems"].toArray();
     for (const auto &asValue : asArray) {
         QJsonObject asConfig = asValue.toObject();
@@ -214,13 +214,13 @@ void Network::connectAS() {
     }
 }
 
-void Network::startPhaseOne(const QString &configFilePath) {
-    qDebug() << "Starting Phase One: Network Construction.";
+void NetworkSimulator::startPhaseOne(const QString &configFilePath) {
+    qDebug() << "Starting Phase One: NetworkSimulator Construction.";
     loadConfig(configFilePath);
     initializeNetwork();
 }
 
-void Network::startPhaseTwo() {
+void NetworkSimulator::startPhaseTwo() {
     qDebug() << "Starting Phase Two: Identification.";
     for (const auto &as : m_autonomousSystems) {
         as->startRoutingProtocol();
@@ -229,7 +229,7 @@ void Network::startPhaseTwo() {
     monitorRoutingCompletion();
 }
 
-void Network::monitorRoutingCompletion() {
+void NetworkSimulator::monitorRoutingCompletion() {
     for (const auto &as : m_autonomousSystems) {
         connect(as.data(), &AutonomousSystem::routingProtocolStopped, this, [this]() {
             m_routingCompletionCount++;
@@ -241,32 +241,32 @@ void Network::monitorRoutingCompletion() {
     }
 }
 
-void Network::startPhaseThree() {
+void NetworkSimulator::startPhaseThree() {
     qDebug() << "Starting Phase Three: Execution.";
     m_config["simulation_duration"].toString();
 }
 
-void Network::startPhaseFour() {
+void NetworkSimulator::startPhaseFour() {
     qDebug() << "Starting Phase Four: Analysis.";
     analyzeResults();
 }
 
-void Network::analyzeResults() {
+void NetworkSimulator::analyzeResults() {
     qDebug() << "Analyzing simulation results...";
 }
 
-// void Network::resetNetwork() {
+// void NetworkSimulator::resetNetwork() {
 //     qDebug() << "Resetting network...";
 //     m_autonomousSystems.clear();
 //     initializeNetwork();
 // }
 
-// void Network::cleanLogs() {
+// void NetworkSimulator::cleanLogs() {
 //     qDebug() << "Cleaning logs...";
 //     // Implement log deletion logic.
 // }
 
-// void Network::printRoutingTable(int nodeId) {
+// void NetworkSimulator::printRoutingTable(int nodeId) {
 //     for (const auto &as : m_autonomousSystems) {
 //         for (const auto &router : as->routers()) {
 //             if (router->id() == nodeId) {

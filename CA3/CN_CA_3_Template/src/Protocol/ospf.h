@@ -25,7 +25,7 @@ struct NodeData
     PortPtr_t port;
 
     NodeData(QString _node, QString _parent, PortPtr_t _port)
-        : node(_node), port(_port), parent(_parent) {}
+        : node(_node), parent(_parent), port(_port) {}
 
     NodeData() : node(DUMMY_NODE){}
 
