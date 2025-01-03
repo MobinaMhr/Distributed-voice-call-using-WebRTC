@@ -12,7 +12,6 @@
 const int RIP_TTL = 16;
 const QString UPDATE = "update";
 const QString RIP_PROTOCOL = "RIP";
-const int NEIGHBOR_COST = 1;
 const int FINISH_THRESHOLD = 12;
 
 class RIP : public QObject {

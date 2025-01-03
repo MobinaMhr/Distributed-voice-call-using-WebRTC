@@ -68,6 +68,15 @@ int RoutingTable::getRouteCost(const IpPtr_t &destIp) const {
     return std::numeric_limits<int>::max();
 }
 
+IpPtr_t RoutingTable::getNextHop(const IpPtr_t &destIp) const
+{
+    auto it = m_routingTable.find(destIp);
+    if (it != m_routingTable.end()) {
+        return it.value().nextHopIp;
+    }
+    return nullptr;
+}
+
 void RoutingTable::updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const int metric) {
     if (!destIp) {
         qWarning() << "Invalid destination IP.";

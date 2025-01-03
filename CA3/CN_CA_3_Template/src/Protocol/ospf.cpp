@@ -46,25 +46,28 @@ void OSPF::handleOSPFPacket(const PacketPtr_t &packet, const QSharedPointer<Port
     if (type == HELLO)
         processHelloPacket(packet, port);
     else
-        processLSAPacket(packet);
+        processLSAPacket(packet, port);
 }
 
 void OSPF::processHelloPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port) {
     qDebug() << "Processing Hello packet from port" << port->number();
-    m_topologyGraph[m_routerIp->toString()].insert(packet->ipv4Header().sourceIp());
+    QString payload = packet->readStringFromPayload();
+    QJsonObject lsaData = parsePayload(payload);
+    QString router = lsaData["router"].toString();
+    m_topologyGraph[m_routerIp->toString()].insert(NodeData(router, m_routerIp->toString(), port));//TODO::change to payload ip
     updateLsaPacket();
     // Update neighbor list based on received Hello packet.
     // TODO:: update
 }
 
-void OSPF::processLSAPacket(const PacketPtr_t &packet) {
+void OSPF::processLSAPacket(const PacketPtr_t &packet, const QSharedPointer<Port> &port) {
     QString payload = packet->readStringFromPayload();
     QJsonObject lsaData = parsePayload(payload);
-    updateTopologyGraph(lsaData);
+    updateTopologyGraph(lsaData, port);
     updateLsaPacket();
 }
 
-void OSPF::updateTopologyGraph(const QJsonObject &lsaData) {
+void OSPF::updateTopologyGraph(const QJsonObject &lsaData, const QSharedPointer<Port> &port) {
     qDebug() << "Updating topology graph.";
     QString router = lsaData["router"].toString();
     QJsonArray links = lsaData["links"].toArray();
@@ -72,8 +75,10 @@ void OSPF::updateTopologyGraph(const QJsonObject &lsaData) {
 
     for (const auto& link : links) {
         QString neighbor = link.toString();
-        if (!m_topologyGraph[router].contains(neighbor)){
-            m_topologyGraph[router].insert(neighbor);//prevent repeted neighbors
+        if (!m_topologyGraph[router].contains(NodeData(neighbor, router, port))){
+            m_topologyGraph[router].insert(NodeData(neighbor, router, port));
+            if (!m_topologyGraph.contains(neighbor))
+                m_topologyGraph[neighbor].insert(NodeData(DUMMY_NODE, neighbor, nullptr));
             isTopologyUpdated = true;
         }
     }
@@ -101,11 +106,59 @@ void OSPF::updateLsaPacket()
     lsa->storeStringInPayload(generateLSAPayload());
     m_lsaPacket = *lsa;
 }
-
+/// topology -> (parent, (child, parent, nexthop port))
+/// tempList -> ((child, parent , port), cost)
 void OSPF::computeRoutingTable() {
     qDebug() << "Computing routing table using Dijkstra's algorithm.";
+    QList<QString> unVisitedNodes = m_topologyGraph.keys();
+    unVisitedNodes.removeAll(m_routerIp->toString());
+    // QMap<QString, int> visitedNode;
+    QMap<NodeData, int> tempList;
+    for (NodeData node : m_topologyGraph.value(m_routerIp->toString()))
+        tempList.insert(node, NEIGHBOR_COST);//TODO:: nexthop might have bugs
+
+    while(!tempList.isEmpty()){
+        NodeData shortestKey = findShortestPath(tempList); // Returns NodeData of best cost node
+        int shortestCost = tempList[shortestKey];
+        QString node = shortestKey.node;// childIp
+        PortPtr_t port = shortestKey.port;
+        QString parent = shortestKey.parent;
+        tempList.remove(shortestKey);
+        IpPtr_t nodeIP;
+        IpPtr_t parentIP;
+        if (node.contains(':')){
+            nodeIP = IPv6_t::createIpPtr(node, DEFAULT_IPV6_PREFIX_LENGTH);
+            parentIP = IPv6_t::createIpPtr(parent, DEFAULT_IPV6_PREFIX_LENGTH);
+        }
+        else{
+            nodeIP = IPv4_t::createIpPtr(node, DEFAULT_MASK);
+            parentIP = IPv4_t::createIpPtr(parent, DEFAULT_MASK);
+        }
+        IpPtr_t nextHopIP = m_routingTable->getNextHop(parentIP);
+        if (nextHopIP == nullptr)
+            nextHopIP = nodeIP;
+        m_routingTable->addRoute(nodeIP, nextHopIP, port, OSPF_PROTOCOL, shortestCost);
+        unVisitedNodes.removeAll(node);
+
+
+        ///-------
+        for (NodeData node : m_topologyGraph.value(shortestKey.node)){//TODO:: fix updating bug!!
+            int newCost = shortestCost + NEIGHBOR_COST;
+            NodeData otherPath = pathToSameNode(node.node, tempList);
+            if (otherPath.node != DUMMY_NODE){
+                if (newCost < tempList[otherPath]){
+                    tempList.remove(otherPath);
+                    tempList.insert(node, newCost);
+                }
+            }
+            else
+                tempList.insert(node, newCost);
+        }
+
+    }
     // Implement Dijkstra's algorithm to compute shortest paths.
 }
+
 
 QString OSPF::generateHelloPayload() {
     QJsonObject helloPacket;
@@ -123,7 +176,7 @@ QString OSPF::generateLSAPayload() {
 
     QJsonArray links;
     for (const auto& neighbor : m_topologyGraph[m_routerIp->toString()]) {
-        links.append(neighbor);
+        links.append(neighbor.node);
     }
 
     lsaPacket["links"] = links;
@@ -135,6 +188,37 @@ QString OSPF::generateLSAPayload() {
 QJsonObject OSPF::parsePayload(const QString& payload) {
     QJsonDocument doc = QJsonDocument::fromJson(payload.toUtf8());
     return doc.object();
+}
+
+/// tempList -> (parent, ((child, nexthop port), cost))
+NodeData OSPF::findShortestPath(QMap<NodeData, int> tempList)
+{
+    NodeData keyWithSmallestValue;
+    int smallestValue = std::numeric_limits<int>::max();
+
+    for (auto it = tempList.constBegin(); it != tempList.constEnd(); ++it) {
+        if (it.value() < smallestValue) {
+            smallestValue = it.value() ;
+            keyWithSmallestValue = it.key();
+        }
+    }
+
+    return keyWithSmallestValue;
+
+
+}
+
+NodeData OSPF::pathToSameNode(QString node, QMap<NodeData, int> tempList)
+{
+    NodeData keyWithSmallestValue;
+
+    for (auto it = tempList.constBegin(); it != tempList.constEnd(); ++it) {
+        if (it.key().node == node) {
+            keyWithSmallestValue = it.key();
+        }
+    }
+
+    return keyWithSmallestValue;
 }
 
 bool OSPF::isLSAReady() {

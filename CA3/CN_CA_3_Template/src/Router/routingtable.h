@@ -11,6 +11,7 @@
 
 const QString HELLO = "hello";
 const QString DEFAULT_MASK = "255.255.255.0";
+const int NEIGHBOR_COST = 1;
 
 class RoutingTable : public QObject
 {
@@ -45,6 +46,7 @@ public:
 
     void printRoutingTable() const;
     int getRouteCost(const IpPtr_t &destIp) const;
+    IpPtr_t getNextHop(const IpPtr_t &destIp) const;
     void updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const int metric);
     QVector<QString> getNodes() const;
     QVector<int> getCosts() const;
