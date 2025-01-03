@@ -12,7 +12,7 @@
 #include <QHash>
 #include "../Router/routingtable.h"
 
-const int OSPF_TTL = 16;
+const int OSPF_TTL = 4*4*4*4*4*4;
 const QString LSA = "lsa";
 const QString OSPF_PROTOCOL = "OSPF";
 const int OSPF_FINISH_THRESHOLD = 50;
