@@ -62,6 +62,7 @@ public:
     void run();
     void handleOSPFPacket(const PacketPtr_t& packet, const QSharedPointer<Port> &port);
     bool isLSAReady();
+    Packet getlsaPacket();
     // Packet getLSAPacket();
 
 private:

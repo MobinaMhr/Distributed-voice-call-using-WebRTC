@@ -225,6 +225,13 @@ bool OSPF::isLSAReady() {
     return m_lsaIsReady;
 }
 
+Packet OSPF::getlsaPacket()
+{
+    if(!m_isFinished)
+        m_lsaIsReady = false;
+    return m_lsaPacket;
+}
+
 // Packet OSPF::getLSAPacket() {
 //     m_lsaIsReady = false;
 //     // Construct and return the LSA packet.

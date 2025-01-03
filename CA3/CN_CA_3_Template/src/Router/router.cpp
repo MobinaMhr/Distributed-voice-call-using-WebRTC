@@ -215,7 +215,10 @@ void Router::handleRoutingPacket()
             Q_EMIT sendPacket(m_buffer[i], BROADCAST_ON_ALL_PORTS);
         }
         m_buffer.clear();
-        // Q_EMIT sendPacket(m_ospf.getupdatePacket(), BROADCAST_ON_ALL_PORTS);
+        if (m_ospf->isLSAReady()){
+            Packet *lsa = new Packet(m_ospf->getlsaPacket());
+            Q_EMIT sendPacket(PacketPtr_t(lsa), BROADCAST_ON_ALL_PORTS);
+        }
     }
 }
 
