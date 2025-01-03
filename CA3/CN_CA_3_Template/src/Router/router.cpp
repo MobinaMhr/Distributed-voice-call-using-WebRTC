@@ -11,6 +11,7 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
     m_bufferSize(bufferSize),
     m_dhcp(nullptr),
     m_isRouting(false),
+    m_isBgpWorking(false),
     m_rip((new RIP(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))),
                     MacAddress(DEFAULT_MAC)))),
     m_ospf(new OSPF(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))), m_macAddress, this)){
@@ -326,6 +327,7 @@ void Router::route(UT::PacketControlType protocol)
     }else if(protocol == UT::PacketControlType::OSPF){
         m_ospf = new OSPF(m_ipv4Address, m_macAddress, this);
         connect(m_ospf, &OSPF::routingFinished, this, &Router::finishRouting, Qt::AutoConnection);
+        m_ospf->run();
     }
 }
 
@@ -369,4 +371,10 @@ void Router::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber)
 void Router::processDataPacket(const PacketPtr_t &packet) {
     qDebug() << name() << ": Implement data packet handling logic.";
     // Add specific logic for Data Packet handling, such as forwarding or delivering.
+}
+
+void Router::runBgp()
+{
+    /// should send the Ebgp packet
+    /// shoul send the Ibgp packet on its own routing table
 }

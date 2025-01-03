@@ -32,6 +32,7 @@ public:
     std::vector<QSharedPointer<Node>> neighbors();
     void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     void processDataPacket(const PacketPtr_t &packet) override;
+    void runBgp();
 
 Q_SIGNALS:
     void routingFinished(int id);
@@ -51,6 +52,7 @@ private:
     std::vector<QSharedPointer<Node>>   m_neighbors;
     DHCP*                               m_dhcp;
     bool                                m_isRouting;
+    bool                                m_isBgpWorking;
     UT::PacketControlType               m_protocol;
     RIP                                 *m_rip;
     OSPF                                *m_ospf;
