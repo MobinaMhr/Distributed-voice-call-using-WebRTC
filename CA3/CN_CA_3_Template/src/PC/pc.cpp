@@ -5,6 +5,9 @@ PC::PC(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ipVers
     m_port = QSharedPointer<Port>::create(0);
     connect(this, &PC::sendPacket, m_port.data(), &Port::sendPacket, Qt::AutoConnection);
     connect(m_port.data(), &Port::packetReceived, this, &PC::receivePacket, Qt::AutoConnection);
+    QString ipv = (ipVersion == UT::IPVersion::IPv4) ? "IPV4" : "IPV6";
+    log("Pc " + QString::number(id) +  "by ipversion: " + ipv + "by macAddress: " + macAddress.toString()
+        + "created successfuly" );
 }
 
 PC::~PC() {}
@@ -16,7 +19,8 @@ void PC::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
     }
     packet->decreasePacketTtl();
     if (m_hasIP){
-        if (!isPacketMine(packet) && !packet->shouldDrop()) {
+        if (!isPacketMine(packet) || packet->shouldDrop()) {
+            log("droped packet : " + packet->getLogMessage());
             return;
         }//TODO:should move somewhere else;
     }
@@ -56,6 +60,7 @@ void PC::handleDhcpOffer(PacketPtr_t packet)
                                                fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL);
             req->storeIntInPayload(m_id);
             PacketPtr_t reqPt = PacketPtr_t(req);
+            log("DHCP offer " + sugestedIp + " accepted");
             Q_EMIT sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);//send at clock tick
         }
     }
@@ -67,6 +72,8 @@ void PC::handleDhcpAck(PacketPtr_t packet)
     QJsonDocument jsonDoc = QJsonDocument::fromJson(payload.toUtf8());
     QString ip = jsonDoc.object().value("ip").toString();
     QString mask = jsonDoc.object().value("mask").toString();
+    log("ack packet : " + packet->getLogMessage() + "\npayload:\n" +
+        packet->readStringFromPayload() + "\nrecieved");
     setIP(ip, mask);
 }
 
@@ -133,4 +140,5 @@ void PC::route(UT::PacketControlType protocol)
         hello->storeStringInPayload(payloadStrng);
         // buffer packet
     }
+    log("hello packet sent");
 }

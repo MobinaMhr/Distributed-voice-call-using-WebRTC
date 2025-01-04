@@ -22,7 +22,8 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
         connect(m_ports[i].data(), &Port::packetReceived, this, &Router::receivePacket, Qt::AutoConnection);
     }
     QString ipv = (ipVersion == UT::IPVersion::IPv4) ? "IPV4" : "IPV6";
-    log("Router " + QString::number(id) + "by ipversion: " + ipv + "created successfully");
+    log("Router " + QString::number(id) + "by ipversion: " + ipv + "by macAddress: " + macAddress.toString() +
+        "created successfully");
 }
 
 Router::~Router() {}
