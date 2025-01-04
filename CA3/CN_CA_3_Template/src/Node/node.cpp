@@ -47,6 +47,7 @@ void Node::sendDiscovery()
                                              DHCP_TTL);
     discovery->storeIntInPayload(m_id);
     PacketPtr_t discoveryPt = PacketPtr_t(discovery);
+    log("discovery packet created::\n\n" + discovery->getLogMessage());
     Q_EMIT sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
     //send dhcp discover packet
 }
@@ -65,9 +66,13 @@ void Node::log(const QString &message)
 void Node::setIP(QString sugestedIP, QString mask)
 {
     m_ipv4Address = IPv4Ptr_t(new IPv4_t(sugestedIP, mask));
-    if (m_ipVersion == UT::IPVersion::IPv6)
+    QString logMessage = "set the ip\nipv4:" + m_ipv4Address->toString();
+    if (m_ipVersion == UT::IPVersion::IPv6){
         m_ipv6Address = m_ipv4Address->toIPv6();
+        logMessage.append("\nipv6:" + m_ipv6Address->toString());
+    }
     m_hasIP = true;
+    log(logMessage);
 }
 
 int Node::id() const {
@@ -96,8 +101,10 @@ UT::IPVersion Node::ipVersion() const {
 
 void Node::setIPVersion(UT::IPVersion ipVersion) {
     m_ipVersion = ipVersion;
+    QString ipv = (ipVersion == UT::IPVersion::IPv4) ? "IPV4" : "IPV6";
+    log("ipversion is set to : " + ipv);
 }
-
+;
 QString Node::ipv6Address() const
 {
     return m_ipv6Address->toString();
