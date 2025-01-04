@@ -9,9 +9,12 @@ Node::Node(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ip
     m_logFile(QString("node%1_log.txt").arg(id)),
     m_name("Node_" + QString::number(id)){
     m_state = UT::NodeState::Alive;
+    log("node generated\n\n");
 }
 
-Node::~Node() {}
+Node::~Node() {
+    log("node destroyed");
+}
 
 // Node* Node::instance(int id, const MacAddress &macAddress, int portCount, QThread* parent) {
 //     if (!m_self) {
@@ -44,7 +47,7 @@ void Node::sendDiscovery()
                                              DHCP_TTL);
     discovery->storeIntInPayload(m_id);
     PacketPtr_t discoveryPt = PacketPtr_t(discovery);
-    sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
+    Q_EMIT sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
     //send dhcp discover packet
 }
 

@@ -155,3 +155,32 @@ void TCPHeader::print()
     qDebug() << "  Checksum:" << m_checksum;
     qDebug() << "  Urgent Pointer:" << m_urgentPointer;
 }
+
+QString TCPHeader::getLogMessage()
+{
+    QString logMessage = QString(
+                           "TCP Header:\n"
+                           "  Source Port: %1\n"
+                           "  Destination Port: %2\n"
+                           "  Sequence Number: %3\n"
+                           "  Acknowledgment Number: %4\n"
+                           "  Data Offset: %5\n"
+                           "  Flags: %6 (SYN: %7 ACK: %8 FIN: %9)\n"
+                           "  Window Size: %10\n"
+                           "  Checksum: %11\n"
+                           "  Urgent Pointer: %12")
+                           .arg(m_sourcePort)
+                           .arg(m_destPort)
+                           .arg(m_sequenceNumber)
+                           .arg(m_acknowledgmentNumber)
+                           .arg(m_dataOffset)
+                           .arg(m_flags)
+                           .arg((m_flags & 0x02) != 0)
+                           .arg((m_flags & 0x10) != 0)
+                           .arg((m_flags & 0x01) != 0)
+                           .arg(m_windowSize)
+                           .arg(m_checksum)
+                           .arg(m_urgentPointer);
+
+    return logMessage;
+}

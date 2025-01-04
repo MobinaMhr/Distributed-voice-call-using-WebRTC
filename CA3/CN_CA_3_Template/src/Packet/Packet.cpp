@@ -211,3 +211,39 @@ void Packet::print()
     }
     m_tcpHeader.print();
 }
+
+QString Packet::getLogMessage()
+{
+    QString packetType = (m_packetType == UT::PacketType::Data) ? "Data" : "Control";
+
+    QString logMessage = QString(
+                           "Packet Details:\n"
+                           "Packet Type: %1\n"
+                           "Control Type: %2\n"
+                           "Sequence Number: %3\n"
+                           "Waiting Cycles: %4\n"
+                           "Total Cycles: %5\n"
+                           "Payload Size: %6 bytes\n"
+                           "Path: %7\n"
+                           "IP Version: %8\n")
+                           .arg(packetType)
+                           .arg(toString(m_controlType))
+                           .arg(m_sequenceNumber)
+                           .arg(m_waitingCycles)
+                           .arg(m_totalCycles)
+                           .arg(m_payload.size())
+                           .arg(m_path.join(" -> "))
+                           .arg(m_ipVersion == UT::IPVersion::IPv4 ? "IPv4" : "IPv6");
+
+    // Append the appropriate IP header message based on the IP version
+    if (m_ipVersion == UT::IPVersion::IPv4) {
+        logMessage.append("IPv4 Header:\n" + m_ipv4Header.getLogMessage() + "\n");
+    } else {
+        logMessage.append("IPv6 Header:\n" + m_ipv6Header.getLogMessage() + "\n");
+    }
+
+    // Append the TCP header message
+    logMessage.append("TCP Header:\n" + m_tcpHeader.getLogMessage());
+
+    return logMessage;
+}

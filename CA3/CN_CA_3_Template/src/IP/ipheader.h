@@ -21,6 +21,7 @@ public:
     explicit AbstractIPHeader(QObject *parent = nullptr);
     UT::IPVersion ipVersion() const;
     virtual void print() = 0;
+    virtual QString getLogMessage() = 0;
 
 protected: // Getters and Setters
     UT::IPVersion m_ipVersion;
@@ -80,6 +81,7 @@ public:    // Getters and Setters
     void setDestIp(IPv4Ptr_t newDestIp);
 
     void print() override;
+    QString getLogMessage() override;
 
 private:
     uint8_t     m_versionHeaderLength;
@@ -135,6 +137,7 @@ public:    // Getters and Setters
     void setDestIp(IPv6Ptr_t newDestIp);
 
     void print() override;
+    QString getLogMessage() override;
 
 private:  // members
     uint32_t    m_versionTrafficClassFlowLabel;

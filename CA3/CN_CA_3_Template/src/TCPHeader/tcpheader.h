@@ -34,6 +34,7 @@ public:
     void setUrgentPointer(uint16_t urgentPointer);
 
     void print();
+    QString getLogMessage();
 
 private:
     uint16_t    m_sourcePort;

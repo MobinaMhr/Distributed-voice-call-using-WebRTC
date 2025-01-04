@@ -222,3 +222,47 @@ IPHeader<UT::IPVersion::IPv6> &IPHeader<UT::IPVersion::IPv6>::operator=(const IP
     }
     return *this;
 }
+
+QString IPHeader<UT::IPVersion::IPv4>::getLogMessage()
+{
+    QString logMessage = QString(
+                           "VersionHeaderLength: %1\n"
+                           "TypeOfService: %2\n"
+                           "TotalLength: %3\n"
+                           "Identification: %4\n"
+                           "FlagsFragmentOffset: %5\n"
+                           "TTL: %6\n"
+                           "Protocol: %7\n"
+                           "HeaderChecksum: %8\n"
+                           "Source IP: %9\n"
+                           "Destination IP: %10")
+                           .arg(m_versionHeaderLength)
+                           .arg(m_typeOfService)
+                           .arg(m_totalLength)
+                           .arg(m_identification)
+                           .arg(m_flagsFragmentOffset)
+                           .arg(m_ttl)
+                           .arg(m_protocol)
+                           .arg(m_headerChecksum)
+                           .arg(m_sourceIp->toString())
+                           .arg(m_destIp->toString());
+
+    return logMessage;
+}
+
+QString IPHeader<UT::IPVersion::IPv6>::getLogMessage()
+{
+    QString logMessage = QString("VersionTrafficClassFlow: %1\n"
+                           "Payload length: %2\n"
+                           "NextHeader: %3\n"
+                           "HopLimit: %4\n"
+                           "Source IP: %5\n"
+                           "Destination IP: %6")
+                           .arg(m_versionTrafficClassFlowLabel)
+                           .arg(m_payloadLength)
+                           .arg(m_nextHeader)
+                           .arg(m_hopLimit)
+                           .arg(m_sourceIp->toString())
+                           .arg(m_destIp->toString());
+    return logMessage;
+}

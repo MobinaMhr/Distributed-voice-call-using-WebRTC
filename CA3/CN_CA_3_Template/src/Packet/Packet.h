@@ -66,6 +66,7 @@ public:
     void setTcpHeader(const TCPHeader &tcpHeader);
 
     void print();
+    QString getLogMessage();
 
 private:
     UT::PacketType              m_packetType;
