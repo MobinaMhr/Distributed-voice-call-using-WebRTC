@@ -4,8 +4,9 @@ Node::Node(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ip
     : QThread(parent),
     m_ipVersion(ipVersion),
     m_id(id),
+    m_hasIP(false),
     m_macAddress(macAddress),
-    m_name("Node_" + QString::number(id)) {
+    m_name("Node_" + QString::number(id)){
     m_state = UT::NodeState::Alive;
 }
 
@@ -51,6 +52,7 @@ void Node::setIP(QString sugestedIP, QString mask)
     m_ipv4Address = IPv4Ptr_t(new IPv4_t(sugestedIP, mask));
     if (m_ipVersion == UT::IPVersion::IPv6)
         m_ipv6Address = m_ipv4Address->toIPv6();
+    m_hasIP = true;
 }
 
 int Node::id() const {

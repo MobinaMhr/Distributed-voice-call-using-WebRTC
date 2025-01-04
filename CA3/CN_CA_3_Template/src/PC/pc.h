@@ -4,6 +4,8 @@
 #include "../Node/Node.h"
 #include "../IP/IP.h"
 #include <QString>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 class PC : public Node {
     Q_OBJECT
@@ -26,6 +28,9 @@ public Q_SLOTS:
 
 private:
     PortPtr_t       m_port;
+
+    void handleDhcpOffer(PacketPtr_t packet);
+    void handleDhcpAck(PacketPtr_t packet);
 };
 
 #endif // PC_H

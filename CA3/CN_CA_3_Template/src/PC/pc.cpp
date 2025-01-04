@@ -14,8 +14,11 @@ void PC::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
         qDebug() << name() << ": Received a null packet.";
         return;
     }
-    if (!isPacketMine(packet)) {
-        return;
+    packet->decreasePacketTtl();
+    if (m_hasIP){
+        if (!isPacketMine(packet) && !packet->shouldDrop()) {
+            return;
+        }//TODO:should move somewhere else;
     }
 
     switch (packet->packetType()) {
@@ -37,46 +40,55 @@ void PC::getIP()
     sendDiscovery();
 }
 
+void PC::handleDhcpOffer(PacketPtr_t packet)
+{
+    if (packet->dataLinkHeader().source().toString() == m_macAddress.toString()){
+        if (m_ipv4Address->toValue() == DEFAULT_IP_VALUE){
+            QString sugestedIp = packet->readStringFromPayload();
+            IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+            QByteArray payload ;
+            DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress,
+                                                       packet->dataLinkHeader().destination());
+            TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
+            IPHv4_t *iphv4 = new IPHv4_t();
+            IPHv6_t *iphv6 = new IPHv6_t();
+            Packet *req = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPRequest, 1, 0, 0,
+                                               fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL);
+            req->storeIntInPayload(m_id);
+            PacketPtr_t reqPt = PacketPtr_t(req);
+            Q_EMIT sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);//send at clock tick
+        }
+    }
+}
+
+void PC::handleDhcpAck(PacketPtr_t packet)
+{
+    QString payload = packet->readStringFromPayload();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(payload.toUtf8());
+    QString ip = jsonDoc.object().value("ip").toString();
+    QString mask = jsonDoc.object().value("mask").toString();
+    setIP(ip, mask);
+}
+
 PortPtr_t PC::getIdlePort() {
     if (m_port->state() == UT::PortState::Idle) return m_port;
     else return nullptr;
 }
 
 void PC::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) {
-    switch (packet->controlType()) {
-        case UT::PacketControlType::Request:
+    if (m_ipv4Address->isInSubnet(packet->ipv4Header().sourceIp())){
+        switch (packet->controlType()) {
+            case UT::PacketControlType::DHCPOffer:
+                handleDhcpOffer(packet);
+                break;
 
-            break;
-        case UT::PacketControlType::Response:
+            case UT::PacketControlType::DHCPAcknowledge:
+                handleDhcpAck(packet);
+                break;
 
-            break;
-        case UT::PacketControlType::Acknowledge:
-
-            break;
-        case UT::PacketControlType::Error:
-
-            break;
-        case UT::PacketControlType::DHCPDiscovery:
-
-            break;
-        case UT::PacketControlType::DHCPOffer:
-
-            break;
-        case UT::PacketControlType::DHCPRequest:
-
-            break;
-        case UT::PacketControlType::DHCPAcknowledge:
-
-            break;
-        case UT::PacketControlType::DHCPNak:
-
-            break;
-        case UT::PacketControlType::RIP:
-        case UT::PacketControlType::OSPF:
-
-            break;
-        default:
-            break;
+            default:
+                break;
+        }
     }
 }
 

@@ -55,6 +55,7 @@ protected:
     UT::IPVersion   m_ipVersion;
     IPv4Ptr_t       m_ipv4Address;
     IPv6Ptr_t       m_ipv6Address;
+    bool            m_hasIP;
 
     void setIP(QString sugestedIP, QString mask);
     void run() override;

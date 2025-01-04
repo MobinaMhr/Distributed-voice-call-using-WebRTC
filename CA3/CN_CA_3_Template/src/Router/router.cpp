@@ -79,7 +79,7 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
         // generate offer packet
     }
     else
-        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+        Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);//should bufer it and send by clock tick
 }
 
 void Router::handleDhcpOffer(PacketPtr_t packet)
@@ -144,10 +144,12 @@ void Router::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
     }
     packet->decreasePacketTtl();
 
-    if (!isPacketMine(packet) && !packet->shouldDrop()) {
-        bufferPacket(packet);
-        return;
-    }//TODO:should move somewhere else;
+    if (m_hasIP && !m_isRouting){
+        if (!isPacketMine(packet) && !packet->shouldDrop()) {
+            bufferPacket(packet);
+            return;
+        }//TODO:should move somewhere else;
+    }///?????????
 
     switch (packet->packetType()) {
         case UT::PacketType::Control:
