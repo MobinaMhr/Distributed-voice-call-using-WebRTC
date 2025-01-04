@@ -6,6 +6,7 @@ Node::Node(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ip
     m_id(id),
     m_hasIP(false),
     m_macAddress(macAddress),
+    m_logFile(QString("node%1_log.txt").arg(id)),
     m_name("Node_" + QString::number(id)){
     m_state = UT::NodeState::Alive;
 }
@@ -45,6 +46,17 @@ void Node::sendDiscovery()
     PacketPtr_t discoveryPt = PacketPtr_t(discovery);
     sendPacket(discoveryPt, BROADCAST_ON_ALL_PORTS);
     //send dhcp discover packet
+}
+
+void Node::log(const QString &message)
+{
+    if (m_logFile.open(QIODevice::Append | QIODevice::Text)) {
+        QTextStream out(&m_logFile);
+        out << message << "\n";
+        m_logFile.close();
+    } else {
+        qWarning("Could not open log file for writing.");
+    }
 }
 
 void Node::setIP(QString sugestedIP, QString mask)

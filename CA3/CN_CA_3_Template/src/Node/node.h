@@ -12,6 +12,8 @@
 #include "../MACAddress/macaddress.h"
 #include <QString>
 #include "../Port/Port.h"
+#include <QFile>
+#include <QTextStream>
 
 const qint32 DHCP_TTL = 80;
 
@@ -46,6 +48,7 @@ public:
     void setIPVersion(UT::IPVersion ipVersion);
 
     void sendDiscovery();
+    void log(const QString &message);
 
     virtual void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) = 0;
     virtual void processDataPacket(const PacketPtr_t &packet) = 0;
@@ -56,6 +59,7 @@ protected:
     IPv4Ptr_t       m_ipv4Address;
     IPv6Ptr_t       m_ipv6Address;
     bool            m_hasIP;
+    QFile           m_logFile;
 
     void setIP(QString sugestedIP, QString mask);
     void run() override;
