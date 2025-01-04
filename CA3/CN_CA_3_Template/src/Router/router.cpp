@@ -397,6 +397,12 @@ void Router::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber)
             case UT::PacketControlType::OSPF:
                 handleOspfPacket(packet, portNumber);
                 break;
+            case UT::PacketControlType::EBGP:
+                handleEBgpPacket(packet);
+                break;
+            case UT::PacketControlType::IBGP:
+                handleIBgp(packet, portNumber);
+                break;
 
             default:
                 break;
@@ -452,4 +458,73 @@ QString Router::generateEBgpPayload()
     jsonObject["costs"] = costsArray;
     QJsonDocument jsonDoc(jsonObject);
     return QString(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+void Router::handleEBgpPacket(const PacketPtr_t &packet)
+{
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(packet->readStringFromPayload().toUtf8());
+    QJsonObject inputPayload = jsonDoc.object();
+    inputPayload["type"] = IBGP_PROTOCOL;
+    QJsonDocument newJsonDoc(inputPayload);
+    QString newPayload = QString(jsonDoc.toJson(QJsonDocument::Compact));
+    QMap<IpPtr_t, RoutingTable::RouteEntry> currentRoutingTable = m_routing_table->getAllRoutes();
+    for (const IpPtr_t& node : currentRoutingTable.keys()){
+        Packet ibgpPacket = generateIBgpPacket(node, newPayload);
+        // send the packet;
+    }
+    IpPtr_t ip =  (m_ipVersion == UT::IPVersion::IPv4) ? IpPtr_t(m_ipv4Address) : IpPtr_t(m_ipv6Address);
+    updateRoutingTable(newJsonDoc.object(), IPv4_t::createIpPtr(packet->ipv4Header().sourceIp(), DEFAULT_MASK),
+                       m_ports[m_bgpPort]);
+}
+
+Packet Router::generateIBgpPacket(const IpPtr_t &dest, QString payload)
+{
+    IPHv4_t v4 = *(new IPHv4_t(this));
+    v4.setSourceIp(m_ipv4Address);
+    IPHv6_t v6 = *(new IPHv6_t(this));
+    v6.setSourceIp(m_ipv4Address->toIPv6());
+    QByteArray _payload ;
+    DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress, this->m_macAddress);
+    TCPHeader *th = new TCPHeader(m_bgpPort, BROADCAST_ON_ALL_PORTS);
+    Packet *update = new Packet(UT::PacketType::Control, UT::PacketControlType::IBGP,
+                                        1, 0, 0, dest, _payload, *dh, *th, v4, v6, RIP_TTL);
+
+    update->storeStringInPayload(payload);;
+    return *update;
+}
+
+void Router::updateRoutingTable(QJsonObject ibgp, IpPtr_t sourceIp, PortPtr_t port)
+{
+    QVector<QString> nodes;
+    QVector<int> costs;
+    QJsonArray nodesArray = ibgp["nodes"].toArray();
+    QJsonArray costsArray = ibgp["costs"].toArray();
+
+    for (const QJsonValue& nodeValue : nodesArray)
+        nodes.append(nodeValue.toString());
+    for (const QJsonValue& costValue : costsArray)
+        costs.append(costValue.toInt());
+
+    IpPtr_t nextHopIP = m_routing_table->getNextHop(sourceIp);
+    if (nextHopIP == nullptr)
+        nextHopIP = sourceIp;
+
+    for (int i = 0; i<nodes.size(); i++){
+        auto node = nodes[i];
+        IpPtr_t nodeIP;
+        nodeIP = IPv4_t::createIpPtr(node, DEFAULT_MASK);
+        int currentCost = m_routing_table->getRouteCost(nodeIP);
+        int costFromNeighbor = costs[i] + NEIGHBOR_COST;
+        if (currentCost > costFromNeighbor)
+            m_routing_table->updateRoute(nodeIP ,nextHopIP, port, costFromNeighbor);
+
+    }
+}
+
+void Router::handleIBgp(const PacketPtr_t &packet, const int &portnumber)
+{
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(packet->readStringFromPayload().toUtf8());
+    IpPtr_t ip =  (m_ipVersion == UT::IPVersion::IPv4) ? IpPtr_t(m_ipv4Address) : IpPtr_t(m_ipv6Address);
+    updateRoutingTable(jsonDoc.object(), IPv4_t::createIpPtr(packet->ipv4Header().sourceIp(), DEFAULT_MASK),
+                       m_ports[portnumber]);
 }

@@ -14,6 +14,7 @@
 
 const int ROUTER_IS_NOT_GATEWAY = -2;
 const QString EBGP_PROTOCOL = "EBGP";
+const QString IBGP_PROTOCOL = "IBGP";
 
 class Router : public Node {
     Q_OBJECT
@@ -38,6 +39,10 @@ public:
     void runBgp();
     void setBgpPort(int portnumber);
     QString generateEBgpPayload();
+    void handleEBgpPacket(const PacketPtr_t &packet);
+    Packet generateIBgpPacket(const IpPtr_t &dest, QString payload);
+    void updateRoutingTable(QJsonObject ibgp, IpPtr_t sourceIp, PortPtr_t port);
+    void handleIBgp(const PacketPtr_t &packet, const int &portnumber);
 
 Q_SIGNALS:
     void routingFinished(int id);
