@@ -1,6 +1,6 @@
 #include <QCoreApplication>
 #include <QDebug>
-#include "./Network/network.h"
+#include "./NetworkSimulator/networkSimulator.h"
 // #include "./MACAddress/testmacaddress.h"
 // #include "./MACAddress/testmacaddressgenerator.h"
 
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     QCoreApplication app(argc, argv);
 
     QString configFilePath = "./../../assets/config.json";
-    Network network(configFilePath);
+    NetworkSimulator network(configFilePath);
     network.startPhaseOne(configFilePath);
 
     qDebug() << "----------------------------------";
