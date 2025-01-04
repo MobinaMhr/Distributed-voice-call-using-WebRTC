@@ -45,6 +45,7 @@ public:
     QMap<IpPtr_t, RouteEntry> getAllRoutes() const;
 
     void printRoutingTable() const;
+    QString getRoutingTableAsString() const;
     int getRouteCost(const IpPtr_t &destIp) const;
     IpPtr_t getNextHop(const IpPtr_t &destIp) const;
     void updateRoute(const IpPtr_t &destIp, const IpPtr_t &nextHopIp, const QSharedPointer<Port> &port, const int metric);

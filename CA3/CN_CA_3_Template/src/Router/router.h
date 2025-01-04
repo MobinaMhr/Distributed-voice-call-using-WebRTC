@@ -64,6 +64,7 @@ private:
     QString createDhcpAckBody(PacketPtr_t packet);
     void handleRoutingPacket();
     void handleOspfPacket(PacketPtr_t packet, int portNumber);
+    void handleRipPacket(PacketPtr_t packet, int portNumber);
 
     bool isBufferAtCapacity();
     int findBufferPositionForPacket(UT::PacketType packetType);

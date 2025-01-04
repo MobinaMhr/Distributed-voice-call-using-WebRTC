@@ -21,6 +21,8 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
         connect(this, &Router::sendPacket, m_ports[i].data(), &Port::sendPacket, Qt::AutoConnection);
         connect(m_ports[i].data(), &Port::packetReceived, this, &Router::receivePacket, Qt::AutoConnection);
     }
+    QString ipv = (ipVersion == UT::IPVersion::IPv4) ? "IPV4" : "IPV6";
+    log("Router " + QString::number(id) + "by ipversion: " + ipv + "created successfully");
 }
 
 Router::~Router() {}
@@ -74,12 +76,15 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
         offer->storeStringInPayload(sugestedIp);
         PacketPtr_t offerPt = PacketPtr_t(offer);
         /// BUFFER HERE instead of send
-
+        log("offer packet : " + offerPt->getLogMessage() + "\npayload:\n" + sugestedIp + "\ngenerated");
         // Q_EMIT sendPacket(offerPt, BROADCAST_ON_ALL_PORTS);
         // generate offer packet
     }
-    else
+    else{
         Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);//should bufer it and send by clock tick
+        log("discovery packet : " + packet->getLogMessage() + "\npayload:\n" +
+            QString::number(packet->readIntFromPayload()) + "\nforwaeded");
+    }
 }
 
 void Router::handleDhcpOffer(PacketPtr_t packet)
@@ -99,10 +104,15 @@ void Router::handleDhcpOffer(PacketPtr_t packet)
             req->storeIntInPayload(m_id);
             PacketPtr_t reqPt = PacketPtr_t(req);
             Q_EMIT sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);
+            log("request packet : " + reqPt->getLogMessage() + "\npayload:\n" +
+                QString::number(m_id)  + "\ngenerated");
         }
     }
-    else
+    else{
         Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+        log("offer packet : " + packet->getLogMessage() + "\npayload:\n" +
+            packet->readStringFromPayload() + "\nforwarded");
+    }
 }
 
 void Router::handleDhcpReq(PacketPtr_t packet)
@@ -122,10 +132,14 @@ void Router::handleDhcpReq(PacketPtr_t packet)
         ack->storeStringInPayload(response);
         PacketPtr_t ackPt = PacketPtr_t(ack);
         Q_EMIT sendPacket(ackPt, BROADCAST_ON_ALL_PORTS);
+        log("ack packet : " + ackPt->getLogMessage() + "\npayload:\n" + response + "\ngenerated");
         // generate offer packet
     }
-    else
+    else{
         Q_EMIT sendPacket(packet, BROADCAST_ON_ALL_PORTS);
+        log("request packet : " + packet->getLogMessage() + "\npayload:\n" +
+            QString::number(packet->readIntFromPayload()) + "\nforwarded");
+    }
 }
 
 void Router::handleDhcpAck(PacketPtr_t packet)
@@ -134,6 +148,8 @@ void Router::handleDhcpAck(PacketPtr_t packet)
     QJsonDocument jsonDoc = QJsonDocument::fromJson(payload.toUtf8());
     QString ip = jsonDoc.object().value("ip").toString();
     QString mask = jsonDoc.object().value("mask").toString();
+    log("ack packet : " + packet->getLogMessage() + "\npayload:\n" +
+        packet->readStringFromPayload() + "\nrecieved");
     setIP(ip, mask);
 }
 
@@ -147,8 +163,13 @@ void Router::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
     if (m_hasIP && !m_isRouting){
         if (!isPacketMine(packet) && !packet->shouldDrop()) {
             bufferPacket(packet);
+            log("packet : \n" + packet->getLogMessage() + "\nbuffered");
             return;
         }//TODO:should move somewhere else;
+        else if (packet->shouldDrop()){
+            log("packet : \n" + packet->getLogMessage() + "\ndroped by the end of its ttl");
+            return;
+        }
     }///?????????
 
     switch (packet->packetType()) {
@@ -168,6 +189,7 @@ void Router::receivePacket(const PacketPtr_t &packet, uint8_t portNumber) {
 void Router::finishRouting(RoutingTable routingTable)
 {
     m_routing_table = new RoutingTable(routingTable);
+    log("routing finished : " + m_routing_table->getRoutingTableAsString());
     m_isRouting = false;
     Q_EMIT routingFinished(m_id);
 }
@@ -228,6 +250,8 @@ void Router::handleRoutingPacket()
 void Router::handleOspfPacket(PacketPtr_t packet, int portNumber)
 {
     QString payload = packet->readStringFromPayload();
+    log("ospf packet : " + packet->getLogMessage() + "\npayload:\n" + payload + "\nrecevied on port : " +
+        QString::number(portNumber));
     QJsonDocument doc = QJsonDocument::fromJson(payload.toUtf8());
     QString type = doc.object()["type"].toString();
     if (type != HELLO)
@@ -235,11 +259,19 @@ void Router::handleOspfPacket(PacketPtr_t packet, int portNumber)
     m_ospf->handleOSPFPacket(packet, m_ports[portNumber]);
 }
 
+void Router::handleRipPacket(PacketPtr_t packet, int portNumber)
+{
+    QString payload = packet->readStringFromPayload();
+    log("ospf packet : " + packet->getLogMessage() + "\npayload:\n" + payload + "\nrecevied on port : " +
+        QString::number(portNumber));
+    m_rip->handleRIPPacket(packet, m_ports[portNumber]);
+}
+
 void Router::bufferPacket(const PacketPtr_t &packet) {
     int position = findBufferPositionForPacket(packet->packetType());
 
     if (position == -1) {
-        qDebug() << LOG_TITLE << "Packet Dropped: Buffer Full. Sequence:" << packet->sequenceNumber();
+        log("Packet Dropped: Buffer Full. Sequence:" + QString::number(packet->sequenceNumber()));
         return;
     }
 
@@ -248,10 +280,8 @@ void Router::bufferPacket(const PacketPtr_t &packet) {
     } else {
         m_buffer.insert(m_buffer.begin() + position, std::move(packet));
     }
-
-    qDebug() << LOG_TITLE << (packet->packetType() == UT::PacketType::Data ?
-                                "Data Packet Added." : "Control Packet Added.")
-             << "Buffer Size:" << m_buffer.size();
+    QString packetType = (packet->packetType() == UT::PacketType::Data ? "Data Packet Added." : "Control Packet Added.");
+    log(packetType + "Buffer Size:" + QString::number(m_buffer.size()));
 }
 
 void Router::routePackets() {
@@ -259,32 +289,32 @@ void Router::routePackets() {
         const auto& packetPtr = *it;
 
         if (!packetPtr) {
-            qDebug() << "Encountered a null packet pointer.";
+            log( "Encountered a null packet pointer.");
             it = m_buffer.erase(it);
             continue;
         }
 
-        qDebug() << "Processing packet with sequence number:" << packetPtr->sequenceNumber();
+        log("Processing packet with sequence number:" + QString::number(packetPtr->sequenceNumber()));
 
         if (!m_routing_table->routeExists(packetPtr->destinationIP())) {
-            qDebug() << "No Route Exists for the packet";
+            log("No Route Exists for the packet");
             continue;
         }
 
         QSharedPointer<Port> hostPort = m_routing_table->getPort(packetPtr->destinationIP());
         int portIndex = hostPort->number();
 
-        if (m_ports[portIndex]->state() == UT::PortState::Reserved) {
+        if (m_ports[portIndex]->state() == UT::PortState::Reserved || !m_hasIP || m_isRouting || m_isBgpWorking) {
             m_ports[portIndex]->setState(UT::PortState::Sending);
-            qDebug() << "Routing packet to port" << portIndex;
+            log("Routing packet :\n" + packetPtr->getLogMessage() + "\nto port" + QString::number(portIndex));
 
             Q_EMIT sendPacket(packetPtr, hostPort->number());
             it = m_buffer.erase(it);
         } else if (m_ports[portIndex]->state() == UT::PortState::Sending) {
-            qDebug() << "Port" << portIndex << "is already sending. Keeping packet in buffer.";
+            log("Port" + QString::number(portIndex) + "is already sending. Keeping packet in buffer.");
             ++it;
         } else {
-            qDebug() << "Port" << portIndex << "is not bined and is idle.";
+            log("Port" + QString::number(portIndex) + "is not bined and is idle.");
             ++it;
         }
 
@@ -295,7 +325,7 @@ void Router::routePackets() {
                                       (port->state() == UT::PortState::Idle); });
 
         if (allPortsBusy) {
-            qDebug() << "All ports are Busy. Stopping packet routing.";
+            log("All ports are Busy. Stopping packet routing.");
             break;
         }
     }
@@ -316,10 +346,13 @@ std::vector<PortPtr_t> Router::getPorts() {
 void Router::setDhcp(int asNumber)
 {
     this->m_dhcp = new DHCP(asNumber);
+    log("I'm a DHCP");
 }
 
 void Router::route(UT::PacketControlType protocol)
 {
+    QString protocolName = (protocol == UT::PacketControlType::OSPF) ? "OSPF" : "RIP";
+    log("start routing by protocol " + protocolName);
     m_isRouting = true;
     m_protocol = protocol;
     if (m_protocol == UT::PacketControlType::RIP){
@@ -357,7 +390,7 @@ void Router::processControlPacket(const PacketPtr_t &packet, uint8_t portNumber)
                 handleDhcpAck(packet);
                 break;
             case UT::PacketControlType::RIP:
-                m_rip->handleRIPPacket(packet, m_ports[portNumber]);
+                handleRipPacket(packet, portNumber);
                 break;
             case UT::PacketControlType::OSPF:
                 handleOspfPacket(packet, portNumber);

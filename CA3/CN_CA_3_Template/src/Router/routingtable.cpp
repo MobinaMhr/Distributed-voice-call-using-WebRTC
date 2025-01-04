@@ -55,6 +55,12 @@ void RoutingTable::printRoutingTable() const
     }
 }
 
+QString RoutingTable::getRoutingTableAsString() const
+{
+    //TODO
+    return "";
+}
+
 int RoutingTable::getRouteCost(const IpPtr_t &destIp) const {
     if (!destIp) {
         return std::numeric_limits<int>::max();

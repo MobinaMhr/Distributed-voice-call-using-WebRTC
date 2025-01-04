@@ -9,12 +9,9 @@ Node::Node(int id, const MacAddress &macAddress, int portCount, UT::IPVersion ip
     m_logFile(QString("node%1_log.txt").arg(id)),
     m_name("Node_" + QString::number(id)){
     m_state = UT::NodeState::Alive;
-    log("node generated\n\n");
 }
 
-Node::~Node() {
-    log("node destroyed");
-}
+Node::~Node() {}
 
 // Node* Node::instance(int id, const MacAddress &macAddress, int portCount, QThread* parent) {
 //     if (!m_self) {
