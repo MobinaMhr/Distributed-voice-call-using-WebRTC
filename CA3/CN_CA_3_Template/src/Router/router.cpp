@@ -12,6 +12,7 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
     m_dhcp(nullptr),
     m_isRouting(false),
     m_isBgpWorking(false),
+    m_bgpPort(ROUTER_IS_NOT_GATEWAY),
     m_rip((new RIP(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))),
                     MacAddress(DEFAULT_MAC)))),
     m_ospf(new OSPF(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))), m_macAddress, this)){
@@ -411,6 +412,44 @@ void Router::processDataPacket(const PacketPtr_t &packet) {
 
 void Router::runBgp()
 {
+    if(m_bgpPort != ROUTER_IS_NOT_GATEWAY){
+        IPHv4_t v4 = *(new IPHv4_t(this));
+        v4.setSourceIp(m_ipv4Address);
+        IPHv6_t v6 = *(new IPHv6_t(this));
+        v6.setSourceIp(m_ipv4Address->toIPv6());
+        IpPtr_t fakeDest = IPv4_t::createIpPtr("255.255.255.255", "255.255.255.255");
+        QByteArray payload ;
+        DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress, this->m_macAddress);
+        TCPHeader *th = new TCPHeader(m_bgpPort, BROADCAST_ON_ALL_PORTS);
+        Packet *update = new Packet(UT::PacketType::Control, UT::PacketControlType::EBGP,
+                                            1, 0, 0, fakeDest, payload, *dh, *th, v4, v6, RIP_TTL);
+
+        update->storeStringInPayload(generateEBgpPayload());
+        //store it to send on bgpProt!!!
+    }
     /// should send the Ebgp packet
     /// shoul send the Ibgp packet on its own routing table
+}
+
+void Router::setBgpPort(int portnumber)
+{
+    m_bgpPort = portnumber;
+}
+
+QString Router::generateEBgpPayload()
+{
+    QMap<IpPtr_t, RoutingTable::RouteEntry> routes = m_routing_table->getAllRoutes();
+    QJsonObject jsonObject;
+    jsonObject["type"] = EBGP_PROTOCOL;
+
+    QJsonArray nodesArray;
+    QJsonArray costsArray;
+    for (const IpPtr_t& node : routes.keys()){
+        nodesArray.append(node->toIPv4()->toString());
+        costsArray.append(routes[node].metric);
+    }
+    jsonObject["nodes"] = nodesArray;
+    jsonObject["costs"] = costsArray;
+    QJsonDocument jsonDoc(jsonObject);
+    return QString(jsonDoc.toJson(QJsonDocument::Compact));
 }

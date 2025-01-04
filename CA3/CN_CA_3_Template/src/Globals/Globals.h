@@ -51,6 +51,8 @@ enum class PacketControlType
     DHCPNak,
     RIP,
     OSPF,
+    EBGP,
+    IBGP,
 };
 
 // const std::map<PacketControlType, QString> packetControlTypeStrings = {

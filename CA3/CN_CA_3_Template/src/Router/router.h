@@ -12,6 +12,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
+const int ROUTER_IS_NOT_GATEWAY = -2;
+const QString EBGP_PROTOCOL = "EBGP";
+
 class Router : public Node {
     Q_OBJECT
 
@@ -33,6 +36,8 @@ public:
     void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     void processDataPacket(const PacketPtr_t &packet) override;
     void runBgp();
+    void setBgpPort(int portnumber);
+    QString generateEBgpPayload();
 
 Q_SIGNALS:
     void routingFinished(int id);
@@ -56,6 +61,7 @@ private:
     UT::PacketControlType               m_protocol;
     RIP                                 *m_rip;
     OSPF                                *m_ospf;
+    int                                 m_bgpPort;
 
     void handleDhcpDiscovery(PacketPtr_t packet);
     void handleDhcpOffer(PacketPtr_t packet);
