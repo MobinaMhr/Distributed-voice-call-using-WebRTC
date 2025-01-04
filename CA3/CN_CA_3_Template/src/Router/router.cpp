@@ -326,7 +326,7 @@ void Router::route(UT::PacketControlType protocol)
         m_rip = new RIP(m_ipv4Address, m_macAddress, this);
         connect(m_rip, &RIP::routingFinished, this, &Router::finishRouting, Qt::AutoConnection);
         m_rip->run();
-    }else if(protocol == UT::PacketControlType::OSPF){
+    }else if(m_protocol == UT::PacketControlType::OSPF){
         m_ospf = new OSPF(m_ipv4Address, m_macAddress, this);
         connect(m_ospf, &OSPF::routingFinished, this, &Router::finishRouting, Qt::AutoConnection);
         m_ospf->run();

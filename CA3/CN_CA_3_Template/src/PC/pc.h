@@ -3,6 +3,8 @@
 
 #include "../Node/Node.h"
 #include "../IP/IP.h"
+#include "../Protocol/ospf.h"
+#include "../Protocol/rip.h"
 #include <QString>
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -21,6 +23,7 @@ public:
     //void send(IPv6_t dest_ip); // create packets and send them;
     void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
     void processDataPacket(const PacketPtr_t &packet) override;
+    void route(UT::PacketControlType protocol);
 
 public Q_SLOTS:
     void receivePacket(const PacketPtr_t &packet, uint8_t portNumber) override;

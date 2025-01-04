@@ -27,7 +27,7 @@ public:
     PortPtr_t getIdlePort() override;
     std::vector<PortPtr_t> getPorts();
     void setDhcp(int asNumber);
-    void route(UT::PacketControlType protocol);
+    void route(UT::PacketControlType protocol);// my change to slot
 
     std::vector<QSharedPointer<Node>> neighbors();
     void processControlPacket(const PacketPtr_t &packet, uint8_t portNumber) override;
