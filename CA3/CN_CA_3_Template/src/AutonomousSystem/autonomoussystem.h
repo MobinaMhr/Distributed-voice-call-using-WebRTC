@@ -12,8 +12,9 @@ class AutonomousSystem : public QObject
     Q_OBJECT
 
 public:
-    explicit AutonomousSystem(int routerCount, int pcCount, int routerOffset, int pcOffset,
-                              UT::TopologyType topology_type, QObject *parent = nullptr);
+    explicit AutonomousSystem(int id, int routerCount, int pcCount, int routerOffset, int pcOffset,
+                              UT::TopologyType topology_type, int routerBufferSize, int routerPortCount,
+                              QObject *parent = nullptr);
     ~AutonomousSystem() override;
 
     void startRoutingProtocol();
@@ -58,7 +59,7 @@ private:
     TopologyController*             m_topologyController;
     UT::IPVersion                   m_ipVersion;
 
-    void initializeAS();
+    void initializeAS(int routerPortCount);
     void initializePCs(UT::IPVersion ipVersion, int offset, int portCount = 1);
     QSharedPointer<Router> findRouterById(const int routerId);
 };

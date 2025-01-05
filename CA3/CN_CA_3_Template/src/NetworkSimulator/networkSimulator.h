@@ -41,6 +41,9 @@ private:
     void analyzeResults();
     int m_routingCompletionCount;
     int m_totalRouters;
+
+    UT::TopologyType returnTopologyType(QString topologyType);
+    void generateEventCoordinator(double lambda, int cycleCount, int packetCount, int pcCount, int cycleLength);
 };
 
 #endif // NETWORKSIMULATOR_H

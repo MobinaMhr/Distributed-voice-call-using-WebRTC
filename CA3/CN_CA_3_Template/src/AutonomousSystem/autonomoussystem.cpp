@@ -3,9 +3,11 @@
 
 #include <QDebug>
 
-AutonomousSystem::AutonomousSystem(int routerCount, int pcCount, int routerOffset, int pcOffset,
-                                   UT::TopologyType topology_type, QObject *parent) :
+AutonomousSystem::AutonomousSystem(int id, int routerCount, int pcCount, int routerOffset,
+                                   int pcOffset, UT::TopologyType topology_type, int routerBufferSize,
+                                   int routerPortCount, QObject *parent) :
     QObject(parent),
+    m_id(id),
     m_routerCount(routerCount),
     m_pcCount(pcCount),
     m_routerOffset(routerOffset),
@@ -14,9 +16,8 @@ AutonomousSystem::AutonomousSystem(int routerCount, int pcCount, int routerOffse
     m_topologyType(topology_type),
     m_ipVersion(UT::IPVersion::IPv4)
 {
-    int routerBufferSize = 6;
     m_topologyController = new TopologyController(routerBufferSize, this);
-    initializeAS();
+    initializeAS(routerPortCount);
 }
 
 int AutonomousSystem::routerCount() {
@@ -76,9 +77,8 @@ void AutonomousSystem::setGateways(const QJsonArray &gateways) {
     }
 }
 
-void AutonomousSystem::initializeAS() {
-    int portCount = 4;
-    m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_routerOffset, portCount);
+void AutonomousSystem::initializeAS(int routerPortCount) {
+    m_topologyController->initializeTopology(m_topologyType, m_routerCount, m_ipVersion, m_routerOffset, routerPortCount);
     m_routers = m_topologyController->getCurrentTopology();
     m_topologyController->getPcs(m_pcCount, m_pcOffset, m_ipVersion, 1);
     assignIPAddresses();
