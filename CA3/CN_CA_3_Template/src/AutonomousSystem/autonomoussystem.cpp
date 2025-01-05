@@ -16,7 +16,7 @@ AutonomousSystem::AutonomousSystem(int id, int routerCount, int pcCount, int rou
     m_topologyType(topology_type),
     m_ipVersion(UT::IPVersion::IPv4)
 {
-    m_topologyController = new TopologyController(routerBufferSize, this);
+    m_topologyController = new TopologyController(id, routerBufferSize, this);
     initializeAS(routerPortCount);
 }
 

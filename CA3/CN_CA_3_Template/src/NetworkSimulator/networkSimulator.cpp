@@ -45,15 +45,15 @@ void NetworkSimulator::initializeNetwork() {
     QString simulation_duration = m_config["simulation_duration"].toString();
     QString cycle_duration = m_config["cycle_duration"].toString();
     int ttl = m_config["TTL"].toInt();
+    /// TODO:: send ttl to Data Packet.
     int packets_per_simulation = m_config["packets_per_simulation"].toInt();
-    QString statistical_distribution = m_config["statistical_distribution"].toString();
     int router_buffer_size = m_config["router_buffer_size"].toInt();
     int router_port_count = m_config["router_port_count"].toInt();
     QString routing_protocol = m_config["routing_protocol"].toString();
     QString routing_table_update_interval = m_config["routing_table_update_interval"].toString();
-    bool routing_per_port = m_config["routing_per_port"].toBool();
-    int routing_table_size = m_config["routing_table_size"].toInt();
-    int routing_packets_per_port_cycle = m_config["routing_packets_per_port_cycle"].toInt();
+    // bool routing_per_port = m_config["routing_per_port"].toBool();
+    // int routing_table_size = m_config["routing_table_size"].toInt();
+    // int routing_packets_per_port_cycle = m_config["routing_packets_per_port_cycle"].toInt();
 
     QJsonArray asArray = m_config["Autonomous_systems"].toArray();
     for (const auto &asValue : asArray) {
@@ -116,10 +116,14 @@ void NetworkSimulator::initializeNetwork() {
         // Configure gateways and inter-AS connections here...
     }
 
+    int pcCount = 15;
+    int cycleCount = 5;
+    int cycleLength = 100;
+
     connectAS();
-    // generateEventCoordinator(
-    //     lambda, cycleCount, packets_per_simulation, pcCount, cycleLength
-    // );
+    generateEventCoordinator(
+        10.0, cycleCount, packets_per_simulation, pcCount, cycleLength
+    );
 }
 
 void NetworkSimulator::connectAS() {

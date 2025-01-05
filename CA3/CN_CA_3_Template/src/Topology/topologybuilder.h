@@ -9,12 +9,14 @@
 #include <QVector>
 #include <QMap>
 #include <memory>
+#include <QFile>
+#include <QTextStream>
 
 class TopologyBuilder : public QObject {
     Q_OBJECT
 
 public:
-    explicit TopologyBuilder(int routerBufferSize, QObject *parent = nullptr);
+    explicit TopologyBuilder(int id, int routerBufferSize, QObject *parent = nullptr);
     ~TopologyBuilder() override;
 
     void resetBindings();
@@ -37,11 +39,13 @@ private:
     QVector<QSharedPointer<Router>> m_routers;
     PortBindingManager*             m_portBindingManager;
     MacAddressGenerator*            m_macAddressGenerator;
+    QFile                           m_logFile;
 
     QSharedPointer<Router> createRouter(int id, int portCount, UT::IPVersion ipVersion);
     QSharedPointer<PC> createPC(int id, int portCount, UT::IPVersion ipVersion);
     bool bindPorts(PortPtr_t port1, PortPtr_t port2);
     bool unbindPorts(PortPtr_t port1, PortPtr_t port2);
+    void log(const QString &message);
 };
 
 #endif // TOPOLOGYBUILDER_H

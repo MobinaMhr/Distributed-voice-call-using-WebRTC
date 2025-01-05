@@ -3,12 +3,14 @@
 
 #include "TopologyBuilder.h"
 #include <QObject>
+#include <QFile>
+#include <QTextStream>
 
 class TopologyController : public QObject {
     Q_OBJECT
 
 public:
-    explicit TopologyController(int routerBufferSize, QObject *parent = nullptr);
+    explicit TopologyController(int id, int routerBufferSize, QObject *parent = nullptr);
     ~TopologyController() override;
 
     void setTopologyType(UT::TopologyType topologyType);
@@ -37,6 +39,8 @@ private:
     QVector<QSharedPointer<PC>>     m_personalComputers;
     UT::TopologyType                m_activeTopologyType;
     bool                            m_isActive;
+    QFile                           m_logFile;
+    void log(const QString &message);
 };
 
 #endif // TOPOLOGYCONTROLLER_H

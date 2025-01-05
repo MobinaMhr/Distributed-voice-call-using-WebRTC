@@ -1,11 +1,24 @@
 #include "TopologyBuilder.h"
 #include <cmath>
 
-TopologyBuilder::TopologyBuilder(int routerBufferSize, QObject *parent) :
+TopologyBuilder::TopologyBuilder(int id, int routerBufferSize, QObject *parent) :
     QObject(parent),
     m_routerBufferSize(routerBufferSize),
     m_portBindingManager(new PortBindingManager(this)),
-    m_macAddressGenerator(new MacAddressGenerator(this)) {}
+    m_macAddressGenerator(new MacAddressGenerator(this)),
+    m_logFile(QString("topologyBuilder%1_log.txt").arg(id))
+{}
+
+void TopologyBuilder::log(const QString &message)
+{
+    if (m_logFile.open(QIODevice::Append | QIODevice::Text)) {
+        QTextStream out(&m_logFile);
+        out << message << "\n";
+        m_logFile.close();
+    } else {
+        qWarning("Could not open log file for writing.");
+    }
+}
 
 TopologyBuilder::~TopologyBuilder() {
     delete m_portBindingManager;

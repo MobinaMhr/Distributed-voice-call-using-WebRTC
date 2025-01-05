@@ -1,12 +1,24 @@
 #include "TopologyController.h"
 #include <QDebug>
 
-TopologyController::TopologyController(int routerBufferSize, QObject *parent) :
+TopologyController::TopologyController(int id, int routerBufferSize, QObject *parent) :
     QObject(parent),
-    m_topologyBuilder(new TopologyBuilder(routerBufferSize)),
-    m_isActive(false) {
+    m_topologyBuilder(new TopologyBuilder(id, routerBufferSize)),
+    m_isActive(false),
+    m_logFile(QString("topologyController%1_log.txt").arg(id)) {
     // qDebug() << "Here in Topology Controller";
     // m_topologyBuilder = new TopologyBuilder(routerBufferSize);
+}
+
+void TopologyController::log(const QString &message)
+{
+    if (m_logFile.open(QIODevice::Append | QIODevice::Text)) {
+        QTextStream out(&m_logFile);
+        out << message << "\n";
+        m_logFile.close();
+    } else {
+        qWarning("Could not open log file for writing.");
+    }
 }
 
 TopologyController::~TopologyController() {
