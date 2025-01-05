@@ -9,6 +9,8 @@
 #include <QJsonArray>
 #include "../AutonomousSystem/autonomoussystem.h"
 #include "../EventsCoordinator/EventsCoordinator.h"
+#include <QFile>
+#include <QTextStream>
 
 class NetworkSimulator : public QObject {
     Q_OBJECT
@@ -29,19 +31,20 @@ public:
     void isConfigLoaded();
 
 private:
-    QVector<QSharedPointer<AutonomousSystem>> m_autonomousSystems;
-    EventsCoordinator* m_eventCoordinator;
-    QJsonObject m_config;
-    int m_routerCount;
+    QVector<QSharedPointer<AutonomousSystem>>   m_autonomousSystems;
+    EventsCoordinator*                          m_eventCoordinator;
+    QJsonObject                                 m_config;
+    int                                         m_routerCount;
+    int                                         m_routingCompletionCount;
+    int                                         m_totalRouters;
+    QFile                                       m_logFile;
 
+    void log(const QString &message);
     void loadConfig(const QString &filePath);
     void connectAS();
     std::pair<int, int> calculateOffsets();
     void monitorRoutingCompletion();
     void analyzeResults();
-    int m_routingCompletionCount;
-    int m_totalRouters;
-
     UT::TopologyType returnTopologyType(QString topologyType);
     void generateEventCoordinator(double lambda, int cycleCount, int packetCount, int pcCount, int cycleLength);
 };

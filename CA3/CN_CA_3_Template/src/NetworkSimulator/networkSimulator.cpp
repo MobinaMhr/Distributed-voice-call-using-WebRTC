@@ -7,7 +7,19 @@
 NetworkSimulator::NetworkSimulator(const QString &configFilePath, QObject *parent)
     : QObject(parent),
     m_routingCompletionCount(0),
-    m_totalRouters(0) {}
+    m_totalRouters(0),
+    m_logFile(QString("networkSimulator_log.txt")) {}
+
+void NetworkSimulator::log(const QString &message)
+{
+    if (m_logFile.open(QIODevice::Append | QIODevice::Text)) {
+        QTextStream out(&m_logFile);
+        out << message << "\n";
+        m_logFile.close();
+    } else {
+        qWarning("Could not open log file for writing.");
+    }
+}
 
 NetworkSimulator::~NetworkSimulator() {
     delete m_eventCoordinator;
