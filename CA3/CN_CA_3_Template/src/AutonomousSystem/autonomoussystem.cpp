@@ -3,6 +3,15 @@
 
 #include <QDebug>
 
+
+/// 1. Connect slots in PC and Router here.
+/// 2. Hashem: a signal from Nodes is emmited that I've received IP, when all of them've received, emit a signal to routing algorithm start.
+/// route method should be change ot slot and connect to this signal.
+/// 3. Routers should tell I've finnished routing, they say, when all of them said, emmit a signal to run bgp, then runBGP change to slot and all routers runBGP slot connects to this one.
+/// 4. They all should say BGP is finished, AS knows and goes to next phase.
+/// 5. Event Cooridinator cycle count should not go up when ever it is not needed.
+
+
 AutonomousSystem::AutonomousSystem(int id, int routerCount, int pcCount, int routerOffset,
                                    int pcOffset, UT::TopologyType topology_type, int routerBufferSize,
                                    int routerPortCount, QObject *parent) :
