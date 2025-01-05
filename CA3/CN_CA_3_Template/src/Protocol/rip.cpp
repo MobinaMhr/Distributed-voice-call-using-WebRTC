@@ -24,9 +24,10 @@ void RIP::run()
     QByteArray payload;
     DataLinkHeader *dh = new DataLinkHeader(this->m_routerMacAddress, this->m_routerMacAddress);
     TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
-    Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
-                                       1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
-                                       RIP_TTL);
+    Packet *hello = new Packet(
+        UT::PacketType::Control, UT::PacketControlType::RIP, 1, 0, 0,
+        fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header, RIP_TTL
+    );
 
     QVector<IpPtr_t> nodes = {};
 
@@ -192,9 +193,10 @@ QString RIP::generateUpdatePacket()
     QByteArray payload ;
     DataLinkHeader *dh = new DataLinkHeader(this->m_routerMacAddress, this->m_routerMacAddress);
     TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
-    Packet *update = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
-                                       1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
-                                       RIP_TTL);
+    Packet *update = new Packet(
+        UT::PacketType::Control, UT::PacketControlType::RIP, 1, 0, 0,
+        fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header, RIP_TTL
+    );
     auto nodes = m_routingTable->getNodes();
     auto costs = m_routingTable->getCosts();
 

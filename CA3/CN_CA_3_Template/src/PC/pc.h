@@ -2,7 +2,6 @@
 #define PC_H
 
 #include "../Node/Node.h"
-#include "../IP/IP.h"
 #include "../Protocol/ospf.h"
 #include "../Protocol/rip.h"
 #include <QString>

@@ -25,9 +25,10 @@ void OSPF::run()
     QByteArray payload;
     DataLinkHeader *dh = new DataLinkHeader(this->m_routerMac, this->m_routerMac);
     TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
-    Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::OSPF,
-                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
-                                        OSPF_TTL);
+    Packet *hello = new Packet(
+        UT::PacketType::Control, UT::PacketControlType::OSPF, 1, 0, 0,
+        fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header, OSPF_TTL
+    );
 
     hello->storeStringInPayload(generateHelloPayload());
     m_lsaPacket = *hello;
@@ -99,9 +100,10 @@ void OSPF::updateLsaPacket()
     QByteArray payload;
     DataLinkHeader *dh = new DataLinkHeader(this->m_routerMac, this->m_routerMac);
     TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
-    Packet *lsa = new Packet(UT::PacketType::Control, UT::PacketControlType::OSPF,
-                                        1, 0, 0, fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header,
-                                        OSPF_TTL);
+    Packet *lsa = new Packet(
+        UT::PacketType::Control, UT::PacketControlType::OSPF, 1, 0, 0,
+        fakeDest, payload, *dh, *th, m_routerIpv4Header, m_routerIpv6Header, OSPF_TTL
+    );
 
     lsa->storeStringInPayload(generateLSAPayload());
     m_lsaPacket = *lsa;

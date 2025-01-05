@@ -56,8 +56,10 @@ void PC::handleDhcpOffer(PacketPtr_t packet)
             TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
             IPHv4_t *iphv4 = new IPHv4_t();
             IPHv6_t *iphv6 = new IPHv6_t();
-            Packet *req = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPRequest, 1, 0, 0,
-                                               fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL);
+            Packet *req = new Packet(
+                UT::PacketType::Control, UT::PacketControlType::DHCPRequest, 1, 0, 0,
+                fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL
+            );
             req->storeIntInPayload(m_id);
             PacketPtr_t reqPt = PacketPtr_t(req);
             log("DHCP offer " + sugestedIp + " accepted");
@@ -121,16 +123,18 @@ void PC::route(UT::PacketControlType protocol)
                                          m_ipv6Address->toString();
         QJsonDocument doc(helloPacketPayload);
         QString payloadStrng = QString(doc.toJson(QJsonDocument::Compact));
-        Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::OSPF,
-                                           1, 0, 0, fakeDest, payload, *dh, *th, v4, v6,
-                                           OSPF_TTL);
+        Packet *hello = new Packet(
+            UT::PacketType::Control, UT::PacketControlType::OSPF, 1, 0, 0,
+            fakeDest, payload, *dh, *th, v4, v6, OSPF_TTL
+        );
 
         hello->storeStringInPayload(payloadStrng);
         // buffer it to send!!!
     }else {
-        Packet *hello = new Packet(UT::PacketType::Control, UT::PacketControlType::RIP,
-                                            1, 0, 0, fakeDest, payload, *dh, *th, v4, v6,
-                                            RIP_TTL);
+        Packet *hello = new Packet(
+            UT::PacketType::Control, UT::PacketControlType::RIP, 1, 0, 0,
+            fakeDest, payload, *dh, *th, v4, v6, RIP_TTL
+        );
         QJsonArray nodesArray;
         QJsonArray costsArray;
         helloPacketPayload["nodes"] = nodesArray;

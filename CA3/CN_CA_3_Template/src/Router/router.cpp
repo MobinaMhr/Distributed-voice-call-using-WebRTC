@@ -72,9 +72,10 @@ void Router::handleDhcpDiscovery(PacketPtr_t packet)
         TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
         IPHv4_t *iphv4 = new IPHv4_t();
         IPHv6_t *iphv6 = new IPHv6_t();
-        Packet *offer = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPOffer,
-                                           1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
-                                           DHCP_TTL);
+        Packet *offer = new Packet(
+            UT::PacketType::Control, UT::PacketControlType::DHCPOffer, 1, 0, 0,
+            fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL
+        );
         offer->storeStringInPayload(sugestedIp);
         PacketPtr_t offerPt = PacketPtr_t(offer);
         /// BUFFER HERE instead of send
@@ -101,8 +102,10 @@ void Router::handleDhcpOffer(PacketPtr_t packet)
             TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
             IPHv4_t *iphv4 = new IPHv4_t();
             IPHv6_t *iphv6 = new IPHv6_t();
-            Packet *req = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPRequest, 1, 0, 0, 
-                                     fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL);
+            Packet *req = new Packet(
+                UT::PacketType::Control, UT::PacketControlType::DHCPRequest, 1, 0, 0,
+                fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL
+            );
             req->storeIntInPayload(m_id);
             PacketPtr_t reqPt = PacketPtr_t(req);
             Q_EMIT sendPacket(reqPt, BROADCAST_ON_ALL_PORTS);
@@ -128,9 +131,10 @@ void Router::handleDhcpReq(PacketPtr_t packet)
         TCPHeader *th = new TCPHeader(BROADCAST_ON_ALL_PORTS, BROADCAST_ON_ALL_PORTS);
         IPHv4_t *iphv4 = new IPHv4_t();
         IPHv6_t *iphv6 = new IPHv6_t();
-        Packet *ack = new Packet(UT::PacketType::Control, UT::PacketControlType::DHCPAcknowledge,
-                                           1, 0, 0, fakeDest, payload, *dh, *th, *iphv4, *iphv6,
-                                           DHCP_TTL);
+        Packet *ack = new Packet(
+            UT::PacketType::Control, UT::PacketControlType::DHCPAcknowledge, 1, 0, 0,
+            fakeDest, payload, *dh, *th, *iphv4, *iphv6, DHCP_TTL
+        );
         ack->storeStringInPayload(response);
         PacketPtr_t ackPt = PacketPtr_t(ack);
         Q_EMIT sendPacket(ackPt, BROADCAST_ON_ALL_PORTS);
@@ -427,8 +431,10 @@ void Router::runBgp()
         QByteArray payload ;
         DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress, this->m_macAddress);
         TCPHeader *th = new TCPHeader(m_bgpPort, BROADCAST_ON_ALL_PORTS);
-        Packet *update = new Packet(UT::PacketType::Control, UT::PacketControlType::EBGP,
-                                            1, 0, 0, fakeDest, payload, *dh, *th, v4, v6, RIP_TTL);
+        Packet *update = new Packet(
+            UT::PacketType::Control, UT::PacketControlType::EBGP, 1, 0, 0,
+            fakeDest, payload, *dh, *th, v4, v6, RIP_TTL
+        );
 
         update->storeStringInPayload(generateEBgpPayload());
         //store it to send on bgpProt!!!
@@ -486,8 +492,10 @@ Packet Router::generateIBgpPacket(const IpPtr_t &dest, QString payload)
     QByteArray _payload ;
     DataLinkHeader *dh = new DataLinkHeader(this->m_macAddress, this->m_macAddress);
     TCPHeader *th = new TCPHeader(m_bgpPort, BROADCAST_ON_ALL_PORTS);
-    Packet *update = new Packet(UT::PacketType::Control, UT::PacketControlType::IBGP,
-                                        1, 0, 0, dest, _payload, *dh, *th, v4, v6, RIP_TTL);
+    Packet *update = new Packet(
+        UT::PacketType::Control, UT::PacketControlType::IBGP, 1, 0, 0,
+        dest, _payload, *dh, *th, v4, v6, RIP_TTL
+    );
 
     update->storeStringInPayload(payload);;
     return *update;
