@@ -102,7 +102,7 @@ void Node::setIPVersion(UT::IPVersion ipVersion) {
     QString ipv = (ipVersion == UT::IPVersion::IPv4) ? "IPV4" : "IPV6";
     log("ipversion is set to : " + ipv);
 }
-;
+
 QString Node::ipv6Address() const
 {
     return m_ipv6Address->toString();

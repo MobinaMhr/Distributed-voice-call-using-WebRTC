@@ -12,10 +12,10 @@ Router::Router(int id, const MacAddress &macAddress, int portCount, UT::IPVersio
     m_dhcp(nullptr),
     m_isRouting(false),
     m_isBgpWorking(false),
-    m_bgpPort(ROUTER_IS_NOT_GATEWAY),
     m_rip((new RIP(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))),
-                    MacAddress(DEFAULT_MAC)))),
-    m_ospf(new OSPF(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))), m_macAddress, this)){
+                   MacAddress(DEFAULT_MAC)))),
+    m_ospf(new OSPF(IPv4Ptr_t::create((new IPv4_t("255.255.255.255", DEFAULT_MASK, this))), m_macAddress, this)),
+    m_bgpPort(ROUTER_IS_NOT_GATEWAY){
         for (int i = 0; i < portCount; ++i) {
         m_ports[i] = QSharedPointer<Port>::create(i);
 
@@ -474,7 +474,7 @@ void Router::handleEBgpPacket(const PacketPtr_t &packet)
     QJsonDocument newJsonDoc(inputPayload);
     QString newPayload = QString(jsonDoc.toJson(QJsonDocument::Compact));
     QMap<IpPtr_t, RoutingTable::RouteEntry> currentRoutingTable = m_routing_table->getAllRoutes();
-    for (const IpPtr_t& node : currentRoutingTable.keys()){
+    for (const IpPtr_t& node : currentRoutingTable.keys()) {
         Packet ibgpPacket = generateIBgpPacket(node, newPayload);
         // send the packet;
     }
@@ -514,17 +514,22 @@ void Router::updateRoutingTable(QJsonObject ibgp, IpPtr_t sourceIp, PortPtr_t po
         costs.append(costValue.toInt());
 
     IpPtr_t nextHopIP = m_routing_table->getNextHop(sourceIp);
-    if (nextHopIP == nullptr)
+    if (nextHopIP == nullptr) {
         nextHopIP = sourceIp;
-
+    }
     for (int i = 0; i<nodes.size(); i++){
         auto node = nodes[i];
         IpPtr_t nodeIP;
         nodeIP = IPv4_t::createIpPtr(node, DEFAULT_MASK);
         int currentCost = m_routing_table->getRouteCost(nodeIP);
-        int costFromNeighbor = costs[i] + NEIGHBOR_COST;
-        if (currentCost > costFromNeighbor)
+        int costToGateway = m_routing_table->getRouteCost(sourceIp);
+        if (costToGateway == std::numeric_limits<int>::max()) {
+            costToGateway = 0;
+        }
+        int costFromNeighbor = costs[i] + NEIGHBOR_COST + costToGateway;
+        if (currentCost > costFromNeighbor) {
             m_routing_table->updateRoute(nodeIP ,nextHopIP, port, costFromNeighbor);
+        }
 
     }
 }

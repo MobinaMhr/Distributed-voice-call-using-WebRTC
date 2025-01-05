@@ -41,7 +41,8 @@ private:
 
     void log(const QString &message);
     void loadConfig(const QString &filePath);
-    void connectAS();
+    void connectPCs(QJsonArray asGateways);
+    void connectAS(QJsonArray connections);
     std::pair<int, int> calculateOffsets();
     void monitorRoutingCompletion();
     void analyzeResults();

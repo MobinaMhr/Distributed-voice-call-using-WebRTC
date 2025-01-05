@@ -90,38 +90,17 @@ void NetworkSimulator::initializeNetwork() {
         asInstance->setUserGateways(userGateways);
         QJsonArray brokenRouters = asConfig["broken_routers"].toArray();
         asInstance->setBrokenRouters(brokenRouters);
+
         QJsonArray gateways = asConfig["gateways"].toArray();
         asInstance->setGateways(gateways);
+        QJsonArray asGateways = asConfig["as_gateways"].toArray();// These are router gateways
 
-        /// TODO
-        QJsonArray asGateways = asConfig["as_gateways"].toArray();
+        connectPCs(gateways); // may be deleted.
+
         QJsonValue connectToAS = asConfig["connect_to_as"];
-        for (const auto &gateway : gateways) {
-            QJsonObject gatewayObj = gateway.toObject();
-            int gatewayNode = gatewayObj["node"].toInt();
-            QJsonArray users = gatewayObj["users"].toArray();
-            qDebug() << "Gateway Node:" << gatewayNode << "Users:" << users;
-            /// TODO::
-        }
         if (!connectToAS.isNull()) {
-            qDebug() << "--- Connect to AS ---";
-            QJsonArray connections = connectToAS.toArray();
-            for (const auto &connection : connections) {
-                QJsonObject connectionObj = connection.toObject();
-                int connectedASId = connectionObj["id"].toInt();
-                QJsonArray gatewayPairs = connectionObj["gateway_pairs"].toArray();
-
-                qDebug() << "Connect to AS ID:" << connectedASId;
-                for (const auto &pair : gatewayPairs) {
-                    QJsonObject pairObj = pair.toObject();
-                    int gateway = pairObj["gateway"].toInt();
-                    int connectTo = pairObj["connect_to"].toInt();
-                    qDebug() << "Gateway:" << gateway << "Connect To:" << connectTo;
-                    /// TODO::
-                }
-            }
+            connectAS(connectToAS.toArray());
         }
-        /// END TODO
 
         m_autonomousSystems.append(asInstance);
         m_totalRouters += routerCount;
@@ -131,32 +110,36 @@ void NetworkSimulator::initializeNetwork() {
     int pcCount = 15;
     int cycleCount = 5;
     int cycleLength = 100;
-
-    connectAS();
     generateEventCoordinator(
         10.0, cycleCount, packets_per_simulation, pcCount, cycleLength
     );
 }
 
-void NetworkSimulator::connectAS() {
-    QJsonArray asArray = m_config["Autonomous_systems"].toArray();
-    for (const auto &asValue : asArray) {
-        QJsonObject asConfig = asValue.toObject();
-        QJsonArray connections = asConfig["connect_to_as"].toArray();
+void NetworkSimulator::connectPCs(QJsonArray gateways) {
+    for (const auto &gateway : gateways) {
+        QJsonObject gatewayObj = gateway.toObject();
+        int gatewayNode = gatewayObj["node"].toInt();
+        QJsonArray users = gatewayObj["users"].toArray();
+        qDebug() << "Gateway Node:" << gatewayNode << "Users:" << users;
+        /// TODO::
+    }
+}
 
-        for (const auto &connection : connections) {
-            QJsonObject connectionObj = connection.toObject();
-            int targetASId = connectionObj["id"].toInt();
-            QJsonArray gatewayPairs = connectionObj["gateway_pairs"].toArray();
-
-            for (const auto &pair : gatewayPairs) {
-                QJsonObject pairObj = pair.toObject();
-                int sourceGateway = pairObj["gateway"].toInt();
-                int targetGateway = pairObj["connect_to"].toInt();
-
-                // Establish connections between sourceGateway and targetGateway
-                // through their respective AutonomousSystems.
-            }
+void NetworkSimulator::connectAS(QJsonArray connections) {
+    qDebug() << "--- Connect to AS ---";
+    for (const auto &connection : connections) {
+        QJsonObject connectionObj = connection.toObject();
+        int targetASId = connectionObj["id"].toInt();
+        qDebug() << "Connect to AS ID:" << targetASId;
+        QJsonArray gatewayPairs = connectionObj["gateway_pairs"].toArray();
+        for (const auto &pair : gatewayPairs) {
+            QJsonObject pairObj = pair.toObject();
+            int sourceGateway = pairObj["gateway"].toInt();
+            int targetGateway = pairObj["connect_to"].toInt();
+            qDebug() << "Gateway:" << sourceGateway << "Connect To:" << targetGateway;
+            /// TODO::
+            /// Establish connections between sourceGateway and targetGateway
+            /// through their respective AutonomousSystems.
         }
     }
 }
