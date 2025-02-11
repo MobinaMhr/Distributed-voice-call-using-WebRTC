@@ -1,1 +1,0 @@
-router_id, mac_address, ipv4, ipv6 
