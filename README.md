@@ -1,5 +1,5 @@
 # Distributed voice call using WebRTC
-A Computer Networks course project in the spring semester of the University of Tehran under the supervision of Dr.Yazdani. 
+A Computer Networks course project in the fall semester of the University of Tehran under the supervision of Dr.Yazdani. 
 
 ## How to Run
 
