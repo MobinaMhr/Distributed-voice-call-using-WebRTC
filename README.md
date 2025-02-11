@@ -1,7 +1,5 @@
-# Computer-Networks-Course-S2025
-Computer Networks course projects in the spring semester of the University of Tehran under the supervision of Dr.Yazdani. 
-
 # Distributed voice call using WebRTC
+A Computer Networks course project in the spring semester of the University of Tehran under the supervision of Dr.Yazdani. 
 
 ## How to Run
 
